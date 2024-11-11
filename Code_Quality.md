@@ -1,7 +1,5 @@
 # Code Quality Convention Document
 
-This document outlines the coding standards and best practices for the Scorion Project. Following these conventions will ensure that our code is consistent, maintainable, and easy for all team members to understand and contribute to.
-
 ---
 
 ## 1. General Code Quality Principles
