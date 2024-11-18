@@ -83,7 +83,7 @@
 
 ---
 
-## 6. Database (PostgreSQL or SQLite) Conventions
+## 6. Database (SQLite) Conventions
 - **Table Naming**: Use `snake_case` for table names (e.g., `user_profiles`).
 - **Column Naming**: Use `snake_case` for columns and be descriptive (e.g., `first_name`, `created_at`).
 - **Primary Keys**: Name primary key columns as `id` or `{table_name}_id` (e.g., `user_id`).
