@@ -17,9 +17,33 @@ Being aware of these expectations provides the team with a precise standard by w
 
 ## The Problem
 
+### 1. Task
+- The client aims to improve the way feedback is captured within the Scorion environment by incorporating audio recordings. Currently, feedbacks are typed in or recorded as text, converted to text by a device and saved as text.
+However, these methods present 2 main challenges:
+    - **Inadequate Speech-to-text Implementation**: Devices often fail to accurately convert speech to text due to language accents, technical errors and so on. Besides, some devices also lack capability for speech-to-text function.
+    - **Missing Audio Feedback**: There is not a function to record, store and access audio clips, which limit the richness of giving feedback as well as replying to the given feedbacks.
+- The proposed solution is to use AI as a speech-to-text API, therefore enable the ability to record and store text transcription, ensuring usability and accessibility for a diverse set of devices.
+
+### 2. The Stakeholders
+- **Primary Stakeholders**:
+    - **Scorion Developers**: Provide feedback to student. Introduce students to Scorion's working environment. Receive the product.
+    - **Students**: Receive feedback. Responsible for implementing the solution.
+- **Secondary Stakeholders**:
+    - **Saxion Teachers**: Grade the project based on the product given to the client.
+    - **Compliance and Legal Team**: Ensure the solution adheres to GDPR data privacy regulations.
+
 ---
 
 ## Risks
+| Risks                                   | Impact                                                         | Prevention Measures                                                                                                    |
+|:----------------------------------------|:---------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------|
+| Inaccurate speech-to-text transcription | High (could cause poor user experience)                        | Use proven APIs; support editing and multiple languages|
+| Dependence on third-party APIs for speech-to-text functionality| High (downtime or changes in APIs could disrupt functionality) | Regularly monitor APIs for updates and maintain version compatibility or use multiple API providers to ensure redundancy|
+| Compatibility issues                    | High (could cause problem using the functions)                 | Test across devices and browsers, plan fallback options                                                                |
+| Data security breaches                  | High (legal repercussions and loss of user trust)              | Encrypt data and comply with GDPR                                                                                      |
+| User resistance to adoption             | Medium                                                         | Train users, maintain clear documentation, keep instruction easy to understand                                         |
+
+By identifying, assessing, and preparing for these risks, the Scorion development team and our project group can improve the likelihood of a successful outcome. Proactive mitigation strategies ensure that even high-impact risks are managed effectively, minimizing disruptions and maximizing user satisfaction.
 
 ---
 
