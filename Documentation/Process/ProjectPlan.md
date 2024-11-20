@@ -49,3 +49,25 @@ By identifying, assessing, and preparing for these risks, the Scorion developmen
 
 ## Team Plan
 
+### 1. Team introduction
+We are a team of seven enthusiastic and innovative students from Saxion University of Applied Sciences, bringing together a diverse mix of international perspectives and expertise. As a multidisciplinary group, we share a passion for problem-solving and technology-driven solutions.
+Our unique blend of cultural backgrounds and academic experiences allows us to approach challenges creatively, while our collaborative spirit ensures effective teamwork and a shared commitment to excellence.
+Together, we are excited to contribute our skills and insights to design and build a robust, user-friendly feedback recording solution for our client, Scorion.
+
+### 2. Team goals
+
+- **Deliver an Effective Solution**: Design and implement an user-friendly, efficient and reliable speech-to-text and recording feedback application.
+- **Focus on User's Experience and Needs**: Make sure that the solution fulfills the needs of graders and students by incorporating accessibility, usability and scalability.
+- **Improve Collab Skills**: Strengthen our teamwork and communication to be prepared for a professional working environment.
+- **Stick to Quality Standards**: Maintain high standards in development, testing and implementation so that the product provides the best quality and future-proof.
+- **Develop Professional Competence**: ENhance our technical and project management skills, prepare us for future roles in the software industry.
+- **Meet Deadlines, Be Ahead of time**: Deliver the project milestones on time by working efficiently together with smart time management and logical team planning.
+
+### 3. Team roles
+
+- With his solid knowledge in Git, Krisztian will be the Git Guy, who is in charge of version control, merge requests and Git-related problems. He will be the one who makes sure that branching and merging are done correctly to ensure code integrity and minimize conflicts. Besides, he will also review merging requests and assist other team members with working through Gitlab.
+- Communication with customer is one of the most significant job in this project. That is why Krzysztof will be in charge of client contact, since he has experience in the field before. He will gather and clarify requirements, ensuring that our team fully understands the client's needs. Moreover, he also informs the client about our progress, address their concerns and keep the client's feedback updated in the [Client Communication Log](ClientComunicationLog.md).
+- In respect of organizing issues given within the group, Anastasiia, who is also the SCRUM Master, will manage and prioritize tasks using the Gitlab issues board. She will assign tasks with the measured weights to each member and ensure that issues are solved effectively. Her SCRUM Master progress can be found in [Daily SCRUM Log](DailyScrumLog.md).
+- Anh Nguyen and Radin will lean towards backend development as they are confident with their skills in backend. Other members will also participate in the coding phase to help them ensure secure, efficient and scalable functionality.
+- An Nguyen and David will mainly work on the frontend development, but also help with the backend. We expect everyone to aim for full-stack development so that we can collaborate together to intergrate APIs and backend functionality easily. 
+- Each member will ensure to work well with others to create a smooth workflow, balance workloads while contributing their specialized skills to achive project goals.
