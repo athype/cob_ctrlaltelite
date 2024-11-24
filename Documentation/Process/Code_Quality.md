@@ -111,10 +111,7 @@
 - **Code Comments**:
   - Comment complex or non-obvious code, especially in backend logic or complex frontend interactions.
   - Use comments to describe the purpose and functionality of functions and classes.
-- **README**:
-  - Maintain an updated `README.md` in the root directory, describing the project setup, running instructions, and relevant details.
 - **API Documentation**:
   - Document all API endpoints with details on request methods, parameters, and response structures.
-  - Use Swagger (if applicable) to create API documentation for easy reference.
 
 ---
