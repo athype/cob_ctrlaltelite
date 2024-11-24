@@ -6,20 +6,18 @@
 
 Documentation must be thorough, clear, and accessible, following principles from the **IBM Writing Guide**:
 
-- **Clarity and Brevity**:
+- **Clarity**:
   - Documentation should be concise, providing only the necessary information in a clear format.
   - Avoid technical jargon(specialized language used by experts in a field) where possible; if jargon is required, provide definitions or explanations.
 - **Structured Format**:
   - Use headings, bullet points, and lists to structure content for easy scanning and readability.
 - **Audience-Focused**:
-  - Documentation should cater to both technical team members and non-technical stakeholders (e.g., clients, end-users).
-  - Include a “Getting Started” section for new users, explaining setup and basic usage.
+  - Documentation should cater to both technical team members and non-technical stakeholders (example, clients, end-users).
 - **Comprehensive Coverage**:
   - Each module, function, and component should have associated documentation, covering its purpose, usage, parameters, and expected outputs.
   - All API endpoints should be documented, including request and response formats, parameters, and expected behavior.
 - **Version Control**:
   - Documentation must be updated to reflect any changes in functionality, structure, or dependencies.
-  - Include a changelog section where major documentation updates are logged with dates and summaries.
 
 ---
 
@@ -31,7 +29,7 @@ Frontend elements must follow **Laws of UX** principles to create a user-friendl
   - User interfaces should be as simple as possible to reduce cognitive load.
   - Limit options presented to users at any given time, ensuring a clear path to task completion.
 - **Fitts's Law (Accessibility)**:
-  - Interactive elements (e.g., buttons, links) must be large enough to be easily clickable, especially on mobile devices.
+  - Interactive elements (example: buttons, links) must be large enough to be easily clickable, especially on mobile devices.
   - Primary actions should be emphasized visually and placed in accessible locations on the screen.
 - **Aesthetic-Usability Effect**:
   - Design elements should be visually pleasing, as a well-designed interface fosters user trust and ease of use.
@@ -41,7 +39,7 @@ Frontend elements must follow **Laws of UX** principles to create a user-friendl
   - Provide immediate, clear feedback for user actions, such as loading indicators, success messages, and error notifications.
 - **Responsive and Accessible Design**:
   - The UI must be fully responsive, functioning well on a range of devices and screen sizes.
-  - Follow accessibility standards (e.g., WCAG 2.1) to ensure the application is usable for all users, including those with disabilities.
+  - Follow accessibility standards (example: WCAG 2.1) to ensure the application is usable for all users, including those with disabilities.
 
 ---
 
@@ -62,14 +60,14 @@ Frontend elements must follow **Laws of UX** principles to create a user-friendl
 ## 4. Testing and Quality Assurance
 
 - **Unit Testing**:
-  - All components must have associated unit tests that cover expected behavior, edge cases, and potential errors.
+  - All components that require automated testing must have associated unit tests that cover expected behavior, edge cases, and potential errors.
   - Unit tests should be automated where possible, run regularly, and pass with no failures before code merges.
 - **Integration Testing**:
   - Test integration points between frontend, backend, and database to ensure seamless data flow and functionality.
 - **User Acceptance Testing**:
   - Before a feature is considered complete, it must be tested from the user's perspective to ensure it meets requirements and provides a positive experience.
 - **Bug Tracking and Resolution**:
-  - All known bugs should be documented in GitLab, assigned severity levels, and addressed promptly.
+  - All known bugs should be documented in GitLab, and addressed promptly.
   - No critical or high-severity bugs should remain open when a feature is marked as done.
 
 ---
