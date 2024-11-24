@@ -74,7 +74,7 @@ Frontend elements must follow **Laws of UX** principles to create a user-friendl
 
 ## 5. Final Sign-Off Checklist
 
-Before marking a feature or task as “done,” ensure that:
+Before marking a feature “done,” ensure that:
 - [ ] All code meets quality and style guidelines.
 - [ ] Documentation is complete and up-to-date.
 - [ ] All UI elements are accessible, responsive, and follow UX standards.
