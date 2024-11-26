@@ -7,12 +7,13 @@ export const createJwt = (user: User): Promise<string> => {
     if (!key) {
         throw new Error('JWT_SECRET is not defined');
     }
-    return sign({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        permissions: user.permissions,
-    } satisfies JwtPayload,
-        key
+    return sign(
+        {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            permissions: user.permissions,
+        } satisfies JwtPayload,
+        key,
     );
 };

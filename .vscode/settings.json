@@ -39,7 +39,7 @@
         "**/.next": true,
         "**/out": true,
         "**/.nuxt": true,
-        // "**/dist": true,
+        "**/dist": true,
         "**/.cache/": true,
         ".vuepress/dist": true,
         "**/.temp": true,

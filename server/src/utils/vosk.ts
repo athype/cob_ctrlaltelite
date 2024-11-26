@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Model, Recognizer, type GrammarRecognizerParam, type SpeakerRecognizerParam, type XOR, type Result, type BaseRecognizerParam } from 'vosk';
+import { Model, Recognizer, type GrammarRecognizerParam, type SpeakerRecognizerParam, type XOR } from 'vosk';
 
 export function loadModel(modelPath: string): Model {
     if (!fs.existsSync(modelPath)) {
@@ -9,8 +9,11 @@ export function loadModel(modelPath: string): Model {
 }
 
 export function createRecognizer<T extends XOR<SpeakerRecognizerParam, Partial<GrammarRecognizerParam>>>(
-    model: Model, sampleRate: number
+    model: Model, sampleRate: number,
 ): Recognizer<T> {
-    // @ts-ignore
-    return new Recognizer<T>({ model, sampleRate });
+    // @ts-expect-error - The type definition is incorrect
+    return new Recognizer<T>({ 
+        model, 
+        sampleRate, 
+    });
 }

@@ -1,5 +1,6 @@
 import { type MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
+
 import type { JwtPayload, Permission } from '../types/index.js';
 
 const compare = (a: Permission[], b: Permission[]): boolean => {

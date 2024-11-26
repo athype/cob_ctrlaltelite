@@ -1,8 +1,9 @@
-import { loadModel, createRecognizer } from './vosk.js';
-import { parentPort } from 'worker_threads';
-import { sleep } from './index.js';
-import type { FileStatus, QueuedFile } from './file_queue.js';
 import { createReadStream } from 'fs';
+import { parentPort } from 'worker_threads';
+
+import type { FileStatus, QueuedFile } from './file_queue.js';
+import { sleep } from './index.js';
+import { loadModel, createRecognizer } from './vosk.js';
 
 // const model = loadModel('./static/models/vosk-model-en-us-0.22');
 const model = loadModel('./static/models/vosk-model-small-en-us-0.15');

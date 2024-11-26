@@ -1,8 +1,9 @@
-import { FileQueue } from "../utils/file_queue.js";
-import { getWorkerPath, hashBuffer } from "../utils/index.js";
-import { Hono } from "hono";
+import { writeFile } from 'fs/promises';
+import { Hono } from 'hono';
 import { Worker } from 'worker_threads';
-import { writeFile } from "fs/promises";
+
+import { FileQueue } from '../utils/file_queue.js';
+import { getWorkerPath, hashBuffer } from '../utils/index.js';
 
 // ffmpeg -i .\questions_money.wav -ar 16000 -ac 1 -b:a 256k -af highpass=f=100,afftdn=noise_reduction=20 output.wav
 

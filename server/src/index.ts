@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
 import { serveStatic } from '@hono/node-server/serve-static';
+import { Hono } from 'hono';
+
 import { audio } from './handlers/index.js';
 import 'dotenv/config';
 
@@ -14,6 +15,6 @@ const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);
 
 serve({
-  fetch: app.fetch,
-  port
+    fetch: app.fetch,
+    port,
 });
