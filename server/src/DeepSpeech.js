@@ -23,7 +23,7 @@ const microphone = mic({
     rate: SAMPLE_RATE,
     channels: '1',
     debug: true,
-    exitOnSilence: 6, // Automatically stop recording after 6 seconds of silence
+    exitOnSilence: 6,
 });
 
 const micInputStream = microphone.getAudioStream();
@@ -40,8 +40,6 @@ rl.question('Press "q" to stop recording...\n', () => {
     console.log('Recording stopped.');
     const transcription = stream.finishStream();
     console.log('Final transcription:', transcription);
-
-    // Exit the process gracefully
     process.exit();
 });
 
