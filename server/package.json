@@ -17,6 +17,10 @@
     "better-sqlite3": "^11.5.0",
     "cors": "^2.8.5",
     "express": "^4.21.1",
-    "nodejs": "^0.0.0"
-  }
+    "http-status-codes": "^2.3.0",
+    "escape-html": "^1.0.3"
+  },
+    "devDependencies": {
+      "nodemon": "^3.1.7"
+    }
 }
