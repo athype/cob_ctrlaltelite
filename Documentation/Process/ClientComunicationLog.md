@@ -8,15 +8,18 @@ This document is used to track all communication with the client.
 - **Project Name**: Audio Feedback (Client on board)
 - **Client Name**: Scorion
 - **Primary Contact**: [Client's Primary Contact Name]
-- **Contact Details**: [Email/Phone Number/Other Channels]
+- **Contact Details**: 
+
+Email: office@scorion.com
+Discord: Scorion
 
 ---
 
 ## Communication Log
 
-| **Date**       | **Time**   | **Medium**          | **Attendees**                                 | **Topics Discussed**                                                                                                    | **Key Decisions/Notes**                                                                                 | **Next Steps/Actions**                                                                                      |
-|-----------------|-----------|---------------------|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| YYYY-MM-DD      | HH:MM AM/PM | [Email, Zoom, Phone, etc.] | [Team & Client Members Present]              | [Key topics discussed, e.g., feature requests, progress updates, challenges, etc.]                                   | [Decisions made or important notes, e.g., client approved feature X, provided feedback on prototype.]  | [Follow-up actions or tasks, e.g., deliver updated prototype by next meeting, prepare technical proposal.] |
+| **Date**   | **Time** | **Medium** | **Attendees**     | **Topics Discussed**                        | **Key Decisions/Notes** | **Next Steps/Actions**                                                                                      |
+|------------|----------|------------|-------------------|---------------------------------------------|-------------------------|-------------------------------------------------------------------------------------------------------------|
+| 25-11-2024 | 11:56 PM | Email      | Anastasiia Khylyk | Progress update - sent vision for Sprint 1. | -                       |   |
 
 ---
 
