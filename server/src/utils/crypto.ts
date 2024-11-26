@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 export const hashPassword = async (password: string): Promise<string> => {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
@@ -8,4 +10,10 @@ export const hashPassword = async (password: string): Promise<string> => {
 
 export const verifyPassword = async (password: string, hash: string): Promise<boolean> => {
     return await hashPassword(password) === hash;
+};
+
+export const hashBuffer = async (buffer: Buffer): Promise<string> => {
+    const hash = crypto.createHash('sha256');
+    hash.update(buffer);
+    return hash.digest('hex');
 };

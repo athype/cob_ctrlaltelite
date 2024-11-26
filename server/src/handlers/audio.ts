@@ -1,15 +1,16 @@
-import { Hono } from "hono";
 import { FileQueue } from "../utils/file_queue.js";
-import crypto from "crypto";
-import { writeFile } from "fs/promises";
+import { getWorkerPath, hashBuffer } from "../utils/index.js";
+import { Hono } from "hono";
 import { Worker } from 'worker_threads';
+import { writeFile } from "fs/promises";
 
 // ffmpeg -i .\questions_money.wav -ar 16000 -ac 1 -b:a 256k -af highpass=f=100,afftdn=noise_reduction=20 output.wav
 
 const app = new Hono();
 
 const queue = new FileQueue();
-const worker = new Worker('./src/utils/worker.js');
+const workerPath = getWorkerPath();
+const worker = new Worker(workerPath);
 
 worker.on('message', (message) => {
     console.log('Received message from worker:', message);
@@ -27,26 +28,27 @@ app.get('/:fileId', async (c) => {
     const { fileId } = c.req.param();
 
     const file = queue.get(fileId);
-    if (file) {
-        return c.json({ status: file.status });
+    if (!file) {
+        return c.json({ error: 'File not found' });
     }
-    return c.json({ error: 'File not found' });
+    return c.json({ 
+        status: file.status,
+        result: file.result,
+    });
 });
 
 app.post('/', async (c) => {
     const blob = await c.req.blob();
     const buffer = Buffer.from(await blob.arrayBuffer());
-    const hash = crypto.createHash('sha256').update(buffer).digest('hex');
 
+    const hash = await hashBuffer(buffer);
     const path = `./temp/uploads/${hash}.wav`;
+
     await writeFile(path, buffer);
 
     queue.add({ path, hash, status: 'queued' });
 
     return c.json({ fileId: hash });
-   
-    // console.log(result);
-    // return c.json(result);
 });
 
 export default app;
