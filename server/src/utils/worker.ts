@@ -1,8 +1,8 @@
-import { loadModel, createRecognizer, processAudio } from './vosk.js';
+import { loadModel, createRecognizer } from './vosk.js';
 import { parentPort } from 'worker_threads';
-import { readFile } from 'fs/promises';
 import { sleep } from './index.js';
 import type { FileStatus, QueuedFile } from './file_queue.js';
+import { createReadStream } from 'fs';
 
 // const model = loadModel('./static/models/vosk-model-en-us-0.22');
 const model = loadModel('./static/models/vosk-model-small-en-us-0.15');
@@ -36,12 +36,18 @@ const updateItem = (status: FileStatus, result?: string): void => {
 const processItem = async (): Promise<void> => {
     if (!currentQueueItem) return;
 
-    updateItem('processing');
-
     try {
-        const audio = await readFile(currentQueueItem.path);
         const recognizer = createRecognizer(model, 16000);
-        const result = await processAudio(recognizer, audio);
+        const stream = createReadStream(currentQueueItem.path);
+
+        for await (const chunk of stream) {
+            await recognizer.acceptWaveformAsync(chunk);
+            const { partial } = recognizer.partialResult();
+            if (partial) updateItem('processing', partial);
+        }
+
+        const result = recognizer.finalResult();
+        recognizer.free();
 
         updateItem('completed', result.text);
     } catch (error) {

@@ -14,12 +14,3 @@ export function createRecognizer<T extends XOR<SpeakerRecognizerParam, Partial<G
     // @ts-ignore
     return new Recognizer<T>({ model, sampleRate });
 }
-
-export async function processAudio<T extends XOR<SpeakerRecognizerParam, Partial<GrammarRecognizerParam>>>(
-    recognizer: Recognizer<T>, buffer: Buffer
-): Promise<Result<T>> {
-    recognizer.acceptWaveform(buffer);
-    const result = recognizer.finalResult();
-    recognizer.free();
-    return result;
-}

@@ -2,7 +2,8 @@
   "name": "server",
   "type": "module",
   "scripts": {
-    "dev": "npm run build && node dist/index.js",
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon --watch 'src/**/*.ts' -e ts --exec npm run start",
     "build": "tsc"
   },
   "dependencies": {
@@ -13,13 +14,14 @@
     "drizzle-orm": "^0.36.4",
     "ffmpeg": "^0.0.4",
     "hono": "^4.6.12",
-    "typescript": "^5.7.2",
     "vosk": "^0.3.39",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@types/vosk": "^0.3.1",
-    "drizzle-kit": "^0.28.1"
+    "drizzle-kit": "^0.28.1",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.7.2"
   }
 }

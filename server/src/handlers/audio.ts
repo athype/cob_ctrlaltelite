@@ -13,7 +13,6 @@ const workerPath = getWorkerPath();
 const worker = new Worker(workerPath);
 
 worker.on('message', (message) => {
-    console.log('Received message from worker:', message);
     if (message === 'item_request') {
         const item = queue.getLastQueued();
         if (item) worker.postMessage(item);
