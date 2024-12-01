@@ -48,7 +48,6 @@ A standalone proof-of-concept feedback feature within Scorion that:
 - **Risks:**
   - Complexity of integrating local speech-to-text libraries (e.g., Whisper, DeepSpeech).
   - Potential UI usability issues during development.
-  - Database performance challenges with large audio files.
 - **Assumptions:**
   - SQLite database will be sufficient for storing metadata and audio/text feedback securely.
   - The client is primarily focused on core functionality and user experience for the proof-of-concept.
@@ -91,14 +90,11 @@ A standalone proof-of-concept feedback feature within Scorion that:
     - Create a list view for displaying saved text feedback.
     - Include a preview box for selected feedback.
 
-#### Epic 3: Speech-to-Text (Future Scope)
-- **User Story 5 (Optional):** As a user, I want audio feedback transcribed into text locally so that it remains private and accessible.
-
 ---
 
-## 4. System Architecture
+## 3. System Architecture
 
-### 4.1 Basic Architecture with Logical Components
+### 3.1 Basic Architecture with Logical Components
 - **Frontend:**
   - Svelte-based interface for recording, playback, and feedback input.
   - Separate sections for audio feedback, text feedback, and saved lists.
@@ -106,14 +102,14 @@ A standalone proof-of-concept feedback feature within Scorion that:
   - Express.js backend handling secure audio storage and retrieval.
   - SQLite database for managing metadata and storing text feedback.
 
-### 4.2 Deployment and Component Diagram
+### 3.2 Deployment and Component Diagram
 - **Deployment Details:**
   - Local SQLite database.
   - Proof-of-concept application, independent of Scorion’s current systems.
 
 ---
 
-## 5. Changelog
+## 4. Changelog
 
 | Version | Date       | Author      | Description                                                 |
 |---------|------------|-------------|-------------------------------------------------------------|
