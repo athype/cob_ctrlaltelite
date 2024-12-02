@@ -35,3 +35,40 @@
 
 - **Next meeting on & at:** Monday 14:00 December 2nd.
 - **Closing time:** 14:16
+
+---
+
+# `02/12/2024`
+- **Present:** Anastasiia, Andre, Anh, Krisztián, David 
+- **Not Present:** Kryztof(called in sick), Din(Busy with other)
+- **Scrum-master this meeting:** Anastasiia
+- **Minutes taken by:** Krisztián
+---
+- **Opening time:** 14:15
+- **Announcements:** Whisper works, no typescript
+- **Approval of mergings:** 
+---
+### Last session's action points
+- _`General:`_
+- **Anastasiia:** Worked on presentation for client meeting, mostly finished, waiting for updates on other functionality to add to it.
+- **Andre:** Testing and recording.
+- **Anh:** Been working on the backend and have found a compatibility issue, trying to resolve that.
+- **Chrystoph:** 
+- **David:** Frontend blueprint
+- **Din:** 
+- **Krisztian** Component library research and setup
+### Current action points
+- _`General:`_
+- **Anastasiia:** Will check if prerequisute is there for a new task.
+- **Andre:** Continues with same task.
+- **Anh:** Will contue to work on the backend and link it to a test frontend.
+- **Chrystoph:** 
+- **David:** Finishing functional design v2
+- **Din:** 
+- **Krisztián:** Audio component making
+---
+
+- **Next meeting on & at:** Monday 14:00 December 2nd.
+- **Closing time:** 14:25
+
+---
