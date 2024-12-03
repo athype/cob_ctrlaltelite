@@ -92,9 +92,9 @@ A standalone proof-of-concept feedback feature within Scorion that:
 
 ---
 
-## 3. System Architecture
+## 4. System Architecture
 
-### 3.1 Basic Architecture with Logical Components
+### 4.1 Basic Architecture with Logical Components
 - **Frontend:**
   - Svelte-based interface for recording, playback, and feedback input.
   - Separate sections for audio feedback, text feedback, and saved lists.
@@ -102,14 +102,14 @@ A standalone proof-of-concept feedback feature within Scorion that:
   - Express.js backend handling secure audio storage and retrieval.
   - SQLite database for managing metadata and storing text feedback.
 
-### 3.2 Deployment and Component Diagram
+### 4.2 Deployment and Component Diagram
 - **Deployment Details:**
   - Local SQLite database.
   - Proof-of-concept application, independent of Scorion’s current systems.
 
 ---
 
-## 4. Changelog
+## 5. Changelog
 
 | Version | Date       | Author      | Description                                                 |
 |---------|------------|-------------|-------------------------------------------------------------|
