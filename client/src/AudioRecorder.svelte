@@ -42,15 +42,40 @@
         }
     }
 
-    function finishRecording() {
+    async function finishRecording() {
         if (recorder && recorder.state !== 'inactive') {
             recorder.stop();
-            recorder.onstop = () => {
+            recorder.onstop = async () => {
                 const blob = new Blob(items, { type: 'audio/wav' });
-                const audio = document.createElement('audio');
-                audio.setAttribute('controls', 'controls');
-                document.getElementById('audioContainer')?.appendChild(audio);
-                audio.innerHTML = `<source src="${URL.createObjectURL(blob)}" type="audio/webm"/>`;
+                const formData = new FormData();
+
+
+                // Decode the audio file to get the duration
+                const audioContext = new AudioContext();
+                const arrayBuffer = await blob.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                const duration = audioBuffer.duration;
+
+                // Append the audio and metadata to the FormData
+                formData.append('audio', blob, 'recording.wav');
+                formData.append('duration', Math.round(duration).toString()); // Send duration in seconds
+
+
+                try {
+                    const response = await fetch('http://localhost:3000/upload-audio', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('Audio uploaded successfully:', result);
+                    } else {
+                        console.error('Failed to upload audio:', await response.text());
+                    }
+                } catch (err) {
+                    console.error('Error uploading audio:', err);
+                }
 
                 // Reset state
                 startDisabled = false;
@@ -60,6 +85,7 @@
             };
         }
     }
+
 </script>
 
 <div class="audio">
