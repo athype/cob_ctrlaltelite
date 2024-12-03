@@ -1,5 +1,6 @@
 <script>
     import './app.css';
+    import './app.css';
     import router from 'page';
     import Home from './pages/Home.svelte';
 
@@ -14,11 +15,6 @@
 
     router.start();
 </script>
-
-<svelte:head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
-</svelte:head>
 
 <main>
     <svelte:component this={page} {params} />

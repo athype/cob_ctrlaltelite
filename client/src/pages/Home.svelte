@@ -1,255 +1,369 @@
 <script>
-    import {
-        Button,
-        Card,
-        CardHeader,
-        CardTitle,
-        CarouselIndicators, Collapse, Nav,
-        Navbar,
-        NavbarBrand, NavbarToggler, NavItem, NavLink
-    } from '@sveltestrap/sveltestrap';
-    import { Icon } from '@sveltestrap/sveltestrap';
-    let activeIndex = 0;
-    let isOpen = false;
-    let toggle;
+    // for joining with backend (in progress)
+
+
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const recordingsSection = document.querySelector('.recordings');
+    //     const textsSection = document.querySelector('.texts');
+    //     const feedbackDisplay = document.querySelector('.selected-feedback-display');
+    //
+    //     // fetch recordings and text feedback from the backend
+    //     async function fetchFeedback() {
+    //         try {
+    //             const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
+    //             const textsResponse = await fetch('http://localhost:3000/text-feedback');
+    //
+    //             const recordings = await recordingsResponse.json();
+    //             const texts = await textsResponse.json();
+    //
+    //             recordings.forEach(recording => {
+    //                 const recordingElement = document.createElement('button');
+    //                 recordingElement.classList.add('feedback-item');
+    //                 recordingElement.innerHTML = `
+    //                     <p class="feedback-name">${recording.file_path}</p>
+    //                     <time class="feedback-date">${recording.created_at}</time>
+    //                 `;
+    //                 recordingElement.addEventListener('click', () => {
+    //                     updateFeedbackDisplay(recording, 'audio');
+    //                 });
+    //                 recordingsSection.appendChild(recordingElement);
+    //             });
+    //
+    //             texts.forEach(text => {
+    //                 const textElement = document.createElement('button');
+    //                 textElement.classList.add('feedback-item');
+    //                 textElement.innerHTML = `
+    //                     <p class="feedback-name">${text.feedback_text}</p>
+    //                     <time class="feedback-date">${text.created_at}</time>
+    //                 `;
+    //                 textElement.addEventListener('click', () => {
+    //                     updateFeedbackDisplay(text, 'text');
+    //                 });
+    //                 textsSection.appendChild(textElement);
+    //             });
+    //         } catch (error) {
+    //             console.error('Error fetching feedback:', error);
+    //         }
+    //     }
+    //
+    //     // Update the selected feedback display
+    //     function updateFeedbackDisplay(feedback, type) {
+    //         if (type === 'audio') {
+    //             feedbackDisplay.innerHTML = `
+    //                 <header>
+    //                     <h3>${feedback.file_path}</h3>
+    //                 </header>
+    //                 <div>
+    //                     <button onclick="playAudio('${feedback.file_path}')">Play</button>
+    //                     <div class="audio-waveform">${feedback.waveform}</div>
+    //                 </div>
+    //                 <p><strong>Date:</strong> ${feedback.created_at}</p>
+    //             `;
+    //         } else if (type === 'text') {
+    //             feedbackDisplay.innerHTML = `
+    //                 <header>
+    //                     <h3>${feedback.feedback_text}</h3>
+    //                 </header>
+    //                 <p><strong>Date:</strong> ${feedback.created_at}</p>
+    //             `;
+    //         }
+    //     }
+    //
+    //     // Play the audio when the play button is clicked
+    //     function playAudio(filePath) {
+    //         const audio = new Audio(filePath);
+    //         audio.play();
+    //     }
+    //
+    //     fetchFeedback();
+    // });
 </script>
 
-<Navbar color="dark" theme="dark">
-    <NavbarBrand href="/" class="me-auto">Scorion</NavbarBrand>
-    <NavbarToggler on:click={toggle} class="me-2" />
-    <Collapse {isOpen} navbar>
-        <Nav navbar>
-            <NavItem>
-                <NavLink href="#components/">Components</NavLink>
-            </NavItem>
-            <NavItem>
-                <NavLink href="https://github.com/sveltestrap/sveltestrap">GitHub</NavLink>
-            </NavItem>
-        </Nav>
-    </Collapse>
-</Navbar>
-
 <main class="container">
-    <div class="flex">
-        <div class="section recordings">
-            <h2 style="font-size: 22px">Recordings</h2>
-            <div class="recording">
-                <Button outline color="primary" class="play-button">
-                    <Icon name="play" />
-                </Button>
-                <div class="waveform">|-╹-〢-〡-╷-----------------〣-╻-╹-╿-╽-〢-〡-╷-〣-╻-╹-╿-╽-┃-│</div>
-            </div>
-            <div class="recording">
-                <Button outline color="primary" class="play-button">
-                    <Icon name="play" />
-                </Button>
-                <div class="waveform">|-╹-〢-〡-╷-〣-╻-╹-╿-╽-┃-│|-╹-〢-〡-╷-〣-╻-╹-╿-╽-┃---------╻-╹-╿-╽-┃-│</div>
-            </div>
-            <div class="recording">
-                <Button outline color="primary" class="play-button">
-                    <Icon name="play" />
-                </Button>
-                <div class="waveform">|-╹-〢--╿-╽-┃-│|------------〣-╻-╹-╿-╽-┃-│|-╹-〢-〡-╷-〣-╻-╹-╿-╽-┃-│</div>
-            </div>
-        </div>
+    <h1 style="margin-top: 50px">Feedbacks:</h1>
+    <section class="feedback-sections">
+        <!-- recordings Section -->
+        <section class="recordings">
+            <header>
+                <h2>Recordings</h2>
+            </header>
 
+            <!-- dummies -->
+            <button>Feedback 21/09/24</button>
+            <button>Feedback 21/09/24</button>
 
-        <div class="section texts">
-            <h2 style="font-size: 22px">Texts</h2>
-            <div class="text-item">
-                <div class="text-item-name">
-                    Feedback 23 11-1
-                </div>
-                <div class="text-item-date" style="font-size: 12px; font-style: italic">
-                    29-07-2014
-                </div>
-            </div>
-            <div class="text-item">
-                <div class="text-item-name" >
-                    Feedback 23 11-1
-                </div>
-                <div class="text-item-date" style="font-size: 12px; font-style: italic">
-                    29-07-2014
-                </div>
-            </div>
-            <div class="text-item">
-                <div class="text-item-name">
-                    Feedback 23 11-1
-                </div>
-                <div class="text-item-date" style="font-size: 12px; font-style: italic">
-                    29-07-2014
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <Card class="selected-text-display">
-        <CardHeader>
-            <CardTitle style="color: blueviolet">Feedback 23 11-1</CardTitle>
-        </CardHeader>
-        <p>Excellent job, but blablabla</p>
-    </Card>
-
-    <div class="record-send">
-        <section class="record-container">
-            <button class="record-btn">🔴</button>
-            <div class="waveform">|-╹-〢--╿-╽--------〢-〡-╷-〣-╻-╹-╿--------------------╹-〢-〡-╷-〣-╻-╹-╿-╽-┃-│</div>
+            <!-- dynamically loaded recordings -->
         </section>
-        <button class="send-btn">Send</button>
-    </div>
 
+        <!-- text Feedback Section -->
+        <section class="texts">
+            <header>
+                <h2>Texts</h2>
+            </header>
 
-    <div class="input-section">
-        <input type="text" placeholder="Type feedback here..." />
-        <button class="send-btn">Send</button>
-    </div>
+            <!-- dummies -->
+            <button>Feedback 21/09/24</button>
+            <button>Feedback 21/09/24</button>
+            <button>Feedback 21/09/24</button>
 
+            <!-- dynamically loaded text feedback -->
+        </section>
+    </section>
+
+    <!-- selected feedback section -->
+    <section class="selected-feedback">
+        <section>Select a feedback to view it here!</section>
+    </section>
+
+    <!-- input feedback section -->
+    <h1 style="margin-top: 50px">Add Feedback:</h1>
+    <section class="feedback-input">
+        <div class="record-audio">
+            <section class="record-audio-container">
+                <button class="record-button">⚪</button>
+                <div class="audio-waveform">|-╹-〢--╿-╽---〡-╷-〣-╻-╹-╿---╹-╿---╹-╿---╹-〣-╻-╹-╿-╽-┃-│</div>
+            </section>
+            <button class="send-button">Send</button>
+        </div>
+
+        <div class="text-feedback">
+            <textarea placeholder="Type here..." rows="3"></textarea>
+            <button class="send-button">Send</button>
+        </div>
+    </section>
 </main>
+
 
 <style>
 
+    /* general page */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #1e1e1e;
+        color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* main container*/
     .container {
         display: flex;
         flex-direction: column;
         gap: 2rem;
+        padding: 2rem;
     }
 
-    .flex {
+    .container h1 {
+        font-size: 1.25rem;
+    }
+
+    header h2 {
+        color: white;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+
+
+
+
+    .feedback-sections {
         display: flex;
-        justify-content: space-between;
+        gap: 2rem;
     }
 
-    .section {
-        flex: 1;
-        padding: 1rem;
-        border: 1px solid var(--clr-light);
-    }
-
-    .recording:hover{
-        border-color: blueviolet;
-    }
-
-    .text-item:hover{
-        border-color: blueviolet;
-    }
-
+    /* recordings and texts */
     .recordings, .texts {
+        flex: 1;
+        background-color: #2c2c2c;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 2px solid var(--clr-purple);
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+        overflow-y: auto;
+        max-height: 300px;
         display: flex;
         flex-direction: column;
         gap: 1rem;
     }
-
-    .recording {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 0.5rem;
-        border: 1px solid var(--clr-light);
-    }
-
-    .waveform{
-        color: var(--clr-purple);
-    }
-
-    .play-button{
-        padding: 0.5rem;
+    .recordings button, .texts button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
         background-color: var(--clr-purple);
-        cursor: pointer;
-        border-radius: var(--radius);
-        box-shadow: 0 0 5px 2px var(--clr-purple);
-        transition: all 0.3s ease;
+        color: black;
+        font-size: 1rem;
+        width: 100%;
+    }
+    .recordings button:hover, .texts button:hover {
+        box-shadow: 0px 0px 5px 1px #9400FF;
+        color: white;
     }
 
-    .play-button:hover {
-        background-color: var(--clr-light);
-        color: var(--clr-dark);
-        transform: scale(1.1);
-    }
 
-    .text-item {
+
+
+
+    .recording, .feedback-item {
         display: flex;
         align-items: center;
-        padding: 0.5rem;
-        border: 1px solid var(--clr-light);
-        cursor: pointer;
-        justify-content: space-between;
-    }
-
-
-
-    .text-item.selected {
+        background-color: #353535;
         border: 1px solid var(--clr-purple);
+        border-radius: 5px;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+    }
+    .recording:hover, .feedback-item:hover {
+        background-color: var(--clr-purple);
+        color: #ffffff;
     }
 
-    .selected-text-display {
-        border: 1px solid var(--clr-light);
+
+
+
+    /* selected feedback */
+    .selected-feedback {
+        background-color: #2c2c2c;
         padding: 1rem;
         padding-bottom: 150px;
-    }
-
-    .feedback-title {
-        color: var(--clr-purple);
+        border-radius: 8px;
+        border: 2px solid var(--clr-pink);
+        color: white;
         font-size: 20px;
-        font-style: oblique;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
     }
 
-    .record-send {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 150px;
+
+
+
+
+    .feedback-content {
+        margin-top: 1rem;
     }
 
-    .record-container{
+    .feedback-input {
         display: flex;
-        align-items: center;
-        gap: 1rem;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 2rem;
+    }
+
+
+
+
+    /* audio recording */
+    .record-audio {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background-color: #2c2c2c;
         padding: 1rem;
-        border: 1px solid var(--clr-light);
-        background-color: var(--clr-dark);
-        color: var(--clr-light);
+        border-radius: 8px;
+        border: 1px solid var(--clr-cyan);
     }
-
-    .record-btn{
-        transition: all 0.3s ease;
-    }
-
-    .record-btn:hover {
-        transform: scale(1.3);
-    }
-
-
-
-
-
-    .send-btn {
-        padding: 1.5rem;
-        background-color: var(--clr-purple);
-        color: var(--clr-light);
+    .record-audio button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: none;
         cursor: pointer;
-        border-radius: var(--radius);
-        transition: all 0.3s ease;
+        background-color: #31DEF7;
+        color: black;
+        font-size: 1rem;
+    }
+    .record-audio button:hover {
+        background-color: darkcyan;
+        color: white;
     }
 
 
 
-    .send-btn:hover{
-        transform: scale(1.1);
-    }
 
-    .input-section {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    input[type="text"] {
+    /* text feedback */
+    .text-feedback {
         flex: 1;
-        padding: 1.5rem;
-        border: 1px solid var(--clr-light);
-        background-color: var(--clr-dark);
-        color: var(--clr-light);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background-color: #2c2c2c;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--clr-cyan);
+    }
+
+    .text-feedback button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        background-color: #31DEF7;
+        color: black;
+        font-size: 1rem;
+    }
+    .text-feedback button:hover {
+        background-color: darkcyan;
+        color: white;
+    }
+
+
+
+
+
+
+    /* audio recording container */
+    .record-audio-container {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        background-color: #353535;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid darkgrey;
+    }
+    .record-audio-container button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        background-color: red;
+        color: black;
+        font-size: 1rem;
+    }
+    .record-audio-container button:hover {
+        box-shadow: 0px 0px 5px 1px red;
+        background-color: red;
+        color: white;
+    }
+
+
+
+
+
+    textarea {
+        resize: none;
+        padding: 1rem;
+        padding-bottom: 100px;
+        border-radius: 4px;
+        border: 1px solid darkgrey;
+        background-color: #353535;
+        color: #ffffff;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+
+
+
+    .audio-waveform {
+        color: red;
+        padding: 12px;
     }
 </style>
