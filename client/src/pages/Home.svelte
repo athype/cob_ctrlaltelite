@@ -146,6 +146,7 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
+
     }
     .feedback-button {
         padding: 0.5rem 1rem;
@@ -213,6 +214,7 @@
         flex-direction: column;
         justify-content: space-between;
         gap: 2rem;
+
     }
 
 
@@ -228,6 +230,9 @@
         padding: 1rem;
         border-radius: 8px;
         border: 1px solid var(--clr-cyan);
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
     }
     .record-audio button {
         padding: 0.5rem 1rem;
@@ -256,6 +261,9 @@
         padding: 1rem;
         border-radius: 8px;
         border: 1px solid var(--clr-cyan);
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
     }
 
     .text-feedback button {
@@ -286,7 +294,6 @@
         background-color: #353535;
         padding: 1rem;
         border-radius: 8px;
-        border: 1px solid darkgrey;
     }
     .record-audio-container button {
         padding: 0.5rem 1rem;
@@ -311,13 +318,9 @@
         resize: none;
         padding: 1rem;
         padding-bottom: 100px;
-        border-radius: 4px;
-        border: 1px solid darkgrey;
+        border-radius: 8px;
         background-color: #353535;
         color: #ffffff;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
     }
 
 
