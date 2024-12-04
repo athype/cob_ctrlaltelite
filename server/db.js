@@ -38,9 +38,9 @@ const initDatabase = () => {
 
 // Insert mock data for testing
 const insertMockData = () => {
-    // const audioStmt = db.prepare('INSERT INTO audio_feedback (file_path, duration) VALUES (?, ?)');
-    // audioStmt.run('./audio/test1.mp3', 120);
-    // audioStmt.run('./audio/test2.mp3', 95);
+    const audioStmt = db.prepare('INSERT INTO audio_feedback (file_path, duration) VALUES (?, ?)');
+    audioStmt.run('./audio/test1.mp3', 120);
+    audioStmt.run('./audio/test2.mp3', 95);
 
     const textStmt = db.prepare('INSERT INTO text_feedback (feedback_text, user_id) VALUES (?, ?)');
     textStmt.run('Great work on the project!', 1);

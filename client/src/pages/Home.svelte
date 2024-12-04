@@ -2,81 +2,79 @@
     // for joining with backend (in progress)
 
 
-    // document.addEventListener('DOMContentLoaded', () => {
-    //     const recordingsSection = document.querySelector('.recordings');
-    //     const textsSection = document.querySelector('.texts');
-    //     const feedbackDisplay = document.querySelector('.selected-feedback-display');
-    //
-    //     // fetch recordings and text feedback from the backend
-    //     async function fetchFeedback() {
-    //         try {
-    //             const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
-    //             const textsResponse = await fetch('http://localhost:3000/text-feedback');
-    //
-    //             const recordings = await recordingsResponse.json();
-    //             const texts = await textsResponse.json();
-    //
-    //             recordings.forEach(recording => {
-    //                 const recordingElement = document.createElement('button');
-    //                 recordingElement.classList.add('feedback-item');
-    //                 recordingElement.innerHTML = `
-    //                     <p class="feedback-name">${recording.file_path}</p>
-    //                     <time class="feedback-date">${recording.created_at}</time>
-    //                 `;
-    //                 recordingElement.addEventListener('click', () => {
-    //                     updateFeedbackDisplay(recording, 'audio');
-    //                 });
-    //                 recordingsSection.appendChild(recordingElement);
-    //             });
-    //
-    //             texts.forEach(text => {
-    //                 const textElement = document.createElement('button');
-    //                 textElement.classList.add('feedback-item');
-    //                 textElement.innerHTML = `
-    //                     <p class="feedback-name">${text.feedback_text}</p>
-    //                     <time class="feedback-date">${text.created_at}</time>
-    //                 `;
-    //                 textElement.addEventListener('click', () => {
-    //                     updateFeedbackDisplay(text, 'text');
-    //                 });
-    //                 textsSection.appendChild(textElement);
-    //             });
-    //         } catch (error) {
-    //             console.error('Error fetching feedback:', error);
-    //         }
-    //     }
-    //
-    //     // Update the selected feedback display
-    //     function updateFeedbackDisplay(feedback, type) {
-    //         if (type === 'audio') {
-    //             feedbackDisplay.innerHTML = `
-    //                 <header>
-    //                     <h3>${feedback.file_path}</h3>
-    //                 </header>
-    //                 <div>
-    //                     <button onclick="playAudio('${feedback.file_path}')">Play</button>
-    //                     <div class="audio-waveform">${feedback.waveform}</div>
-    //                 </div>
-    //                 <p><strong>Date:</strong> ${feedback.created_at}</p>
-    //             `;
-    //         } else if (type === 'text') {
-    //             feedbackDisplay.innerHTML = `
-    //                 <header>
-    //                     <h3>${feedback.feedback_text}</h3>
-    //                 </header>
-    //                 <p><strong>Date:</strong> ${feedback.created_at}</p>
-    //             `;
-    //         }
-    //     }
-    //
-    //     // Play the audio when the play button is clicked
-    //     function playAudio(filePath) {
-    //         const audio = new Audio(filePath);
-    //         audio.play();
-    //     }
-    //
-    //     fetchFeedback();
-    // });
+    document.addEventListener('DOMContentLoaded', () => {
+        const recordingsSection = document.querySelector('.recordings');
+        const textsSection = document.querySelector('.texts');
+        const feedbackDisplay = document.querySelector('.selected-feedback-display');
+
+        // fetch recordings and text feedback from the backend
+        async function fetchFeedback() {
+            try {
+                const recordingsResponse = await fetch('http://localhost:5137/audio-feedback');
+                // const textsResponse = await fetch('http://localhost:5137/text-feedback');
+
+                const recordings = await recordingsResponse.json();
+                // const texts = await textsResponse.json();
+
+                recordings.forEach(recording => {
+                    const recordingElement = document.createElement('button');
+                    recordingElement.innerHTML = `
+                        <button>${recording.file_path}</button>
+                    `;
+                    recordingElement.addEventListener('click', () => {
+                        updateFeedbackDisplay(recording, 'audio');
+                    });
+                    recordingsSection.appendChild(recordingElement);
+                });
+
+                // texts.forEach(text => {
+                //     const textElement = document.createElement('button');
+                //     textElement.classList.add('feedback-item');
+                //     textElement.innerHTML = `
+                //         <p class="feedback-name">${text.feedback_text}</p>
+                //         <time class="feedback-date">${text.created_at}</time>
+                //     `;
+                //     textElement.addEventListener('click', () => {
+                //         updateFeedbackDisplay(text, 'text');
+                //     });
+                //     textsSection.appendChild(textElement);
+                // });
+            } catch (error) {
+                console.error('Error fetching feedback:', error);
+            }
+        }
+
+        // Update the selected feedback display
+        function updateFeedbackDisplay(feedback, type) {
+            if (type === 'audio') {
+                feedbackDisplay.innerHTML = `
+                    <header>
+                        <h3>${feedback.file_path}</h3>
+                    </header>
+                    <div>
+                        <button onclick="playAudio('${feedback.file_path}')">Play</button>
+                        <div class="audio-waveform">${feedback.waveform}</div>
+                    </div>
+                    <p><strong>Date:</strong> ${feedback.created_at}</p>
+                `;
+            } else if (type === 'text') {
+                feedbackDisplay.innerHTML = `
+                    <header>
+                        <h3>${feedback.feedback_text}</h3>
+                    </header>
+                    <p><strong>Date:</strong> ${feedback.created_at}</p>
+                `;
+            }
+        }
+
+        // Play the audio when the play button is clicked
+        function playAudio(filePath) {
+            const audio = new Audio(filePath);
+            audio.play();
+        }
+
+        fetchFeedback();
+    });
 </script>
 
 <main class="container">
@@ -90,7 +88,7 @@
 
             <!-- dummies -->
             <button>Feedback 21/09/24</button>
-            <button>Feedback 21/09/24</button>
+
 
             <!-- dynamically loaded recordings -->
         </section>
@@ -103,8 +101,7 @@
 
             <!-- dummies -->
             <button>Feedback 21/09/24</button>
-            <button>Feedback 21/09/24</button>
-            <button>Feedback 21/09/24</button>
+
 
             <!-- dynamically loaded text feedback -->
         </section>

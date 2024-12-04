@@ -7,7 +7,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 
 const app = express();
-const PORT = 3000;
+const PORT = 5137;
 
 // Construct equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -65,6 +65,30 @@ app.post('/upload-audio', upload.single('audio'), (req, res) => {
         console.error('Error uploading audio:', err);
         return res.status(500).send('Internal Server Error');
     }
+});
+
+app.get('/audio/:id', (req, res) => {
+    const { id } = req.params;
+    const stmt = db.prepare('SELECT file_path FROM audio_feedback WHERE id = ?');
+    const row = stmt.get(id);
+
+    if (!row) {
+        return res.status(404).send('Audio not found.');
+    }
+
+    res.sendFile(path.resolve(row.file_path));
+});
+
+app.get('/audio-feedback', (req, res) => {
+    const stmt = db.prepare('SELECT id, file_path FROM audio_feedback');
+    const rows = stmt.all(); // Fetch all rows from the table
+
+    if (rows.length === 0) {
+        return res.status(404).send('No audio files found.');
+    }
+
+    // Send the list of audio files as JSON
+    res.json(rows);
 });
 
 // Start the server

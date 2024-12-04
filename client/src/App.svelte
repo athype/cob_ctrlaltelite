@@ -1,6 +1,4 @@
 <script>
-    import './app.css';
-    import './app.css';
     import router from 'page';
     import Home from './pages/Home.svelte';
 
