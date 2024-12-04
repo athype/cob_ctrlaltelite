@@ -82,10 +82,11 @@
 
     function setRecorderActions() {
         recorder.ondataavailable = (event) => {
-            chunks = [...chunks, event.data];
+            chunks.push(event.data);
         };
 
         recorder.onstop = () => {
+            console.log("Recorder stopped");
             recording = URL.createObjectURL(new Blob(chunks, { 'type': 'audio/wav; codecs=opus' }));
             chunks = [];
             audioPlayer.setAttribute('src', recording);
@@ -121,7 +122,7 @@
         }
             } catch (error) {
         console.error('Error uploading audio:', error);
-    }   
+    }
     }
 
     function saveRecording() {

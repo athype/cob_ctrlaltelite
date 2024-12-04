@@ -22,7 +22,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads'); // Save files to the 'uploads' folder
+        cb(null, uploadsDir); // Save files to the 'uploads' folder
     },
     filename: (req, file, cb) => {
         const uniqueName = `${Date.now()}-${file.originalname}`;
@@ -39,7 +39,7 @@ app.use(express.json());
 initDatabase();
 
 // insert mock data
-insertMockData();
+// insertMockData();
 
 // Basic route to test server and database
 app.get('/', (req, res) => {
