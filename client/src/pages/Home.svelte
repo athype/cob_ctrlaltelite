@@ -1,118 +1,86 @@
 <script>
-    // for joining with backend (in progress)
+    import { onMount } from "svelte";
+    import FeedbackButton from '../components/feedback-button.svelte';  // Assuming you have this component
 
+    let recordings = [];  // Array to store fetched recordings
+    const feedbackDisplay = document.querySelector('.selected-feedback-display');
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const recordingsSection = document.querySelector('.recordings');
-        const textsSection = document.querySelector('.texts');
-        const feedbackDisplay = document.querySelector('.selected-feedback-display');
-
-        // fetch recordings and text feedback from the backend
-        async function fetchFeedback() {
-            try {
-                const recordingsResponse = await fetch('http://localhost:5137/audio-feedback');
-                // const textsResponse = await fetch('http://localhost:5137/text-feedback');
-
-                const recordings = await recordingsResponse.json();
-                // const texts = await textsResponse.json();
-
-                recordings.forEach(recording => {
-                    const recordingElement = document.createElement('button');
-                    recordingElement.innerHTML = `
-                        <button>${recording.file_path}</button>
-                    `;
-                    recordingElement.addEventListener('click', () => {
-                        updateFeedbackDisplay(recording, 'audio');
-                    });
-                    recordingsSection.appendChild(recordingElement);
-                });
-
-                // texts.forEach(text => {
-                //     const textElement = document.createElement('button');
-                //     textElement.classList.add('feedback-item');
-                //     textElement.innerHTML = `
-                //         <p class="feedback-name">${text.feedback_text}</p>
-                //         <time class="feedback-date">${text.created_at}</time>
-                //     `;
-                //     textElement.addEventListener('click', () => {
-                //         updateFeedbackDisplay(text, 'text');
-                //     });
-                //     textsSection.appendChild(textElement);
-                // });
-            } catch (error) {
-                console.error('Error fetching feedback:', error);
-            }
+    // Fetch feedback recordings on component mount
+    async function fetchFeedback() {
+        try {
+            const response = await fetch('http://localhost:5137/audio-feedback');
+            recordings = await response.json();
+        } catch (error) {
+            console.error('Error fetching feedback:', error);
         }
 
-        // Update the selected feedback display
-        function updateFeedbackDisplay(feedback, type) {
-            if (type === 'audio') {
-                feedbackDisplay.innerHTML = `
-                    <header>
-                        <h3>${feedback.file_path}</h3>
-                    </header>
-                    <div>
-                        <button onclick="playAudio('${feedback.file_path}')">Play</button>
-                        <div class="audio-waveform">${feedback.waveform}</div>
-                    </div>
-                    <p><strong>Date:</strong> ${feedback.created_at}</p>
-                `;
-            } else if (type === 'text') {
-                feedbackDisplay.innerHTML = `
-                    <header>
-                        <h3>${feedback.feedback_text}</h3>
-                    </header>
-                    <p><strong>Date:</strong> ${feedback.created_at}</p>
-                `;
-            }
-        }
+        // try {
+        //     const response = await fetch('http://localhost:5137/text-feedback');
+        //     recordings = await response.json();
+        // } catch (error) {
+        //     console.error('Error fetching feedback:', error);
+        // }
+    }
 
-        // Play the audio when the play button is clicked
-        function playAudio(filePath) {
-            const audio = new Audio(filePath);
-            audio.play();
-        }
+    // Fetch recordings when the component is mounted
+    onMount(fetchFeedback);
 
-        fetchFeedback();
-    });
+    // Update the selected feedback display
+    function updateFeedbackDisplay(feedback) {
+        feedbackDisplay.innerHTML = `
+            <header>
+                <h3>${feedback.file_path}</h3>
+            </header>
+            <div>
+                <button onclick="playAudio('${feedback.file_path}')">Play</button>
+                <div class="audio-waveform">${feedback.waveform}</div>
+            </div>
+            <p><strong>Date:</strong> ${feedback.created_at}</p>
+        `;
+    }
+
+    // Play the audio when the play button is clicked
+    function playAudio(filePath) {
+        const audio = new Audio(filePath);
+        audio.play();
+    }
+
+    // Handle feedback button click
+    function handleFeedbackClick(recording) {
+        updateFeedbackDisplay(recording);
+    }
 </script>
 
 <main class="container">
     <h1 style="margin-top: 50px">Feedbacks:</h1>
     <section class="feedback-sections">
-        <!-- recordings Section -->
+        <!-- Recordings Section -->
         <section class="recordings">
             <header>
                 <h2>Recordings</h2>
             </header>
-
-            <!-- dummies -->
-            <button>Feedback 21/09/24</button>
-
-
-            <!-- dynamically loaded recordings -->
+            <!-- Dynamically loaded recordings -->
+            {#each recordings as recording}
+                <FeedbackButton label={recording.file_path} onClick={() => handleFeedbackClick(recording)} />
+            {/each}
         </section>
 
-        <!-- text Feedback Section -->
+        <!-- Text Feedback Section -->
         <section class="texts">
             <header>
                 <h2>Texts</h2>
             </header>
 
-            <!-- dummies -->
-            <button>Feedback 21/09/24</button>
-
-
-            <!-- dynamically loaded text feedback -->
+            <!-- Add dynamic rendering for text feedback if needed -->
         </section>
     </section>
 
-    <!-- selected feedback section -->
+    <!-- Selected feedback section -->
     <section class="selected-feedback">
         <section>Select a feedback to view it here!</section>
     </section>
 
-    <!-- input feedback section -->
+    <!-- Add Feedback Section -->
     <h1 style="margin-top: 50px">Add Feedback:</h1>
     <section class="feedback-input">
         <div class="record-audio">
@@ -134,13 +102,7 @@
 <style>
 
     /* general page */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #1e1e1e;
-        color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-    }
+
 
     /* main container*/
     .container {
@@ -185,7 +147,7 @@
         flex-direction: column;
         gap: 1rem;
     }
-    .recordings button, .texts button {
+    .feedback-button {
         padding: 0.5rem 1rem;
         border-radius: 5px;
         border: none;
@@ -195,10 +157,12 @@
         font-size: 1rem;
         width: 100%;
     }
-    .recordings button:hover, .texts button:hover {
+
+    .feedback-button {
         box-shadow: 0px 0px 5px 1px #9400FF;
         color: white;
     }
+
 
 
 

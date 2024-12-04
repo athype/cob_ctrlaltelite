@@ -67,7 +67,7 @@ app.post('/upload-audio', upload.single('audio'), (req, res) => {
     }
 });
 
-app.get('/audio/:id', (req, res) => {
+app.get('/audio-feedback/:id', (req, res) => {
     const { id } = req.params;
     const stmt = db.prepare('SELECT file_path FROM audio_feedback WHERE id = ?');
     const row = stmt.get(id);
