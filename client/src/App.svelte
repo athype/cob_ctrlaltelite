@@ -1,6 +1,19 @@
 <script>
-	import './app.css';
-    import AudioRecorder from "./components/AudioRecorder.svelte";
+    import router from 'page';
+    import Home from './pages/Home.svelte';
+
+    let page;
+    let params;
+    let currentRoute;
+
+    router('/', (ctx) => {
+        page = Home;
+        currentRoute = ctx.pathname;
+    });
+
+    router.start();
 </script>
 
-<AudioRecorder />
+<main>
+    <svelte:component this={page} {params} />
+</main>
