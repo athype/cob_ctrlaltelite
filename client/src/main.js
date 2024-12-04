@@ -6,8 +6,9 @@ import './style/modernnormalize.css'
 import './style/utils.css'
 import './style/style.css'
 
+
 const app = mount(App, {
-    target: document.getElementById('app')
+    target: document.getElementById('app'),
 })
 
 export default app
