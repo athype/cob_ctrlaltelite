@@ -15,7 +15,7 @@
     "url": "https://gitlab.com/saxionnl/hbo-ict/2.2-project-client-on-board/78.git"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
+    "@sveltejs/vite-plugin-svelte": "^4.0.2",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "svelte": "^5.4.0",
