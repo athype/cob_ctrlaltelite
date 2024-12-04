@@ -86,12 +86,60 @@
         };
 
         recorder.onstop = () => {
-            recording = URL.createObjectURL(new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' }));
+            recording = URL.createObjectURL(new Blob(chunks, { 'type': 'audio/wav; codecs=opus' }));
             chunks = [];
             audioPlayer.setAttribute('src', recording);
             playButton.classList.remove('disabled');
         };
     }
+
+    async function uploadAudio(blob) {
+
+        const formData = new FormData();
+
+        // Decode the audio file to calculate duration
+        const arrayBuffer = await blob.arrayBuffer();
+        const audioContext = new AudioContext();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        const duration = Math.round(audioBuffer.duration);
+
+        // Append audio and metadata to FormData
+        formData.append('audio', blob, 'recording.wav');
+        formData.append('duration', duration.toString()); // Duration in seconds
+
+        try {
+            const response = await fetch('http://localhost:3000/upload-audio', {
+                method: 'POST',
+                body: formData,
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Audio uploaded successfully:', result);
+        } else {
+            console.error('Failed to upload audio:', await response.text());
+        }
+            } catch (error) {
+        console.error('Error uploading audio:', error);
+    }   
+    }
+
+    function saveRecording() {
+        console.log('Save button clicked.');
+        if (!recording) {
+            console.error('No recording to save.');
+            return;
+        }
+
+        fetch(recording)
+            .then((res) => res.blob())
+            .then((blob) => {
+                console.log('Blob prepared for upload:', blob);
+                uploadAudio(blob);
+            })
+        .catch((error) => console.error('Error preparing audio for upload:', error));
+    }
+
 
     function startRecording() {
         isRecording = true;
@@ -224,13 +272,14 @@
         playButton = document.querySelector('.js-play');
         pauseButton = document.querySelector('.js-pause');
         clearButton = document.querySelector('.js-clear');
+        saveButton = document.querySelector('.js-save-button');
 
         requestMicrophoneAccess();
         audioPlayer.addEventListener('ended', stop);
 
         // Add event listeners
         document.querySelector('.js-record').addEventListener('mouseup', toggleRecording);
-        //saveButton.addEventListener('mouseup', saveRecording);
+        saveButton.addEventListener('mouseup', saveRecording);
         pauseButton.addEventListener('mouseup', pauseRecording);
         clearButton.addEventListener('mouseup', clearRecording);
         playButton.addEventListener('mouseup', togglePlay);

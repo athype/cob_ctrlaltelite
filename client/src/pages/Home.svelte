@@ -1,6 +1,6 @@
 <script>
     // for joining with backend (in progress)
-
+    import AudioRecorder from "../components/AudioRecorder.svelte";
 
     document.addEventListener('DOMContentLoaded', () => {
         const recordingsSection = document.querySelector('.recordings');
@@ -10,7 +10,7 @@
         // fetch recordings and text feedback from the backend
         async function fetchFeedback() {
             try {
-                const recordingsResponse = await fetch('http://localhost:5137/audio-feedback');
+                const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
                 // const textsResponse = await fetch('http://localhost:5137/text-feedback');
 
                 const recordings = await recordingsResponse.json();
@@ -115,13 +115,14 @@
     <!-- input feedback section -->
     <h1 style="margin-top: 50px">Add Feedback:</h1>
     <section class="feedback-input">
-        <div class="record-audio">
-            <section class="record-audio-container">
-                <button class="record-button">⚪</button>
-                <div class="audio-waveform">|-╹-〢--╿-╽---〡-╷-〣-╻-╹-╿---╹-╿---╹-╿---╹-〣-╻-╹-╿-╽-┃-│</div>
-            </section>
-            <button class="send-button">Send</button>
-        </div>
+<!--        <div class="record-audio">-->
+<!--            <section class="record-audio-container">-->
+<!--                <button class="record-button">⚪</button>-->
+<!--                <div class="audio-waveform">|-╹-〢&#45;&#45;╿-╽-&#45;&#45;〡-╷-〣-╻-╹-╿-&#45;&#45;╹-╿-&#45;&#45;╹-╿-&#45;&#45;╹-〣-╻-╹-╿-╽-┃-│</div>-->
+<!--            </section>-->
+<!--            <button class="send-button">Send</button>-->
+<!--        </div>-->
+        <AudioRecorder />
 
         <div class="text-feedback">
             <textarea placeholder="Type here..." rows="3"></textarea>
