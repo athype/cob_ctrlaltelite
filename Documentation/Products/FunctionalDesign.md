@@ -1,13 +1,17 @@
-# Functional Design (Updated After Client Meeting)
+# Functional Design
 
 ## 1. Introduction
 
 ### 1.1 Problem
-Scorion currently lacks an intuitive feedback feature that separates audio feedback from assignment text and ensures compliance with strict privacy standards. While the current system supports text-based feedback, audio feedback relies on external devices and lacks integration with Scorion's platform. A new solution is needed to improve user experience and align with data privacy requirements.
+Scorion currently lacks an intuitive feedback feature that separates audio feedback from assignment text, 
+ensuring that audio data is securely handled while maintaining strict privacy standards. Existing workflows 
+for audio feedback are dependent on third-party services, which can introduce privacy risks and are non-compliant with ISO27001.
 
 ### 1.2 Problem Analysis
 - Current feedback is limited to text or externally recorded audio, which may lack the contextual nuance and convenience of an integrated solution.
-- Existing audio recording workflows rely on third-party services, which pose privacy risks (violating ISO27001 compliance).
+- Existing audio recording workflows rely on third-party services that pose significant privacy risks, 
+such as unauthorized data storage or access, potentially violating ISO27001 compliance. 
+Additionally, these external tools may expose sensitive user data to third-party servers, which could lead to breaches of user confidentiality.
 - There is no way to stop or resume recordings, which leads to unnecessary content being captured during interruptions.
 
 ### 1.3 Context Research
@@ -48,6 +52,7 @@ A standalone proof-of-concept feedback feature within Scorion that:
 - **Risks:**
   - Complexity of integrating local speech-to-text libraries (e.g., Whisper, DeepSpeech).
   - Potential UI usability issues during development.
+  - Audio file storage could potentially become a bottleneck if not optimized for performance as the number of recordings increases.
 - **Assumptions:**
   - SQLite database will be sufficient for storing metadata and audio/text feedback securely.
   - The client is primarily focused on core functionality and user experience for the proof-of-concept.
@@ -90,6 +95,12 @@ A standalone proof-of-concept feedback feature within Scorion that:
     - Create a list view for displaying saved text feedback.
     - Include a preview box for selected feedback.
 
+### 3.3 Mockups and wireframes (Low-Fidelity)
+#### Mockups
+![mockup1.png](..%2Fmd-images%2Fmockup1.png)
+![mockup2.png](..%2Fmd-images%2Fmockup2.png)
+#### Wireframes
+![wireframe.png](..%2Fmd-images%2Fwireframe.png)
 ---
 
 ## 4. System Architecture
@@ -111,8 +122,9 @@ A standalone proof-of-concept feedback feature within Scorion that:
 
 ## 5. Changelog
 
-| Version | Date       | Author      | Description                                                 |
-|---------|------------|-------------|-------------------------------------------------------------|
-| 0.1     | 2023-11-20 | David       | Initial draft based on known context.                      |
-| 0.2     | 2023-12-1 | Din | Updated based on client meeting, Sprint 1 vision document and user stories. |
+| Version | Date       | Author | Description                                                                 |
+|---------|------------|--------|-----------------------------------------------------------------------------|
+| 0.1     | 2023-11-20 | David  | Initial draft based on known context.                                       |
+| 0.2     | 2023-12-01 | Din    | Updated based on client meeting, Sprint 1 vision document and user stories. |
+| 0.3     | 2023-12-04 | David  | Added low-fidelity mockups, wireframes and updates to introduction          |
 
