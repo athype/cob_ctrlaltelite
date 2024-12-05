@@ -64,8 +64,7 @@
                     const textElement = document.createElement('button');
                     textElement.classList.add('feedback-item');
                     textElement.innerHTML = `
-                        <p class="feedback-name">${text.feedback_text}</p>
-                        <time class="feedback-date">${text.created_at}</time>
+                        <button class="feedback-name">${text.feedback_text}</button>
                     `;
                     textElement.addEventListener('click', () => {
                         updateFeedbackDisplay(text, 'text');
@@ -88,7 +87,7 @@
                         <button onclick="playAudio('${feedback.file_path}')">Play</button>
                         <div class="audio-waveform">${feedback.waveform}</div>
                     </div>
-                    <p><strong>Date:</strong> ${feedback.created_at}</p>
+
                 `;
             } else if (type === 'text') {
                 feedbackDisplay.innerHTML = `
@@ -120,7 +119,6 @@
             </header>
 
             <!-- dummies -->
-            <button>Feedback 21/09/24</button>
 
 
             <!-- dynamically loaded recordings -->
@@ -133,7 +131,7 @@
             </header>
 
             <!-- dummies -->
-            <button>Feedback 21/09/24</button>
+
 
 
             <!-- dynamically loaded text feedback -->
@@ -141,7 +139,7 @@
     </section>
 
     <!-- selected feedback section -->
-    <section class="selected-feedback">
+    <section class="selected-feedback-display">
         <section>Select a feedback to view it here!</section>
     </section>
 
@@ -256,23 +254,26 @@
 
 
 
-    /* selected feedback */
-    .selected-feedback {
+    /* Selected feedback */
+    .selected-feedback-display {
         background-color: #2c2c2c;
-        padding: 1rem;
-        padding-bottom: 150px;
-        border-radius: 8px;
-        border: 2px solid var(--clr-pink);
+        padding: 1rem; /* Consistent padding */
+        padding-bottom: 10vh; /* Relative unit for bottom padding */
+        border-radius: 0.5rem; /* Relative unit for border-radius */
+        border-top: 0.1rem solid var(--clr-pink); /* Relative unit for border */
         color: white;
-        font-size: 20px;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
+        font-size: 1.25rem; /* Relative font size */
+        text-align: center;
+
+        /* Flexbox for layout */
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        justify-content: center; /* Center all items vertically */
+        align-items: center; /* Center all items horizontally */
+
+        height: 50vh; /* Relative height */
+        overflow-y: auto; /* Enable scrolling if content overflows */
     }
-
-
-
-
 
     .feedback-content {
         margin-top: 1rem;
