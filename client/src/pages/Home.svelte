@@ -6,7 +6,7 @@
     function handleSend() {
         if (feedbackText.trim() === '') {
             console.log("No feedback provided!");
-            return;
+            return
         }
 
         console.log("Feedback received:", feedbackText);
@@ -84,8 +84,8 @@
                         <h3>${feedback.file_path}</h3>
                     </header>
                     <div>
-                        <button onclick="playAudio('${feedback.file_path}')">Play</button>
-                        <div class="audio-waveform">${feedback.waveform}</div>
+                    <!--    <button onclick="playAudio('${feedback.file_path}')">Play</button>
+                        <div class="audio-waveform">${feedback.waveform}</div> -->
                     </div>
 
                 `;
@@ -94,7 +94,6 @@
                     <header>
                         <h3>${feedback.feedback_text}</h3>
                     </header>
-                    <p><strong>Date:</strong> ${feedback.created_at}</p>
                 `;
             }
         }
