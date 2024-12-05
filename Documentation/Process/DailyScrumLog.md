@@ -72,3 +72,36 @@
 - **Closing time:** 14:25
 
 ---
+
+# `5/12/2024`
+- **Present:** Anastasiia, Andre, Anh, Krisztián, David, Din
+- **Not Present:** Kryztof(called in sick), Din(Busy with other)
+- **Scrum-master this meeting:** Anastasiia
+- **Minutes taken by:** Krisztián
+---
+- **Opening time:** 14:15
+- **Announcements:** Whisper works, no typescript
+- **Approval of mergings:**
+---
+### Last session's action points
+- _`General:`_
+- **Anastasiia:** Worked on presentation for client meeting, and documents.
+- **Andre:** Frontend blueprint.
+- **Anh:** getting din's database and krisztian's component implented, audio functionality
+- **Chrystoph:**
+- **David:** Finishing functional design v2. Helping with styling component(making the base), working on merging with backend.
+- **Din:** Test Whisper, Presentation addition, Functional Design update.
+- **Krisztian** Audio component making(main coding, visualization, styling management)
+### Current action points
+- _`General:`_
+- **Anastasiia:**
+- **Andre:**
+- **Anh:**
+- **Chrystoph:**
+- **David:**
+- **Din:**
+- **Krisztián:**
+---
+
+- **Next meeting on & at:** Monday 14:00 December 2nd.
+- **Closing time:** 14:25
