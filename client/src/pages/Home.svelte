@@ -39,8 +39,6 @@
         const recordingsSection = document.querySelector('.recordings');
         const textsSection = document.querySelector('.texts');
         const feedbackDisplay = document.querySelector('.selected-feedback-display');
-        const textFeedbackInput = document.querySelector('.text-feedback');
-        const sendButton = document.querySelector('.send-button');
 
         // fetch recordings and text feedback from the backend
         async function fetchFeedback() {
