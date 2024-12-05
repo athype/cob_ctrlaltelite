@@ -7,7 +7,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 
 const app = express();
-const PORT = 5137;
+const PORT = 3000;
 
 // Construct equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -22,7 +22,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads'); // Save files to the 'uploads' folder
+        cb(null, uploadsDir); // Save files to the 'uploads' folder
     },
     filename: (req, file, cb) => {
         const uniqueName = `${Date.now()}-${file.originalname}`;
@@ -39,7 +39,7 @@ app.use(express.json());
 initDatabase();
 
 // insert mock data
-insertMockData();
+// insertMockData();
 
 // Basic route to test server and database
 app.get('/', (req, res) => {
@@ -90,6 +90,50 @@ app.get('/audio-feedback', (req, res) => {
     // Send the list of audio files as JSON
     res.json(rows);
 });
+
+app.get('/text-feedback', (req, res) => {
+    const stmt = db.prepare('SELECT id, feedback_text FROM text_feedback');
+    const rows = stmt.all();
+
+    if (rows.length === 0) {
+        return res.status(404).send('No text feedbacks found.');
+    }
+
+    res.json(rows);
+})
+
+app.get('/text-feedback/:id', (req, res) => {
+    const { id } = req.params;
+    const stmt = db.prepare('SELECT feedback_text FROM text_feedback WHERE id = ?');
+    const row = stmt.get(id);
+
+    if (!row) {
+        return res.status(404).send('Text feedback not found.');
+    }
+
+    res.type('text').send(feedbackText);
+});
+
+app.post('/text_feedback', (req, res) => {
+      try{
+        const feedback = req.body;
+
+        if (!feedback) {
+            return res.status(400).json({ error: 'Feedback text is required' });
+        }
+
+        const feedback_text = req.body.feedback_text;
+          const stmt = db.prepare('INSERT INTO text_feedback (feedback_text)' +
+              ' VALUES (?)');
+          stmt.run(feedback_text);
+
+          return res.status(200).json({ message: 'Text added to database successfully!', feedback_text });
+      } catch (err) {
+          console.error('Error adding text to database:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+
+})
 
 // Start the server
 app.listen(PORT, () => {
