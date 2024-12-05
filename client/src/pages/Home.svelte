@@ -1,20 +1,55 @@
 <script>
     // for joining with backend (in progress)
     import AudioRecorder from "../components/AudioRecorder.svelte";
+    let feedbackText = '';
+
+    function handleSend() {
+        if (feedbackText.trim() === '') {
+            console.log("No feedback provided!");
+            return;
+        }
+
+        console.log("Feedback received:", feedbackText);
+
+        saveTextFeedback(feedbackText);
+        feedbackText = '';
+    }
+
+    async function saveTextFeedback(text_feedback){
+        try {
+            const response = await fetch('http://localhost:3000/text_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ feedback_text: text_feedback })
+            });
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Text feedback saved successfully:', result);
+        } else {
+            console.error('Failed to save text:', await response.text());
+        }
+        } catch (error ){
+            console.error('Error saving text:', error);
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         const recordingsSection = document.querySelector('.recordings');
         const textsSection = document.querySelector('.texts');
         const feedbackDisplay = document.querySelector('.selected-feedback-display');
+        const textFeedbackInput = document.querySelector('.text-feedback');
+        const sendButton = document.querySelector('.send-button');
 
         // fetch recordings and text feedback from the backend
         async function fetchFeedback() {
             try {
                 const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
-                // const textsResponse = await fetch('http://localhost:5137/text-feedback');
+                const textsResponse = await fetch('http://localhost:3000/text-feedback');
 
                 const recordings = await recordingsResponse.json();
-                // const texts = await textsResponse.json();
+                const texts = await textsResponse.json();
 
                 recordings.forEach(recording => {
                     const recordingElement = document.createElement('button');
@@ -27,18 +62,18 @@
                     recordingsSection.appendChild(recordingElement);
                 });
 
-                // texts.forEach(text => {
-                //     const textElement = document.createElement('button');
-                //     textElement.classList.add('feedback-item');
-                //     textElement.innerHTML = `
-                //         <p class="feedback-name">${text.feedback_text}</p>
-                //         <time class="feedback-date">${text.created_at}</time>
-                //     `;
-                //     textElement.addEventListener('click', () => {
-                //         updateFeedbackDisplay(text, 'text');
-                //     });
-                //     textsSection.appendChild(textElement);
-                // });
+                texts.forEach(text => {
+                    const textElement = document.createElement('button');
+                    textElement.classList.add('feedback-item');
+                    textElement.innerHTML = `
+                        <p class="feedback-name">${text.feedback_text}</p>
+                        <time class="feedback-date">${text.created_at}</time>
+                    `;
+                    textElement.addEventListener('click', () => {
+                        updateFeedbackDisplay(text, 'text');
+                    });
+                    textsSection.appendChild(textElement);
+                });
             } catch (error) {
                 console.error('Error fetching feedback:', error);
             }
@@ -125,8 +160,8 @@
         <AudioRecorder />
 
         <div class="text-feedback">
-            <textarea placeholder="Type here..." rows="3"></textarea>
-            <button class="send-button">Send</button>
+            <textarea bind:value={feedbackText} placeholder="Type here..." rows="3"></textarea>
+            <button on:click={handleSend} class="send-button">Send</button>
         </div>
     </section>
 </main>
