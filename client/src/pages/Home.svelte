@@ -1,159 +1,108 @@
 <script>
-    // for joining with backend (in progress)
     import AudioRecorder from "../components/AudioRecorder.svelte";
+    import FeedbackButton from "../components/feedback-button.svelte";
+    import {onMount} from "svelte";
     let feedbackText = '';
+    let recordings = [];
+    let texts = [];
+    let selectedFeedback = null;
 
-    function handleSend() {
-        if (feedbackText.trim() === '') {
-            console.log("No feedback provided!");
-            return
+    // Fetch recordings and text feedback from the backend
+    async function fetchFeedback() {
+        try {
+            const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
+            const textsResponse = await fetch('http://localhost:3000/text-feedback');
+
+            recordings = await recordingsResponse.json();
+            texts = await textsResponse.json();
+        } catch (error) {
+            console.error('Error fetching feedback:', error);
         }
-
-        console.log("Feedback received:", feedbackText);
-
-        saveTextFeedback(feedbackText);
-        feedbackText = '';
     }
 
-    async function saveTextFeedback(text_feedback){
+    function handleFeedbackClick(feedback, type) {
+        selectedFeedback = { ...feedback, type };
+    }
+
+    async function saveTextFeedback(text_feedback) {
         try {
             const response = await fetch('http://localhost:3000/text_feedback', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ feedback_text: text_feedback })
+                body: JSON.stringify({ feedback_text: text_feedback }),
             });
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Text feedback saved successfully:', result);
-        } else {
-            console.error('Failed to save text:', await response.text());
-        }
-        } catch (error ){
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Text feedback saved successfully:', result);
+                fetchFeedback(); // Refresh feedbacks after submission
+            } else {
+                console.error('Failed to save text:', await response.text());
+            }
+        } catch (error) {
             console.error('Error saving text:', error);
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const recordingsSection = document.querySelector('.recordings');
-        const textsSection = document.querySelector('.texts');
-        const feedbackDisplay = document.querySelector('.selected-feedback-display');
-
-        // fetch recordings and text feedback from the backend
-        async function fetchFeedback() {
-            try {
-                const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
-                const textsResponse = await fetch('http://localhost:3000/text-feedback');
-
-                const recordings = await recordingsResponse.json();
-                const texts = await textsResponse.json();
-
-                recordings.forEach(recording => {
-                    const recordingElement = document.createElement('button');
-                    recordingElement.innerHTML = `
-                        <button>${recording.file_path}</button>
-                    `;
-                    recordingElement.addEventListener('click', () => {
-                        updateFeedbackDisplay(recording, 'audio');
-                    });
-                    recordingsSection.appendChild(recordingElement);
-                });
-
-                texts.forEach(text => {
-                    const textElement = document.createElement('button');
-                    textElement.classList.add('feedback-item');
-                    textElement.innerHTML = `
-                        <button class="feedback-name">${text.feedback_text}</button>
-                    `;
-                    textElement.addEventListener('click', () => {
-                        updateFeedbackDisplay(text, 'text');
-                    });
-                    textsSection.appendChild(textElement);
-                });
-            } catch (error) {
-                console.error('Error fetching feedback:', error);
-            }
+    function handleSend() {
+        if (feedbackText.trim() === '') {
+            console.log("No feedback provided!");
+            return;
         }
+        console.log("Feedback received:", feedbackText);
+        saveTextFeedback(feedbackText);
+        feedbackText = '';
+    }
 
-        // Update the selected feedback display
-        function updateFeedbackDisplay(feedback, type) {
-            if (type === 'audio') {
-                feedbackDisplay.innerHTML = `
-                    <header>
-                        <h3>${feedback.file_path}</h3>
-                    </header>
-                    <div>
-                    <!--    <button onclick="playAudio('${feedback.file_path}')">Play</button>
-                        <div class="audio-waveform">${feedback.waveform}</div> -->
-                    </div>
-
-                `;
-            } else if (type === 'text') {
-                feedbackDisplay.innerHTML = `
-                    <header>
-                        <h3>${feedback.feedback_text}</h3>
-                    </header>
-                `;
-            }
-        }
-
-        // Play the audio when the play button is clicked
-        function playAudio(filePath) {
-            const audio = new Audio(filePath);
-            audio.play();
-        }
-
-        fetchFeedback();
-    });
+    // Fetch feedback when the component is mounted
+    onMount(fetchFeedback);
 </script>
+
 
 <main class="container">
     <h1 style="margin-top: 50px">Feedbacks:</h1>
     <section class="feedback-sections">
-        <!-- recordings Section -->
+        <!-- Recordings Section -->
         <section class="recordings">
             <header>
                 <h2>Recordings</h2>
             </header>
-
-            <!-- dummies -->
-
-
-            <!-- dynamically loaded recordings -->
+            {#each recordings as recording}
+                <FeedbackButton label={recording.file_path} onClick={() => handleFeedbackClick(recording)} />
+            {/each}
         </section>
 
-        <!-- text Feedback Section -->
+        <!-- Text Feedback Section -->
         <section class="texts">
             <header>
                 <h2>Texts</h2>
             </header>
-
-            <!-- dummies -->
-
-
-
-            <!-- dynamically loaded text feedback -->
+            {#each texts as text}
+                <FeedbackButton label={text.file_path} onClick={() => handleFeedbackClick(text)} />
+            {/each}
         </section>
     </section>
 
-    <!-- selected feedback section -->
+    <!-- Selected Feedback Display -->
     <section class="selected-feedback-display">
-        <section>Select a feedback to view it here!</section>
+        {#if selectedFeedback}
+            <header>
+                <h3>
+                    {selectedFeedback.type === 'audio'
+                        ? selectedFeedback.file_path
+                        : selectedFeedback.feedback_text}
+                </h3>
+            </header>
+        {:else}
+            <section>Select a feedback to view it here!</section>
+        {/if}
     </section>
 
-    <!-- input feedback section -->
+    <!-- Input Feedback Section -->
     <h1 style="margin-top: 50px">Add Feedback:</h1>
     <section class="feedback-input">
-<!--        <div class="record-audio">-->
-<!--            <section class="record-audio-container">-->
-<!--                <button class="record-button">⚪</button>-->
-<!--                <div class="audio-waveform">|-╹-〢&#45;&#45;╿-╽-&#45;&#45;〡-╷-〣-╻-╹-╿-&#45;&#45;╹-╿-&#45;&#45;╹-╿-&#45;&#45;╹-〣-╻-╹-╿-╽-┃-│</div>-->
-<!--            </section>-->
-<!--            <button class="send-button">Send</button>-->
-<!--        </div>-->
         <AudioRecorder />
-
         <div class="text-feedback">
             <textarea bind:value={feedbackText} placeholder="Type here..." rows="3"></textarea>
             <button on:click={handleSend} class="send-button">Send</button>

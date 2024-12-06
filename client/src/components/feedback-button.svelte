@@ -1,5 +1,5 @@
 <script>
-    export let label = "Button"; // The button's label text
+    export let label = "Feedback"; // The button's label text
     export let onClick; // Event handler for clicks
 </script>
 
