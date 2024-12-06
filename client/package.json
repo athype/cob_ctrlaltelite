@@ -15,10 +15,10 @@
     "url": "https://gitlab.com/saxionnl/hbo-ict/2.2-project-client-on-board/78.git"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
+    "@sveltejs/vite-plugin-svelte": "^4.0.2",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
-    "svelte": "^5.2.8",
+    "svelte": "^5.4.0",
     "tailwind-merge": "^2.5.5",
     "tailwind-variants": "^0.3.0",
     "tailwindcss": "^3.4.9",
@@ -26,7 +26,9 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
+    "@sveltestrap/sveltestrap": "^6.2.7",
     "cors": "^2.8.5",
-    "page": "^1.11.6"
+    "lucide-svelte": "^0.462.0",
+    "page": "^1.3.7"
   }
 }
