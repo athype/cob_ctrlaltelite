@@ -20,9 +20,18 @@
         }
     }
 
-    function handleFeedbackClick(feedback, type) {
-        selectedFeedback = { ...feedback, type };
+    // function handleFeedbackClick(feedback, type) {
+    //     selectedFeedback = { ...feedback, type };
+    // }
+
+    function handleAudioFeedbackClick() {
+        selectedFeedback = 'audio';
     }
+
+    function handleTextFeedbackClick() {
+        selectedFeedback = 'text';
+    }
+
 
     async function saveTextFeedback(text_feedback) {
         try {
@@ -69,7 +78,7 @@
                 <h2>Recordings</h2>
             </header>
             {#each recordings as recording}
-                <FeedbackButton label={recording.file_path} onClick={() => handleFeedbackClick(recording)} />
+                <FeedbackButton label={recording.file_path} onClick={() => handleAudioFeedbackClick()} />
             {/each}
         </section>
 
@@ -79,7 +88,7 @@
                 <h2>Texts</h2>
             </header>
             {#each texts as text}
-                <FeedbackButton label={text.file_path} onClick={() => handleFeedbackClick(text)} />
+                <FeedbackButton label={text.file_path} onClick={() => handleTextFeedbackClick()} />
             {/each}
         </section>
     </section>
@@ -89,9 +98,20 @@
         {#if selectedFeedback}
             <header>
                 <h3>
-                    {selectedFeedback.type === 'audio'
-                        ? selectedFeedback.file_path
-                        : selectedFeedback.feedback_text}
+                    <!--{selectedFeedback.type === 'audio'-->
+                    <!--    ? selectedFeedback.file_path-->
+                    <!--    : selectedFeedback.feedback_text}-->
+                    {#if selectedFeedback === 'audio'}
+                        <link href="https://fonts.googleapis.com/css?family=Allerta" rel="stylesheet" />
+                        <a>Audio Feedback</a>
+                        <div class="container-audio">
+                            <audio controls loop autoplay>
+                                Your browser does not support the audio tag.
+                            </audio>
+                        </div>
+                    {:else}
+                        <section>{selectedFeedback.feedback_text}</section>
+                    {/if}
                 </h3>
             </header>
         {:else}
@@ -339,11 +359,24 @@
         border-bottom: 0;
     }
 
-
-
-
     .audio-waveform {
         color: red;
         padding: 12px;
     }
+
+    .container-audio {
+        width: 300%;
+        height: auto;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #eee;
+        color: #444;
+        margin: 20px auto;
+        overflow: hidden;
+    }
+    audio {
+        width:100%;
+    }
+
+
 </style>
