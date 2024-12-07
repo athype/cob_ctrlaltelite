@@ -13,25 +13,21 @@
             <div class="items-body-content">
                 <a href="/home">
                 <span>Neurology</span>
-                <i class="fa fa-angle-right"></i>
                 </a>
             </div>
             <div class="items-body-content">
                 <a href="/home">
                     <span>Biology</span>
-                    <i class="fa fa-angle-right"></i>
                 </a>
             </div>
             <div class="items-body-content">
                 <a href="/home">
                     <span>Surgeology</span>
-                    <i class="fa fa-angle-right"></i>
                 </a>
             </div>
             <div class="items-body-content">
                 <a href="/home">
                     <span>Practical Knife Skills</span>
-                    <i class="fa fa-angle-right"></i>
                 </a>
             </div>
         </div>
@@ -41,9 +37,7 @@
 <style>
 
     * {
-
         font-family: 'Rubik', sans-serif;
-
     }
     .container {
         border: 1px solid black;
@@ -103,14 +97,6 @@
     .items-body-content:hover {
         border-radius: 15px;
         border: 1px solid #2b63f3;
-    }
-
-    .items-body-content i {
-        align-self: center;
-        font-size: 15px;
-        color: blueviolet;
-        font-weight: bold;
-        animation: icon 1.5s infinite forwards;
     }
 
     @keyframes icon {
