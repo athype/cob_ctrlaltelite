@@ -1,12 +1,13 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
     import FeedbackButton from "../components/feedback-button.svelte";
-    import {onMount} from "svelte";
+    import { onMount } from "svelte";
+
     let feedbackText = '';
     let recordings = [];
     let texts = [];
     let selectedFeedback = null;
-    let selectedFilePath;
+
 
     // Fetch recordings and text feedback from the backend
     async function fetchFeedback() {
@@ -21,23 +22,21 @@
         }
     }
 
-    // function handleFeedbackClick(feedback, type) {
-    //     selectedFeedback = { ...feedback, type };
-    // }
 
-    function handleAudioFeedbackClick() {
-
+    function handleAudioFeedbackClick(recording) {
+        console.log('Selected Recording:', recording); // Debugging output
         selectedFeedback = {
-            type : 'audio'
+            type: 'audio',
+            filePath: recording.file_path // Correct case for file_path
         };
     }
 
-    function handleTextFeedbackClick() {
+    function handleTextFeedbackClick(text) {
         selectedFeedback = {
-            type : 'text'
-        }
+            type: 'text',
+            content: text.feedback_text
+        };
     }
-
 
     async function saveTextFeedback(text_feedback) {
         try {
@@ -51,7 +50,8 @@
             if (response.ok) {
                 const result = await response.json();
                 console.log('Text feedback saved successfully:', result);
-                fetchFeedback(); // Refresh feedbacks after submission
+                feedbackText = '';  // Clear the text input after saving
+                await fetchFeedback(); // Refresh feedbacks after submission
             } else {
                 console.error('Failed to save text:', await response.text());
             }
@@ -60,81 +60,67 @@
         }
     }
 
+
     function handleSend() {
-        if (feedbackText.trim() === '') {
-            console.log("No feedback provided!");
-            return;
-        }
-        console.log("Feedback received:", feedbackText);
         saveTextFeedback(feedbackText);
-        feedbackText = '';
     }
 
-    // Fetch feedback when the component is mounted
     onMount(fetchFeedback);
 </script>
 
-
 <main class="container">
-    <h1 style="margin-top: 50px">Feedbacks:</h1>
+    <h1>Feedbacks</h1>
     <section class="feedback-sections">
-        <!-- Recordings Section -->
         <section class="recordings">
             <header>
                 <h2>Recordings</h2>
             </header>
-            {#each recordings as recording}
-                <FeedbackButton label={recording.file_path} onClick={() => handleAudioFeedbackClick()} />
-            {/each}
+            {#if recordings.length > 0}
+                {#each recordings as recording}
+                    <FeedbackButton label={`Audio Feedback ${recording.id}`} onClick={() => handleAudioFeedbackClick(recording)} />
+                {/each}
+            {:else}
+                <p>No recordings available.</p>
+            {/if}
         </section>
 
-        <!-- Text Feedback Section -->
         <section class="texts">
             <header>
                 <h2>Texts</h2>
             </header>
-            {#each texts as text}
-                <FeedbackButton label={text.file_path} onClick={() => handleTextFeedbackClick()} />
-            {/each}
+            {#if texts.length > 0}
+                {#each texts as text}
+                    <FeedbackButton label={`Text Feedback ${text.id}`} onClick={() => handleTextFeedbackClick(text)} />
+                {/each}
+            {:else}
+                <p>No text feedback available.</p>
+            {/if}
         </section>
     </section>
 
-    <!-- Selected Feedback Display -->
     <section class="selected-feedback-display">
         {#if selectedFeedback}
-            <header>
-                <h3>
-                    <!--{selectedFeedback.type === 'audio'-->
-                    <!--    ? selectedFeedback.file_path-->
-                    <!--    : selectedFeedback.feedback_text}-->
-                    {#if selectedFeedback.type === 'audio'}
-                        <link href="https://fonts.googleapis.com/css?family=Allerta" rel="stylesheet" />
-                        <a>Audio Feedback</a>
-                        <div class="container-audio">
-                            <audio controls loop autoplay>
-                                Your browser does not support the audio tag.
-                            </audio>
-                        </div>
-                    {:else if selectedFeedback.type === 'text'}
-                        <section>{selectedFeedback.feedback_text}</section>
-                    {/if}
-                </h3>
-            </header>
+            {#if selectedFeedback.type === 'audio'}
+                <audio controls autoplay>
+                    <source src={`http://localhost:3000/${selectedFeedback.filePath}`} type="audio/wav" />
+                    Your browser does not support the audio element.
+                </audio>
+            {:else if selectedFeedback.type === 'text'}
+                <p>{selectedFeedback.content}</p>
+            {/if}
         {:else}
-            <section>Select a feedback to view it here!</section>
+            <p>Select a feedback to view it here.</p>
         {/if}
     </section>
 
-    <!-- Input Feedback Section -->
-    <h1 style="margin-top: 50px">Add Feedback:</h1>
+    <h1>Add Feedback</h1>
     <section class="feedback-input">
         <AudioRecorder />
-        <div class="text-feedback">
-            <textarea bind:value={feedbackText} placeholder="Type here..." rows="3"></textarea>
-            <button on:click={handleSend} class="send-button">Send</button>
-        </div>
+        <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
+        <button on:click={handleSend} class="send-button">Send Feedback</button>
     </section>
 </main>
+
 
 
 <style>
