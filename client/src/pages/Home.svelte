@@ -24,10 +24,9 @@
 
 
     function handleAudioFeedbackClick(recording) {
-        console.log('Selected Recording:', recording); // Debugging output
         selectedFeedback = {
             type: 'audio',
-            filePath: recording.file_path // Correct case for file_path
+            filePath: recording.file_path
         };
     }
 
@@ -50,8 +49,8 @@
             if (response.ok) {
                 const result = await response.json();
                 console.log('Text feedback saved successfully:', result);
-                feedbackText = '';  // Clear the text input after saving
-                await fetchFeedback(); // Refresh feedbacks after submission
+                feedbackText = '';
+                await fetchFeedback();
             } else {
                 console.error('Failed to save text:', await response.text());
             }
