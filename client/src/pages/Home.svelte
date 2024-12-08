@@ -6,6 +6,7 @@
     let recordings = [];
     let texts = [];
     let selectedFeedback = null;
+    let selectedFilePath;
 
     // Fetch recordings and text feedback from the backend
     async function fetchFeedback() {
@@ -25,11 +26,16 @@
     // }
 
     function handleAudioFeedbackClick() {
-        selectedFeedback = 'audio';
+
+        selectedFeedback = {
+            type : 'audio'
+        };
     }
 
     function handleTextFeedbackClick() {
-        selectedFeedback = 'text';
+        selectedFeedback = {
+            type : 'text'
+        }
     }
 
 
@@ -101,7 +107,7 @@
                     <!--{selectedFeedback.type === 'audio'-->
                     <!--    ? selectedFeedback.file_path-->
                     <!--    : selectedFeedback.feedback_text}-->
-                    {#if selectedFeedback === 'audio'}
+                    {#if selectedFeedback.type === 'audio'}
                         <link href="https://fonts.googleapis.com/css?family=Allerta" rel="stylesheet" />
                         <a>Audio Feedback</a>
                         <div class="container-audio">
@@ -109,7 +115,7 @@
                                 Your browser does not support the audio tag.
                             </audio>
                         </div>
-                    {:else}
+                    {:else if selectedFeedback.type === 'text'}
                         <section>{selectedFeedback.feedback_text}</section>
                     {/if}
                 </h3>
