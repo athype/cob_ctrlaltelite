@@ -127,7 +127,7 @@
 - **Krisztian** Helped with merge requests, reviewed multiple tasks for sprint 2.
 ### Current action points
 - _`General:`_
-- **Anastasiia:** List Component, 
+- **Anastasiia:** List Component
 - **Andre:** Improve audio and text preview (front-end)
 - **Anh:** Improve Backend Database (text-feedback, audio-feedback)
 - **Kryztof:** Test Whisper limitation
@@ -136,7 +136,7 @@
 - **Krisztián:** Making list display reacting using Svelte Runes
 ---
 
-- **Next meeting on & at:** Monday 14:00 December 2nd.
+- **Next meeting on & at:** Monday 14:00 December 12nd.
 - **Closing time:** 15:40
 
 ---
