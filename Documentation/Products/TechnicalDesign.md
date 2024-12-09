@@ -81,9 +81,6 @@ To be decided once deployment details are finalized.
 - MediaStream API for audio recording and playback.
 - Whisper library (HuggingFace) for speech-to-text functionality.
 
-#### Protocols
-- Compliance with ISO27001 security standards.
-
 #### Frameworks
 - **Frontend**: Svelte components.
 - **Backend**: Node.js and Express.js.
@@ -117,7 +114,7 @@ To be decided once deployment details are finalized.
 
 ### d. Information Architecture
 - Data Types:
-  - Audio files (e.g., `.wav`, `.mp3`).
+  - Audio files (e.g., `.wav`).
   - Text feedback entries.
 - Data Navigation:
   - Accessible via intuitive UI lists for saved audio and text feedback.
@@ -148,14 +145,11 @@ To be decided once deployment details are finalized.
   - Lists for displaying saved feedback.
   - Buttons for audio actions (Record, Play, Pause, Stop).
 
-### c. Hardware Design
-To be determined.
-
-### d. Software Design
+### c. Software Design
 - Modular and extendable backend structure.
 - Reusable Svelte components for the frontend.
 
-### e. Security Design
+### d. Security Design
 - Local data processing and storage to align with privacy requirements.
 - ISO27001 compliance for system security.
 
