@@ -1,0 +1,230 @@
+/* xs */
+/* @media (min-width: 475px) {} */
+
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+/* @media (min-width: 768px) {} */
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */
+
+/* 2xl */
+/* @media (min-width: 1536px) {} */
+
+.container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    /* border: 1px solid red; */
+}
+
+.section {
+    margin-top: 5rem;
+}
+
+.loading {
+    filter: blur(40px) grayscale(100%);
+}
+
+.loaded {
+    filter: blur(0) grayscale(0);
+    transition: 0.7s ease-in-out;
+}
+
+.gradient-border-button {
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    text-align: center;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background: transparent;
+}
+
+/* Gradient border */
+.gradient-border-button::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(90deg,
+    var(--clr-pink),
+    var(--clr-dark-blue),
+    var(--clr-cyan),
+    var(--clr-pink)
+    );
+    background-size: 200% 100%;
+    border-radius: 10px;
+    z-index: -1;
+    transition: all var(--transition-delay) ease;
+}
+
+/* Solid color middle */
+.gradient-border-button::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--clr-dark);
+    border-radius: 6px;
+    z-index: -1;
+}
+
+.gradient-border-button:hover::before {
+    background-position: 100% 0;
+}
+
+.gradient-border {
+    position: relative;
+    background: transparent;
+    z-index: 0;
+}
+
+.gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px; /* Controls border thickness */
+    background: linear-gradient(90deg,
+    var(--clr-pink),
+    var(--clr-dark-blue),
+    var(--clr-cyan),
+    var(--clr-pink)
+    );
+    background-size: 200% 100%;
+    z-index: -1;
+    transition: all 0.5s ease;
+    border-radius: inherit; /* Inherits border-radius from parent */
+}
+
+.gradient-border::after {
+    content: '';
+    position: absolute;
+    inset: 2px; /* Should match the negative of the before inset */
+    background: var(--clr-dark, #000); /* Fallback to black if variable not set */
+    z-index: -1;
+    border-radius: inherit;
+}
+
+.gradient-text {
+    /* Base styles */
+    position: relative;
+    display: inline-block;
+
+    /* Gradient setup */
+    background: linear-gradient(90deg,
+    var(--clr-purple),
+    var(--clr-dark-blue),
+    var(--clr-cyan),
+    var(--clr-purple)
+    );
+    background-size: 200% auto;
+
+    /* Make the gradient apply to text */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* Fallback */
+
+    /* Optional animation */
+    animation: gradient-text 5s linear infinite;
+}
+
+.gradient-text-static {
+    position: relative;
+    display: inline-block;
+
+    background: linear-gradient(90deg,
+    var(--clr-purple),
+    var(--clr-dark-blue),
+    var(--clr-cyan)
+    );
+    background-size: 100% 100%;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* Hover effect version */
+.gradient-text-hover {
+    background: linear-gradient(90deg,
+    var(--clr-purple),
+    var(--clr-dark-blue),
+    var(--clr-cyan),
+    var(--clr-purple)
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: all 0.5s ease;
+}
+
+.gradient-text-hover:hover {
+    background-position: 100% center;
+}
+
+@keyframes gradient-text {
+    0% {
+        background-position: 0% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+
+/* xs */
+@media (min-width: 475px) {
+    .container {
+        max-width: 475px;
+    }
+}
+
+/* sm */
+@media (min-width: 640px) {
+    .container {
+        max-width: 640px;
+    }
+}
+
+/* md */
+@media (min-width: 768px) {
+    .container {
+        max-width: 768px;
+    }
+}
+
+/* lg */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1024px;
+    }
+
+    .section {
+        margin-top: 10rem;
+    }
+}
+
+/* xl */
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1280px;
+    }
+}
+
+/* 2xl */
+@media (min-width: 1536px) {
+    .container {
+        max-width: 1536px;
+    }
+}
