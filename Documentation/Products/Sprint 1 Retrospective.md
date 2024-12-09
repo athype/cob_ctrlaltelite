@@ -7,7 +7,7 @@
   - Created lists to display **saved audio and text feedback**.
 - **Client Satisfaction**:
   - Delivered a live demo of the prototype during the client meeting, showcasing the core functionalities.
-  - Received positive feedback for the intuitive UI prototype and compliance with privacy standards.
+  - Received positive feedback for the intuitive UI prototype.
 - **Framework Decisions**:
   - Adopted **MediaStream API** for audio recording, which met project requirements.
   - Integrated **Whisper (HuggingFace)** for speech-to-text processing, ensuring local data processing and privacy compliance.
@@ -17,8 +17,7 @@
 
 ## Challenges
 - **Framework Compatibility Issues**:
-  - **Shadcn for Svelte** and **Sveltetrap** were abandoned due to compatibility problems, requiring the use of standard Svelte components.
-- **API Limitations**:
+  - **Shadcn for Svelte** and **Sveltetrap** were abandoned due to compatibility problems, requiring the use of Svelte components.
   - **Web Speech API** was unsuitable due to reliance on Google Cloud, violating privacy policies.
   - **Vosk** required complex dependencies that were out of scope for this project.
 
