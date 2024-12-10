@@ -34,12 +34,12 @@ const upload = multer({ storage });
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(uploadsDir));
 
 // Initialize the database
 initDatabase();
+//insertMockData();
 
-// insert mock data
-// insertMockData();
 
 // Basic route to test server and database
 app.get('/', (req, res) => {
@@ -52,7 +52,7 @@ app.post('/upload-audio', upload.single('audio'), (req, res) => {
             return res.status(400).send('No file uploaded.');
         }
 
-        const filePath = path.join('uploads', req.file.filename);
+        const filePath = path.join('uploads', req.file.filename).replace('\\', '/');
         const duration = parseInt(req.body.duration);
 
         // Insert the file path and duration into the database

@@ -334,16 +334,13 @@
         }
     }
 
-    .testh1 {
-        font-size: var(--size-xl);
-    }
 
     .recorder-container {
         display: flex;
         justify-content: center;
         align-items: center;
         width: 100%; /* Take full width of parent */
-        max-width: 800px; /* Or whatever maximum width you prefer */
+        max-width: 1600px; /* Or whatever maximum width you prefer */
         margin: 2rem auto 0;
         border-radius: 10px;
     }
