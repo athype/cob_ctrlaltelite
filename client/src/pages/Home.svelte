@@ -1,6 +1,6 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import FeedbackButton from "../components/feedback-button.svelte";
+    import FeedbackButton from "../components/FeedbackButton.svelte";
     import { onMount } from "svelte";
 
     let feedbackText = '';
@@ -8,32 +8,49 @@
     let texts = [];
     let selectedFeedback = null;
 
-
     // Fetch recordings and text feedback from the backend
     async function fetchFeedback() {
         try {
+            // Fetch audio feedback
             const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
-            const textsResponse = await fetch('http://localhost:3000/text-feedback');
+            if (recordingsResponse.ok) {
+                recordings = await recordingsResponse.json();
+            } else if (recordingsResponse.status === 404) {
+                console.warn('No audio feedback found.');
+                recordings = []; // Set an empty array to avoid errors
+            } else {
+                console.error('Failed to fetch audio feedback:', await recordingsResponse.text());
+            }
 
-            recordings = await recordingsResponse.json();
-            texts = await textsResponse.json();
+            // Fetch text feedback
+            const textsResponse = await fetch('http://localhost:3000/text-feedback');
+            if (textsResponse.ok) {
+                texts = await textsResponse.json();
+            } else {
+                console.error('Failed to fetch text feedback:', await textsResponse.text());
+            }
         } catch (error) {
             console.error('Error fetching feedback:', error);
         }
     }
 
 
+    // Function for on click of audio feedback button
     function handleAudioFeedbackClick(recording) {
         selectedFeedback = {
+            id: recording.id,
             type: 'audio',
-            filePath: recording.file_path
+            filePath: recording.file_path,
+            name: `Audio Feedback ${recording.id}`
         };
     }
 
+    // Function for on click of text feedback button
     function handleTextFeedbackClick(text) {
         selectedFeedback = {
             type: 'text',
-            content: text.feedback_text
+            content: text.feedback_text,
+            name: `Text Feedback ${text.id}`
         };
     }
 
@@ -70,45 +87,56 @@
 <main class="container">
     <h1>Feedbacks</h1>
     <section class="feedback-sections">
-        <section class="recordings">
-            <header>
-                <h2>Recordings</h2>
-            </header>
-            {#if recordings.length > 0}
-                {#each recordings as recording}
-                    <FeedbackButton label={`Audio Feedback ${recording.id}`} onClick={() => handleAudioFeedbackClick(recording)} />
-                {/each}
-            {:else}
-                <p>No recordings available.</p>
-            {/if}
-        </section>
-
         <section class="texts">
             <header>
                 <h2>Texts</h2>
             </header>
             {#if texts.length > 0}
                 {#each texts as text}
-                    <FeedbackButton label={`Text Feedback ${text.id}`} onClick={() => handleTextFeedbackClick(text)} />
+                    <FeedbackButton
+                            label={`Text Feedback ${text.id}`}
+                            onClick={() => handleTextFeedbackClick(text)}
+                            selected={selectedFeedback?.content === text.feedback_text && selectedFeedback?.type === 'text'}
+                    />
                 {/each}
             {:else}
                 <p>No text feedback available.</p>
+            {/if}
+        </section>
+
+        <section class="recordings">
+            <header>
+                <h2>Recordings</h2>
+            </header>
+            {#if recordings.length > 0}
+                {#each recordings as recording}
+                    <FeedbackButton
+                            label={`Audio Feedback ${recording.id}`}
+                            onClick={() => handleAudioFeedbackClick(recording)}
+                            selected={selectedFeedback?.id === recording.id && selectedFeedback?.type === 'audio'}
+                    />
+                {/each}
+            {:else}
+                <p>No recordings available.</p>
             {/if}
         </section>
     </section>
 
     <section class="selected-feedback-display">
         {#if selectedFeedback}
+            <div class="feedback-header">{selectedFeedback.name}</div>
             {#if selectedFeedback.type === 'audio'}
-                <audio controls autoplay>
-                    <source src={`http://localhost:3000/${selectedFeedback.filePath}`} type="audio/wav" />
-                    Your browser does not support the audio element.
-                </audio>
+                {#key selectedFeedback.id}
+                    <audio controls autoplay>
+                        <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav" />
+                        Your browser does not support the audio element.
+                    </audio>
+                {/key}
             {:else if selectedFeedback.type === 'text'}
                 <p>{selectedFeedback.content}</p>
             {/if}
         {:else}
-            <p>Select a feedback to view it here.</p>
+            <p style="text-align: center; padding-bottom: 5vh">Select a feedback to view it here.</p>
         {/if}
     </section>
 
@@ -116,22 +144,13 @@
     <section class="feedback-input">
         <AudioRecorder />
         <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
-        <button on:click={handleSend} class="send-button">Send Feedback</button>
+        <button on:click={handleSend} class="send-button">Save Text Feedback</button>
     </section>
 </main>
 
 
 
 <style>
-
-    /* general page */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #1e1e1e;
-        color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-    }
 
     /* main container*/
     .container {
@@ -142,7 +161,9 @@
     }
 
     .container h1 {
-        font-size: 1.25rem;
+        font-size: 1.75rem;
+        margin-top: 3vh;
+
     }
 
     header h2 {
@@ -187,7 +208,7 @@
         width: 100%;
     }
     .recordings button:hover, .texts button:hover {
-        box-shadow: 0px 0px 5px 1px #9400FF;
+        box-shadow: 0 0 5px 1px #9400FF;
         color: white;
     }
 
@@ -195,47 +216,45 @@
 
 
 
-    .recording, .feedback-item {
-        display: flex;
-        align-items: center;
-        background-color: #353535;
-        border: 1px solid var(--clr-purple);
-        border-radius: 5px;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-        cursor: pointer;
-    }
-    .recording:hover, .feedback-item:hover {
-        background-color: var(--clr-purple);
-        color: #ffffff;
-    }
-
-
-
-
-    /* Selected feedback */
     .selected-feedback-display {
+        position: relative;
         background-color: #2c2c2c;
-        padding: 1rem; /* Consistent padding */
-        padding-bottom: 10vh; /* Relative unit for bottom padding */
-        border-radius: 0.5rem; /* Relative unit for border-radius */
-        border-top: 0.1rem solid var(--clr-pink); /* Relative unit for border */
+        padding: 4rem 1rem 1rem;
+        border-radius: 0.5rem;
+        border-top: 0.1rem solid var(--clr-pink);
         color: white;
-        font-size: 1.25rem; /* Relative font size */
-        text-align: center;
-
-        /* Flexbox for layout */
+        font-size: 1.5rem;
+        text-align: left;
         display: flex;
-        flex-direction: column; /* Stack items vertically */
-        justify-content: center; /* Center all items vertically */
-        align-items: center; /* Center all items horizontally */
-
-        height: 50vh; /* Relative height */
-        overflow-y: auto; /* Enable scrolling if content overflows */
+        flex-direction: column;
+        gap: 1rem;
+        max-height: 50vh;
+        overflow-y: auto;
+        word-wrap: break-word;
     }
 
-    .feedback-content {
-        margin-top: 1rem;
+    /* scroll bar css to be deleted later after list component maybe */
+    .selected-feedback-display::-webkit-scrollbar,
+    textarea::-webkit-scrollbar {
+        width: 8px;
+    }
+    .selected-feedback-display::-webkit-scrollbar-thumb,
+    textarea::-webkit-scrollbar-thumb {
+        background: var(--clr-purple);
+        border-radius: 4px;
+    }
+
+
+    .feedback-header {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 0.5rem;
+        border-radius: 4px;
+        color: white;
     }
 
     .feedback-input {
@@ -248,99 +267,23 @@
 
 
 
-    /* audio recording */
-    .record-audio {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        background-color: #2c2c2c;
+    .send-button{
+        background-color: var(--clr-pink);
+        color: #101010;
         padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--clr-cyan);
+        width: 20rem;
+        align-self: center;
+        border-radius: 10px;
     }
-    .record-audio button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: #31DEF7;
-        color: black;
-        font-size: 1rem;
-    }
-    .record-audio button:hover {
-        background-color: darkcyan;
+    .send-button:hover{
+        box-shadow: 0 0 5px 1px #9400FF;
         color: white;
     }
-
-
-
-
-    /* text feedback */
-    .text-feedback {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        background-color: #2c2c2c;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--clr-cyan);
-    }
-
-    .text-feedback button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: #31DEF7;
-        color: black;
-        font-size: 1rem;
-    }
-    .text-feedback button:hover {
-        background-color: darkcyan;
-        color: white;
-    }
-
-
-
-
-
-
-    /* audio recording container */
-    .record-audio-container {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        gap: 0.5rem;
-        background-color: #353535;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid darkgrey;
-    }
-    .record-audio-container button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: red;
-        color: black;
-        font-size: 1rem;
-    }
-    .record-audio-container button:hover {
-        box-shadow: 0px 0px 5px 1px red;
-        background-color: red;
-        color: white;
-    }
-
-
-
 
 
     textarea {
-        resize: none;
         padding: 1rem;
-        padding-bottom: 100px;
+        min-height: 10vh;
         border-radius: 4px;
         border: 1px solid darkgrey;
         background-color: #353535;
@@ -350,21 +293,6 @@
         border-bottom: 0;
     }
 
-    .audio-waveform {
-        color: red;
-        padding: 12px;
-    }
-
-    .container-audio {
-        width: 300%;
-        height: auto;
-        padding: 20px;
-        border-radius: 5px;
-        background-color: #eee;
-        color: #444;
-        margin: 20px auto;
-        overflow: hidden;
-    }
     audio {
         width:100%;
     }

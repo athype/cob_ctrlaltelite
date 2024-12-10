@@ -38,7 +38,7 @@ app.use('/uploads', express.static(uploadsDir));
 
 // Initialize the database
 initDatabase();
-insertMockData();
+//insertMockData();
 
 
 // Basic route to test server and database
