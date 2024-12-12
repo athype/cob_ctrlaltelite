@@ -1,14 +1,16 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import FeedbackButton from "../components/FeedbackButton.svelte";
     import { onMount } from "svelte";
+    import List from "../components/List.svelte";
 
     let feedbackText = '';
     let recordings = [];
     let texts = [];
     let selectedFeedback = null;
 
-    // Fetch recordings and text feedback from the backend
+    /**
+     * Fetches both audio and text feedback from backend api via await.
+     */
     async function fetchFeedback() {
         try {
             // Fetch audio feedback
@@ -35,7 +37,10 @@
     }
 
 
-    // Function for on click of audio feedback button
+    /**
+     * When an audio feedback is clicked, selected feedback is updated with its data.
+     * @param recording
+     */
     function handleAudioFeedbackClick(recording) {
         selectedFeedback = {
             id: recording.id,
@@ -45,7 +50,10 @@
         };
     }
 
-    // Function for on click of text feedback button
+    /**
+     * When text feedback button is clicked, selected feedback is updated with its data.
+     * @param text
+     */
     function handleTextFeedbackClick(text) {
         selectedFeedback = {
             type: 'text',
@@ -54,6 +62,26 @@
         };
     }
 
+    /**
+     * Helper function for determining if an audio is selected.
+     * @param recording
+     */
+    function isAudioFeedbackSelected(recording) {
+        return selectedFeedback?.id === recording.id && selectedFeedback?.type === 'audio';
+    }
+
+    /**
+     * Helper function for determining if a text is selected.
+     * @param text
+     */
+    function isTextFeedbackSelected(text) {
+        return selectedFeedback?.content === text.feedback_text && selectedFeedback?.type === 'text';
+    }
+
+    /**
+     * Sends text feedback to the db.
+     * @param text_feedback
+     */
     async function saveTextFeedback(text_feedback) {
         try {
             const response = await fetch('http://localhost:3000/text_feedback', {
@@ -76,7 +104,9 @@
         }
     }
 
-
+    /**
+     * Handler function that calls save function.
+     */
     function handleSend() {
         saveTextFeedback(feedbackText);
     }
@@ -87,39 +117,21 @@
 <main class="container">
     <h1>Feedbacks</h1>
     <section class="feedback-sections">
-        <section class="texts">
-            <header>
-                <h2>Texts</h2>
-            </header>
-            {#if texts.length > 0}
-                {#each texts as text}
-                    <FeedbackButton
-                            label={`Text Feedback ${text.id}`}
-                            onClick={() => handleTextFeedbackClick(text)}
-                            selected={selectedFeedback?.content === text.feedback_text && selectedFeedback?.type === 'text'}
-                    />
-                {/each}
-            {:else}
-                <p>No text feedback available.</p>
-            {/if}
-        </section>
 
-        <section class="recordings">
-            <header>
-                <h2>Recordings</h2>
-            </header>
-            {#if recordings.length > 0}
-                {#each recordings as recording}
-                    <FeedbackButton
-                            label={`Audio Feedback ${recording.id}`}
-                            onClick={() => handleAudioFeedbackClick(recording)}
-                            selected={selectedFeedback?.id === recording.id && selectedFeedback?.type === 'audio'}
-                    />
-                {/each}
-            {:else}
-                <p>No recordings available.</p>
-            {/if}
-        </section>
+            <List
+                    items={texts}
+                    labelPrefix="Text"
+                    handleClick={handleTextFeedbackClick}
+                    isSelected={isTextFeedbackSelected}
+            />
+
+            <List
+                    items={recordings}
+                    labelPrefix="Audio"
+                    handleClick={handleAudioFeedbackClick}
+                    isSelected={isAudioFeedbackSelected}
+            />
+
     </section>
 
     <section class="selected-feedback-display">
@@ -172,49 +184,10 @@
         margin-bottom: 1rem;
     }
 
-
-
-
-
     .feedback-sections {
         display: flex;
         gap: 2rem;
     }
-
-    /* recordings and texts */
-    .recordings, .texts {
-        flex: 1;
-        background-color: #2c2c2c;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 2px solid var(--clr-purple);
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
-        overflow-y: auto;
-        max-height: 300px;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .recordings button, .texts button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: var(--clr-purple);
-        color: black;
-        font-size: 1rem;
-        width: 100%;
-    }
-    .recordings button:hover, .texts button:hover {
-        box-shadow: 0 0 5px 1px #9400FF;
-        color: white;
-    }
-
-
-
-
 
     .selected-feedback-display {
         position: relative;
@@ -236,24 +209,24 @@
     /* scroll bar css to be deleted later after list component maybe */
     .selected-feedback-display::-webkit-scrollbar,
     textarea::-webkit-scrollbar {
-        width: 8px;
+        width: 0.1rem;
     }
     .selected-feedback-display::-webkit-scrollbar-thumb,
     textarea::-webkit-scrollbar-thumb {
         background: var(--clr-purple);
-        border-radius: 4px;
+        border-radius: 0.5rem;
     }
 
 
     .feedback-header {
         position: absolute;
-        top: 10px;
-        left: 10px;
+        top: 0.625rem;
+        left: 0.625rem;
         font-size: 1rem;
         font-weight: bold;
         background-color: rgba(0, 0, 0, 0.5);
         padding: 0.5rem;
-        border-radius: 4px;
+        border-radius: 0.25rem;
         color: white;
     }
 
@@ -273,10 +246,10 @@
         padding: 1rem;
         width: 20rem;
         align-self: center;
-        border-radius: 10px;
+        border-radius: 0.625rem;
     }
     .send-button:hover{
-        box-shadow: 0 0 5px 1px #9400FF;
+        box-shadow:  0 0 0.3125rem 0.0625rem #9400FF;
         color: white;
     }
 
@@ -285,12 +258,10 @@
         padding: 1rem;
         min-height: 10vh;
         border-radius: 4px;
-        border: 1px solid darkgrey;
         background-color: #353535;
         color: #ffffff;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
+        border: 0 solid darkgrey;
+        border-top-width: 1px;
     }
 
     audio {
