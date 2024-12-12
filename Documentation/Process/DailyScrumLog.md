@@ -140,3 +140,38 @@
 - **Closing time:** 15:40
 
 ---
+
+# `12/12/2024`
+- **Present:** David, Andre, Krisztián, Ana, Kryztof, Din, Alan
+- **Not Present:** 
+- **Scrum-master this meeting:** Anastasiia
+- **Minutes taken by:** Din
+---
+- **Opening time:** 12:54
+- **Announcements:** 
+- **Approval of mergings:**
+---
+### Last session's action points
+- _`General:`_
+- **Anastasiia:** already done in task(list component). reviewed and merged.
+- **Andre:** task dependent on other tasks, researching components
+- **Anh:** further Din's implementation for adding titles of the feedback. will finish it all today.
+- **Kryztof:** figma designs. one mock up is ready ro show.
+- **David:** worked on fixing bugs before future implementations. we didn't analyze at the end of sprint 1. 
+- **Din:** Separation of concerns and database title.
+- **Krisztián:** dependent on the progress of 2 other people. git management, code review.
+### Current action points
+- _`General:`_
+- **Anastasiia:** 
+- **Andre:** 
+- **Anh:** 
+- **Kryztof:** 
+- **David:** 
+- **Din:**
+- **Krisztián:** 
+---
+
+- **Next meeting on & at:** Monday 16'th of december.
+- **Closing time:** 13:00
+
+---
