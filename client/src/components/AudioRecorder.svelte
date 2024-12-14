@@ -47,6 +47,9 @@
         messageContainer?.classList.remove('message--visible');
     }
 
+    /**
+     * Requests access to the user's microphone.
+     */
     async function requestMicrophoneAccess() {
         if (!window.AudioContext) {
             setMessage('Your browser does not support window.AudioContext. This is needed for this demo to work.');
@@ -65,6 +68,10 @@
         }
     }
 
+    /**
+     * Sets up the audio stream and creates the necessary audio nodes.
+     * @param {MediaStream} stream The audio stream from the user's microphone.
+     */
     function setAudioStream(stream) {
         audioContext = new AudioContext();
         analyser = audioContext.createAnalyser();
@@ -80,6 +87,9 @@
         setupWaveform();
     }
 
+    /**
+     * Sets the actions for the MediaRecorder instance.
+     */
     function setRecorderActions() {
         recorder.ondataavailable = (event) => {
             chunks.push(event.data);
@@ -94,6 +104,10 @@
         };
     }
 
+    /**
+     * Uploads the audio file to the server.
+     * @param {Blob} blob The audio file to upload.
+     */
     async function uploadAudio(blob) {
 
         const formData = new FormData();
@@ -125,6 +139,9 @@
     }
     }
 
+    /**
+     * Saves the recording to the server.
+     */
     function saveRecording() {
         console.log('Save button clicked.');
         if (!recording) {
@@ -141,18 +158,27 @@
         .catch((error) => console.error('Error preparing audio for upload:', error));
     }
 
-
+    /**
+     * Starts recording audio.
+     */
     function startRecording() {
         isRecording = true;
         document.querySelector('.js-record').classList.add('active');
         recorder.start();
     }
 
+    /**
+     * Stops recording audio.
+     */
     function stopRecording() {
         isRecording = false;
         document.querySelector('.js-record').classList.remove('active');
         recorder.stop();
     }
+
+    /**
+     * Pauses or resumes recording audio.
+     */
     function pauseRecording() {
         if (recorder && recorder.state === 'recording') {
             recorder.pause();
@@ -165,6 +191,9 @@
         }
     }
 
+    /**
+     * Toggles recording audio.
+     */
     function toggleRecording() {
         if (isRecording) {
             stopRecording();
@@ -173,6 +202,9 @@
         }
     }
 
+    /**
+     * Sets up the waveform canvas. The waveform is drawn based on the audio input.
+     */
     function setupWaveform() {
         canvasContext = canvas.getContext('2d');
         width = canvas.offsetWidth;
@@ -188,6 +220,9 @@
         scriptProcessor.onaudioprocess = processInput;
     }
 
+    /**
+     * Processes the audio input to be used in rendering the waveform.
+     */
     function processInput() {
         if (isRecording && !isPaused) {
             const array = new Uint8Array(analyser.frequencyBinCount);
@@ -206,10 +241,19 @@
         }
     }
 
+    /**
+     * Calculates the average volume of the audio input.
+     * @param {Uint8Array} array The audio input array.
+     * @returns {number} The average volume.
+     */
     function getAverageVolume(array) {
         return array.reduce((sum, value) => sum + value, 0) / array.length;
     }
 
+    /**
+     * Renders the bars of the waveform.
+     * @param {number[]} currentBars The current bars to render.
+     */
     function renderBars(currentBars) {
         if (!drawing) {
             drawing = true;
@@ -231,12 +275,18 @@
         }
     }
 
+    /**
+     * Plays the audio recording.
+     */
     function play() {
         isPlaying = true;
         audioPlayer.play();
         playButton.classList.add('active');
     }
 
+    /**
+     * Stops the audio recording.
+     */
     function stop() {
         isPlaying = false;
         audioPlayer.pause();
@@ -244,6 +294,9 @@
         playButton.classList.remove('active');
     }
 
+    /**
+     * Toggles playing the audio recording.
+     */
     function togglePlay() {
         if (isPlaying) {
             stop();
@@ -252,6 +305,9 @@
         }
     }
 
+    /**
+     * Clears the recording and stops the audio player.
+     */
     function clearRecording() {
         if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) {
             recorder.stop();
@@ -265,7 +321,9 @@
         pauseButton.textContent = 'Pause';
     }
 
-
+    /**
+     * Lifecycle function that runs when the component is mounted to the DOM.
+     */
     onMount(() => {
         canvas = document.querySelector('.js-canvas');
         audioPlayer = document.querySelector('.js-audio');
@@ -278,7 +336,6 @@
         requestMicrophoneAccess();
         audioPlayer.addEventListener('ended', stop);
 
-        // Add event listeners
         document.querySelector('.js-record').addEventListener('mouseup', toggleRecording);
         saveButton.addEventListener('mouseup', saveRecording);
         pauseButton.addEventListener('mouseup', pauseRecording);
@@ -339,11 +396,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 100%; /* Take full width of parent */
-        max-width: 1600px; /* Or whatever maximum width you prefer */
+        width: 100%;
+        max-width: 1600px;
         margin: 2rem auto 0;
         border-radius: 10px;
     }
+
+    /* Nasty hack to get the gradient buttons to work */
 
     .recorder-container :global(.gradient-border-button) {
         position: relative;
@@ -396,8 +455,8 @@
 
     .waveform__canvas {
         width: 100%;
-        height: 10rem; /* Reduced height */
-        display: block; /* Prevents unwanted margins */
+        height: 10rem;
+        display: block;
     }
 
     .toolbar {
