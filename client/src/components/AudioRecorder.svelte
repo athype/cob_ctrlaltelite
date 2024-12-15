@@ -1,26 +1,25 @@
 <script>
-    import { onMount } from 'svelte';
+    import {fade} from 'svelte/transition';
+
+    const {onRecordingSaved} = $props();
 
     // Reactive state
-    let stream = null;
-    let input = null;
-    let recorder = null;
-    let recording = null;
-    let isRecording = false;
-    let isPlaying = false;
-    let chunks = [];
-    let bars = [];
-    let drawing = false;
-    let isPaused = false;
+    let stream = $state(null);
+    let input = $state(null);
+    let recorder = $state(null);
+    let recording = $state(null);
+    let isRecording = $state(false);
+    let isPlaying = $state(false);
+    let chunks = $state([]);
+    let bars = $state([]);
+    let drawing = $state(false);
+    let isPaused = $state(false);
+    let message = $state('');
+    let messageVisible = $state(false);
 
     // DOM references
     let canvas;
     let audioPlayer;
-    let messageContainer;
-    let playButton;
-    let pauseButton;
-    let clearButton;
-    let saveButton;
 
     // Constants
     const barWidth = 2;
@@ -36,15 +35,13 @@
     let height = 0;
     let halfHeight = 0;
 
-    function setMessage(message) {
-        if (messageContainer) {
-            messageContainer.innerHTML = message;
-            messageContainer.classList.add('message--visible');
-        }
+    function setMessage(text) {
+        message = text;
+        messageVisible = true;
     }
 
     function hideMessage() {
-        messageContainer?.classList.remove('message--visible');
+        messageVisible = false;
     }
 
     /**
@@ -58,7 +55,7 @@
 
         if (navigator.mediaDevices) {
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream = await navigator.mediaDevices.getUserMedia({audio: true});
                 setAudioStream(stream);
             } catch (error) {
                 setMessage('Something went wrong requesting the userMedia. Please use HTTPS.');
@@ -97,10 +94,8 @@
 
         recorder.onstop = () => {
             console.log("Recorder stopped");
-            recording = URL.createObjectURL(new Blob(chunks, { 'type': 'audio/wav; codecs=opus' }));
+            recording = URL.createObjectURL(new Blob(chunks, {'type': 'audio/wav; codecs=opus'}));
             chunks = [];
-            audioPlayer.setAttribute('src', recording);
-            playButton.classList.remove('disabled');
         };
     }
 
@@ -109,41 +104,38 @@
      * @param {Blob} blob The audio file to upload.
      */
     async function uploadAudio(blob) {
-
         const formData = new FormData();
 
-        // Decode the audio file to calculate duration
         const arrayBuffer = await blob.arrayBuffer();
         const audioContext = new AudioContext();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         const duration = Math.round(audioBuffer.duration);
 
-        // Append audio and metadata to FormData
         formData.append('audio', blob, 'recording.wav');
-        formData.append('duration', duration.toString()); // Duration in seconds
+        formData.append('duration', duration.toString());
 
         try {
             const response = await fetch('http://localhost:3000/upload-audio', {
                 method: 'POST',
                 body: formData,
-        });
+            });
 
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Audio uploaded successfully:', result);
-        } else {
-            console.error('Failed to upload audio:', await response.text());
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Audio uploaded successfully:', result);
+                onRecordingSaved?.();
+            } else {
+                console.error('Failed to upload audio:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error uploading audio:', error);
         }
-            } catch (error) {
-        console.error('Error uploading audio:', error);
-    }
     }
 
     /**
      * Saves the recording to the server.
      */
     function saveRecording() {
-        console.log('Save button clicked.');
         if (!recording) {
             console.error('No recording to save.');
             return;
@@ -155,7 +147,7 @@
                 console.log('Blob prepared for upload:', blob);
                 uploadAudio(blob);
             })
-        .catch((error) => console.error('Error preparing audio for upload:', error));
+            .catch((error) => console.error('Error preparing audio for upload:', error));
     }
 
     /**
@@ -163,7 +155,6 @@
      */
     function startRecording() {
         isRecording = true;
-        document.querySelector('.js-record').classList.add('active');
         recorder.start();
     }
 
@@ -172,7 +163,6 @@
      */
     function stopRecording() {
         isRecording = false;
-        document.querySelector('.js-record').classList.remove('active');
         recorder.stop();
     }
 
@@ -183,11 +173,9 @@
         if (recorder && recorder.state === 'recording') {
             recorder.pause();
             isPaused = true;
-            pauseButton.textContent = 'Resume';
         } else if (recorder && recorder.state === 'paused') {
             recorder.resume();
             isPaused = false;
-            pauseButton.textContent = 'Pause';
         }
     }
 
@@ -275,13 +263,13 @@
         }
     }
 
+
     /**
      * Plays the audio recording.
      */
     function play() {
         isPlaying = true;
         audioPlayer.play();
-        playButton.classList.add('active');
     }
 
     /**
@@ -291,7 +279,6 @@
         isPlaying = false;
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
-        playButton.classList.remove('active');
     }
 
     /**
@@ -316,31 +303,14 @@
         isPaused = false;
         bars = [];
         renderBars(bars);
-        audioPlayer.setAttribute('src', '');
-        playButton.classList.add('disabled');
-        pauseButton.textContent = 'Pause';
+        recording = null;
     }
 
     /**
      * Lifecycle function that runs when the component is mounted to the DOM.
      */
-    onMount(() => {
-        canvas = document.querySelector('.js-canvas');
-        audioPlayer = document.querySelector('.js-audio');
-        messageContainer = document.querySelector('.js-message');
-        playButton = document.querySelector('.js-play');
-        pauseButton = document.querySelector('.js-pause');
-        clearButton = document.querySelector('.js-clear');
-        saveButton = document.querySelector('.js-save-button');
-
+    $effect(() => {
         requestMicrophoneAccess();
-        audioPlayer.addEventListener('ended', stop);
-
-        document.querySelector('.js-record').addEventListener('mouseup', toggleRecording);
-        saveButton.addEventListener('mouseup', saveRecording);
-        pauseButton.addEventListener('mouseup', pauseRecording);
-        clearButton.addEventListener('mouseup', clearRecording);
-        playButton.addEventListener('mouseup', togglePlay);
 
         return () => {
             if (stream) {
@@ -349,37 +319,73 @@
             if (audioContext) {
                 audioContext.close();
             }
-            pauseButton.removeEventListener('mouseup', pauseRecording);
-            clearButton.removeEventListener('mouseup', clearRecording);
         };
     });
 </script>
-
 <div class="recorder-container gradient-border">
-    <div class="recorder">
+    <div class="audio-recorder">
         <div class="waveform">
-            <canvas class="js-canvas waveform__canvas"></canvas>
+            <canvas
+                    bind:this={canvas}
+                    class="js-canvas waveform__canvas"
+            ></canvas>
         </div>
-        <div class="toolbar">
-            <button class="gradient-border-button js-record record-button">
+
+        <div class="controls">
+            <button
+                    class="control-button record-button"
+                    class:active={isRecording}
+                    onclick={toggleRecording}
+            >
                 Record
             </button>
-            <button class="gradient-border-button js-pause pause-button">
-                Pause
+
+            <button
+                    class="control-button pause-button"
+                    onclick={pauseRecording}
+            >
+                {isPaused ? 'Resume' : 'Pause'}
             </button>
-            <button class="gradient-border-button js-play play-button disabled">
+
+            <button
+                    class="control-button play-button"
+                    class:disabled={!recording}
+                    class:active={isPlaying}
+                    onclick={togglePlay}
+            >
                 Play
             </button>
-            <button class="gradient-border-button js-save-button save-button">
-                Save
-            </button>
-            <button class="gradient-border-button js-clear clear-button">
+
+            <button
+                    class="control-button clear-button"
+                    onclick={clearRecording}
+            >
                 Clear
             </button>
-            <audio class="js-audio audio" controls/>
+
+            <button
+                    class="control-button save-button"
+                    onclick={saveRecording}
+                    disabled={!recording}
+            >
+                Save
+            </button>
         </div>
+
+        <audio
+                bind:this={audioPlayer}
+                src={recording}
+                onended={stop}
+        ></audio>
+
+        {#if messageVisible}
+            <div class="message" transition:fade>
+                {message}
+            </div>
+        {/if}
     </div>
 </div>
+
 
 <style>
     @keyframes spin {
@@ -442,7 +448,13 @@
         background-position: 100% 0;
     }
 
-    .recorder {
+
+    .control-button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .audio-recorder {
         width: 100%;
         padding: 2rem;
     }
@@ -459,7 +471,7 @@
         display: block;
     }
 
-    .toolbar {
+    .controls {
         display: flex;
         justify-content: center;
         align-items: center;

@@ -1,12 +1,18 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import { onMount } from "svelte";
+    import {onMount} from "svelte";
     import List from "../components/List.svelte";
 
-    let feedbackText = '';
-    let recordings = [];
-    let texts = [];
-    let selectedFeedback = null;
+    // Declare reactive variables
+    let feedbackText = $state('');
+    let recordings = $state([]);
+    let texts = $state([]);
+    let selectedFeedback = $state(null);
+
+    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback every 5 seconds.
+    $effect(() => {
+        fetchFeedback();
+    });
 
     /**
      * Fetches both audio and text feedback from backend api via await.
@@ -19,7 +25,7 @@
                 recordings = await recordingsResponse.json();
             } else if (recordingsResponse.status === 404) {
                 console.warn('No audio feedback found.');
-                recordings = []; // Set an empty array to avoid errors
+                recordings = [];
             } else {
                 console.error('Failed to fetch audio feedback:', await recordingsResponse.text());
             }
@@ -111,26 +117,25 @@
         saveTextFeedback(feedbackText);
     }
 
-    onMount(fetchFeedback);
 </script>
 
 <main class="container">
     <h1>Feedbacks</h1>
     <section class="feedback-sections">
 
-            <List
-                    items={texts}
-                    labelPrefix="Text"
-                    handleClick={handleTextFeedbackClick}
-                    isSelected={isTextFeedbackSelected}
-            />
+        <List
+                items={texts}
+                labelPrefix="Text"
+                handleClick={handleTextFeedbackClick}
+                isSelected={isTextFeedbackSelected}
+        />
 
-            <List
-                    items={recordings}
-                    labelPrefix="Audio"
-                    handleClick={handleAudioFeedbackClick}
-                    isSelected={isAudioFeedbackSelected}
-            />
+        <List
+                items={recordings}
+                labelPrefix="Audio"
+                handleClick={handleAudioFeedbackClick}
+                isSelected={isAudioFeedbackSelected}
+        />
 
     </section>
 
@@ -140,7 +145,7 @@
             {#if selectedFeedback.type === 'audio'}
                 {#key selectedFeedback.id}
                     <audio controls autoplay>
-                        <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav" />
+                        <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
                         Your browser does not support the audio element.
                     </audio>
                 {/key}
@@ -154,12 +159,11 @@
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
-        <AudioRecorder />
+        <AudioRecorder onRecordingSaved={fetchFeedback} />
         <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
         <button on:click={handleSend} class="send-button">Save Text Feedback</button>
     </section>
 </main>
-
 
 
 <style>
@@ -211,6 +215,7 @@
     textarea::-webkit-scrollbar {
         width: 0.1rem;
     }
+
     .selected-feedback-display::-webkit-scrollbar-thumb,
     textarea::-webkit-scrollbar-thumb {
         background: var(--clr-purple);
@@ -238,9 +243,7 @@
     }
 
 
-
-
-    .send-button{
+    .send-button {
         background-color: var(--clr-pink);
         color: #101010;
         padding: 1rem;
@@ -248,8 +251,9 @@
         align-self: center;
         border-radius: 0.625rem;
     }
-    .send-button:hover{
-        box-shadow:  0 0 0.3125rem 0.0625rem #9400FF;
+
+    .send-button:hover {
+        box-shadow: 0 0 0.3125rem 0.0625rem #9400FF;
         color: white;
     }
 
@@ -265,7 +269,7 @@
     }
 
     audio {
-        width:100%;
+        width: 100%;
     }
 
 
