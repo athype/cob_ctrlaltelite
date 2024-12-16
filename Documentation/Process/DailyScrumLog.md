@@ -175,3 +175,36 @@
 - **Closing time:** 13:00
 
 ---
+
+# `16/12/2024`
+- **Present:** David, Andre, Krisztián, Ana, Kryztof, Din, Alan
+- **Not Present:**
+- **Scrum-master this meeting:** Anastasiia
+- **Minutes taken by:** Din
+---
+- **Opening time:** 14:15
+- **Announcements:** Week 5 was rough for everyone but the team has been working as much as they could. Nothing important to discuss today. Frontend changes may apply according to Krystzian.
+- **Approval of mergings:**
+---
+### Last session's action points
+- _`General:`_
+- **Anastasiia:** refactpring list components. finished and merged.
+- **Andre:** busy with other subject. did documentation for indicvidual reflection.
+- **Anh:** did the audio recording title implementation. fixed the database.
+- **Kryztof:** figma designs. more mokcups are ready. did whisper research. not satisfied with it current state will research more. hi
+- **David:** did a lot of refactpring and clear up errors and problems from previous sprints.
+- **Din:** 
+- **Krisztián:** implemented reactivitiy using svelt runes reacts, audio recorder component, used more svelt features, added more feature.
+### Current action points
+- _`General:`_
+- **Anastasiia:** implementing text field for title and it being sent to the database
+- **Andre:**  will try to finish tasks as soon as possible(improving the feedback display)
+- **Anh:** is trying to fix a bug about the recognition of database.
+- **Kryztof:** morw whisper research.
+- **David:** 
+- **Din:** fix the seperation of concerns.
+- **Krisztián:** implement 3 themes
+---
+
+- **Next meeting on & at:** Thursday 19th of December
+- **Closing time:** 14:30---
