@@ -333,7 +333,7 @@
 
         <div class="controls">
             <button
-                    class="control-button record-button"
+                    class="control-button gradient-border-button record-button"
                     class:active={isRecording}
                     onclick={toggleRecording}
             >
@@ -341,14 +341,14 @@
             </button>
 
             <button
-                    class="control-button pause-button"
+                    class="control-button gradient-border-button pause-button"
                     onclick={pauseRecording}
             >
                 {isPaused ? 'Resume' : 'Pause'}
             </button>
 
             <button
-                    class="control-button play-button"
+                    class="control-button gradient-border-button play-button"
                     class:disabled={!recording}
                     class:active={isPlaying}
                     onclick={togglePlay}
@@ -357,14 +357,14 @@
             </button>
 
             <button
-                    class="control-button clear-button"
+                    class="control-button gradient-border-button clear-button"
                     onclick={clearRecording}
             >
                 Clear
             </button>
 
             <button
-                    class="control-button save-button"
+                    class="control-button gradient-border-button save-button"
                     onclick={saveRecording}
                     disabled={!recording}
             >
