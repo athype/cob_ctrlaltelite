@@ -38,7 +38,7 @@ app.use('/uploads', express.static(uploadsDir));
 
 // Initialize the database
 initDatabase();
-//insertMockData();
+insertMockData();
 
 
 // Basic route to test server and database
@@ -124,9 +124,9 @@ app.post('/text_feedback', (req, res) => {
         }
 
         const feedback_text = req.body.feedback_text;
-          const stmt = db.prepare('INSERT INTO text_feedback (feedback_text)' +
-              ' VALUES (?)');
-          stmt.run(feedback_text);
+          const stmt = db.prepare('INSERT INTO text_feedback (feedback_text, name)' +
+              ' VALUES (?, ?)');
+          stmt.run(feedback_text, feedback.name);
 
           return res.status(200).json({ message: 'Text added to database successfully!', feedback_text });
       } catch (err) {
