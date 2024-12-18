@@ -28,6 +28,7 @@
     let audioContext;
     let analyser;
     let scriptProcessor;
+    let audioName;
 
     // Canvas variables
     let canvasContext;
@@ -55,7 +56,7 @@
 
         if (navigator.mediaDevices) {
             try {
-                stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 setAudioStream(stream);
             } catch (error) {
                 setMessage('Something went wrong requesting the userMedia. Please use HTTPS.');
@@ -102,8 +103,9 @@
     /**
      * Uploads the audio file to the server.
      * @param {Blob} blob The audio file to upload.
+     * @param audioName The name of the file to be created.
      */
-    async function uploadAudio(blob) {
+    async function uploadAudio(blob, audioName) {
         const formData = new FormData();
 
         const arrayBuffer = await blob.arrayBuffer();
@@ -113,6 +115,7 @@
 
         formData.append('audio', blob, 'recording.wav');
         formData.append('duration', duration.toString());
+        formData.append('name', audioName);
 
         try {
             const response = await fetch('http://localhost:3000/upload-audio', {
@@ -141,11 +144,17 @@
             return;
         }
 
+        audioName = window.prompt('Enter a name for your audio recording:', 'My Recording');
+        if (!audioName) {
+            console.error('No name entered. Aborting upload.');
+            return; // Do not proceed without a name
+        }
+
         fetch(recording)
             .then((res) => res.blob())
             .then((blob) => {
                 console.log('Blob prepared for upload:', blob);
-                uploadAudio(blob);
+                uploadAudio(blob, audioName);
             })
             .catch((error) => console.error('Error preparing audio for upload:', error));
     }
@@ -494,11 +503,11 @@
     .message {
         transition: opacity 0.4s ease-in-out;
         padding: 1rem 2rem;
-        background: #ff0000; /* Replace $red with actual color */
+        background: #ff0000;
         opacity: 0;
         font-size: 1.6rem;
         font-family: Helvetica, Arial, sans-serif;
-        color: #ffffff; /* Replace $white with actual color */
+        color: #ffffff;
         line-height: 1.5;
     }
 
