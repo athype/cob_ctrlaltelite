@@ -2,12 +2,14 @@
     import AudioRecorder from "../components/AudioRecorder.svelte";
     import {onMount} from "svelte";
     import List from "../components/List.svelte";
+    import TitleInputField from "../components/TitleInputField.svelte";
 
     // Declare reactive variables
     let feedbackText = $state('');
     let recordings = $state([]);
     let texts = $state([]);
     let selectedFeedback = $state(null);
+    let textFeedbackTitle = $state('');
 
     // Side effect that runs whenever a reactive variable changes, also polling backend for feedback every 5 seconds.
     $effect(() => {
@@ -95,12 +97,14 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ feedback_text: text_feedback }),
+                body: JSON.stringify({ feedback_text: text_feedback,
+                name: textFeedbackTitle}),
             });
             if (response.ok) {
                 const result = await response.json();
                 console.log('Text feedback saved successfully:', result);
                 feedbackText = '';
+                textFeedbackTitle = '';
                 await fetchFeedback();
             } else {
                 console.error('Failed to save text:', await response.text());
@@ -160,6 +164,7 @@
     <h1>Add Feedback</h1>
     <section class="feedback-input">
         <AudioRecorder onRecordingSaved={fetchFeedback} />
+        <TitleInputField  bind:title={textFeedbackTitle}/>
         <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
         <button on:click={handleSend} class="send-button">Save Text Feedback</button>
     </section>
@@ -271,6 +276,4 @@
     audio {
         width: 100%;
     }
-
-
 </style>
