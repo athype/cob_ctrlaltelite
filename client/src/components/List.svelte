@@ -14,7 +14,7 @@
     {#if items.length > 0}
         {#each items as item}
             <FeedbackButton
-                    label={`${labelPrefix} Feedback ${item.id}`}
+                    label={`${labelPrefix} Feedback ${item.name}`}
                     onClick={() => handleClick(item)}
                     selected={isSelected(item)}
             />

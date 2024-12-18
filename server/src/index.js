@@ -54,11 +54,12 @@ app.post('/upload-audio', upload.single('audio'), (req, res) => {
 
         const filePath = path.join('uploads', req.file.filename).replace('\\', '/');
         const duration = parseInt(req.body.duration);
+        const name = req.body.name || 'Untitled';
 
         // Insert the file path and duration into the database
-        const stmt = db.prepare('INSERT INTO audio_feedback (file_path, duration)' +
-            ' VALUES (?, ?)');
-        stmt.run(filePath, duration);
+        const stmt = db.prepare('INSERT INTO audio_feedback (file_path, duration, name)' +
+            ' VALUES (?, ?, ?)');
+        stmt.run(filePath, duration, name);
 
         return res.status(200).json({ message: 'Audio uploaded successfully!', filePath, duration });
     } catch (err) {
@@ -80,7 +81,7 @@ app.get('/audio-feedback/:id', (req, res) => {
 });
 
 app.get('/audio-feedback', (req, res) => {
-    const stmt = db.prepare('SELECT id, file_path FROM audio_feedback');
+    const stmt = db.prepare('SELECT * FROM audio_feedback');
     const rows = stmt.all(); // Fetch all rows from the table
 
     if (rows.length === 0) {
@@ -92,7 +93,7 @@ app.get('/audio-feedback', (req, res) => {
 });
 
 app.get('/text-feedback', (req, res) => {
-    const stmt = db.prepare('SELECT id, feedback_text FROM text_feedback');
+    const stmt = db.prepare('SELECT * FROM text_feedback');
     const rows = stmt.all();
 
     if (rows.length === 0) {
