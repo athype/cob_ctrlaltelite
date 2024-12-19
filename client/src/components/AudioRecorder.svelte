@@ -4,34 +4,107 @@
     const {onRecordingSaved} = $props();
 
     // Reactive state
+
+    /**
+     * @type {MediaStream|null} The stream obtained from the user's microphone.
+     */
     let stream = $state(null);
+
+    /**
+     * @type {MediaStreamAudioSourceNode|null} The audio source node created from the stream.
+     */
     let input = $state(null);
+
+    /**
+     * @type {MediaRecorder|null} The MediaRecorder instance used to record the audio stream.
+     */
     let recorder = $state(null);
+
+    /**
+     * @type {string|null} The URL of the recorded audio blob.
+     */
     let recording = $state(null);
+
+    /**
+     * @type {boolean} Whether audio is currently being recorded.
+     */
     let isRecording = $state(false);
+
+    /**
+     * @type {boolean} Whether a recorded audio is currently being played.
+     */
     let isPlaying = $state(false);
+
+    /**
+     * @type {BlobPart[]} Chunks of recorded audio data.
+     */
     let chunks = $state([]);
+
+    /**
+     * @type {number[]} Array representing the volume bars for waveform visualization.
+     */
     let bars = $state([]);
+
+    /**
+     * @type {boolean} Whether the waveform is currently being drawn.
+     */
     let drawing = $state(false);
+
+    /**
+     * @type {boolean} Whether the recording is currently paused.
+     */
     let isPaused = $state(false);
+
+    /**
+     * @type {string} Message text displayed to the user, e.g., for errors.
+     */
     let message = $state('');
+
+    /**
+     * @type {boolean} Whether the message is visible.
+     */
     let messageVisible = $state(false);
 
+    // Additional states for indicator logic
 
-    // Additional state to track status after actions
+    /**
+     * @type {boolean} Whether the user has just cleared the recording.
+     */
     let justCleared = $state(false);
+
+    /**
+     * @type {boolean} Whether the user has just saved the recording.
+     */
     let justSaved = $state(false);
+
+    /**
+     * @type {boolean} Whether the user has just stopped the recording by pressing the Record button again.
+     */
     let justStopped = $state(false);
+
+    /**
+     * @type {boolean} Whether the user has just stopped playback by pressing the Play button again.
+     */
     let justStoppedPlaying = $state(false);
 
     // DOM references
+
+    /**
+     * @type {HTMLCanvasElement} The canvas element used to draw the waveform.
+     */
     let canvas;
+
+    /**
+     * @type {HTMLAudioElement} The audio element used for playback of the recorded audio.
+     */
     let audioPlayer;
 
-    // Constants
+    // Constants for waveform visualization
     const barWidth = 2;
     const barGutter = 2;
     const barColor = "#9400FF";
+
+    // Audio and waveform analysis context
     let audioContext;
     let analyser;
     let scriptProcessor;
@@ -43,17 +116,25 @@
     let height = 0;
     let halfHeight = 0;
 
+    /**
+     * Sets a message and makes it visible to the user.
+     * @param {string} text The message text to display.
+     */
     function setMessage(text) {
         message = text;
         messageVisible = true;
     }
 
+    /**
+     * Hides the currently visible message.
+     */
     function hideMessage() {
         messageVisible = false;
     }
 
     /**
      * Requests access to the user's microphone.
+     * If successful, it initializes the audio stream. Otherwise, shows an error message.
      */
     async function requestMicrophoneAccess() {
         if (!window.AudioContext) {
@@ -94,6 +175,8 @@
 
     /**
      * Sets the actions for the MediaRecorder instance.
+     * On `ondataavailable`, chunks are pushed.
+     * On `onstop`, a recording blob URL is created.
      */
     function setRecorderActions() {
         recorder.ondataavailable = (event) => {
@@ -108,9 +191,9 @@
     }
 
     /**
-     * Uploads the audio file to the server.
+     * Uploads the audio file to the server along with its duration and name.
      * @param {Blob} blob The audio file to upload.
-     * @param audioName The name of the file to be created.
+     * @param {string} audioName The name of the file to be created.
      */
     async function uploadAudio(blob, audioName) {
         const formData = new FormData();
@@ -148,7 +231,7 @@
     }
 
     /**
-     * Saves the recording to the server.
+     * Saves the recording to the server by prompting for a name and then uploading it.
      */
     function saveRecording() {
         if (!recording) {
@@ -176,13 +259,11 @@
      */
     function startRecording() {
         isRecording = true;
-
         isPaused = false;
         justCleared = false;
         justSaved = false;
         justStopped = false;
         isPlaying = false;
-
         recorder.start();
     }
 
@@ -208,7 +289,8 @@
     }
 
     /**
-     * Toggles recording audio.
+     * Toggles recording audio. If currently recording, it stops and sets `justStopped`.
+     * Otherwise, it starts a new recording session.
      */
     function toggleRecording() {
         if (isRecording) {
@@ -244,6 +326,8 @@
 
     /**
      * Processes the audio input to be used in rendering the waveform.
+     * If recording and not paused, it calculates the volume and renders bars.
+     * If paused, it renders the last known bars.
      */
     function processInput() {
         if (isRecording && !isPaused) {
@@ -297,23 +381,20 @@
         }
     }
 
-
     /**
      * Plays the audio recording.
      */
     function play() {
         isPlaying = true;
-
-        isPaused = false; // If playing a recorded audio, not recording anymore
+        isPaused = false;
         justCleared = false;
         justSaved = false;
         justStopped = false;
-
         audioPlayer.play();
     }
 
     /**
-     * Stops the audio recording.
+     * Stops the audio recording playback.
      */
     function stop() {
         isPlaying = false;
@@ -323,6 +404,8 @@
 
     /**
      * Toggles playing the audio recording.
+     * If currently playing, pressing again stops playback and shows `justStoppedPlaying`.
+     * Otherwise, it starts playback.
      */
     function togglePlay() {
         if (isPlaying) {
@@ -330,16 +413,17 @@
             justStoppedPlaying = true;
             justCleared = false;
             justSaved = false;
-            justStopped = false; // Ensure other states are reset if needed
+            justStopped = false;
             resetIndicatorStateLater();
         } else {
             play();
-            justStoppedPlaying = false; // reset when starting to play
+            justStoppedPlaying = false;
         }
     }
 
     /**
      * Clears the recording and stops the audio player.
+     * Resets all related states and shows the 'cleared' indicator.
      */
     function clearRecording() {
         if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) {
@@ -359,6 +443,7 @@
 
     /**
      * Lifecycle function that runs when the component is mounted to the DOM.
+     * Requests microphone access and returns a cleanup function to close the audio context and stop streams.
      */
     $effect(() => {
         requestMicrophoneAccess();
@@ -375,63 +460,71 @@
 
     /**
      * Resets the indicator state after a few seconds
-     * if cleared or saved action was performed.
+     * if a transient action (like cleared, saved, or stopped) was performed.
      */
     function resetIndicatorStateLater() {
         setTimeout(() => {
-            if (!isRecording && !isPlaying && !isPaused && !justSaved && !justCleared && !justStopped) {
-                // Reset states if needed
+            if (!isRecording && !isPlaying && !isPaused && !justSaved && !justCleared && !justStopped && !justStoppedPlaying) {
+                // Reset states if needed - currently does nothing, but can be extended.
             }
         }, 3000);
     }
 
     /**
-     * Derive the current indicator state based on the
-     * recording/playback conditions.
+     * @type {{type: string}} An object representing the current indicator symbol state.
      */
-
-// Initialize indicatorSymbol with a default object
     let indicatorSymbol = $state({ type: 'none' });
 
-    // If you're using $effect to derive indicatorSymbol's value:
+    /**
+     * Reactive effect that updates the indicator symbol based on the current states.
+     */
     $effect(() => {
         indicatorSymbol = getIndicatorSymbol();
     });
 
+    /**
+     * Determines which indicator symbol to display based on the current recording/playback states.
+     * Returns an object of the form { type: 'someState' }.
+     *
+     * States:
+     * - recording: Red blinking circle
+     * - paused: Green pause icon
+     * - playing: Green blinking play icon
+     * - cleared: Red cross
+     * - saved: Green checkmark
+     * - stopped: White square (when recording is stopped by pressing record again)
+     * - stoppedPlaying: Green square (when playback is stopped by pressing play again)
+     * - none: No active icon
+     *
+     * @returns {{type: string}} An object representing the current indicator state.
+     */
     function getIndicatorSymbol() {
-        // Priority: if recording and not paused -> blinking red circle
         if (isRecording && !isPaused) {
             return { type: 'recording' };
         }
-        // If paused
         if (isPaused) {
             return { type: 'paused' };
         }
-        // If playing
         if (isPlaying) {
             return { type: 'playing' };
         }
-        // If just cleared
         if (justCleared) {
             return { type: 'cleared' };
         }
-        // If just saved
         if (justSaved) {
             return { type: 'saved' };
         }
-        // If just stopped by pressing record again
         if (justStopped) {
             return {type: 'stopped'};
         }
         if (justStoppedPlaying) {
             return { type: 'stoppedPlaying' };
         }
-
-        // Default, no active icon
         return { type: 'none' };
     }
 
 </script>
+
 <div class="recorder-container gradient-border">
     <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">
@@ -457,7 +550,6 @@
             <!-- Green square -->
             <div class="icon stoppedPlaying"></div>
         {/if}
-
     </div>
     <div class="audio-recorder">
         <div class="waveform">
@@ -522,7 +614,6 @@
     </div>
 </div>
 
-
 <style>
     @keyframes spin {
         from {
@@ -533,7 +624,6 @@
         }
     }
 
-
     .recorder-container {
         display: flex;
         justify-content: center;
@@ -542,6 +632,7 @@
         max-width: 1600px;
         margin: 2rem auto 0;
         border-radius: 10px;
+        position: relative; /* Needed for status-indicator positioning */
     }
 
     .status-indicator {
@@ -581,10 +672,9 @@
         color: green;
     }
 
-    /* Playing: green play triangle */
+    /* Playing: green play triangle (blinking) */
     .status-indicator.playing .icon.play {
         color: green;
-        /* Add blinking animation */
         animation: blink 1s infinite alternate;
     }
 
@@ -605,13 +695,12 @@
         background-color: white;
     }
 
+    /* Green square for stoppedPlayback state */
     .status-indicator.stoppedPlaying .icon.stoppedPlaying {
         width: 15px;
         height: 15px;
         background-color: green;
     }
-
-    /* Nasty hack to get the gradient buttons to work */
 
     .recorder-container :global(.gradient-border-button) {
         position: relative;
@@ -626,11 +715,12 @@
         content: '';
         position: absolute;
         inset: -2px;
-        background: linear-gradient(90deg,
-        var(--clr-pink),
-        var(--clr-dark-blue),
-        var(--clr-cyan),
-        var(--clr-pink)
+        background: linear-gradient(
+                90deg,
+                var(--clr-pink),
+                var(--clr-dark-blue),
+                var(--clr-cyan),
+                var(--clr-pink)
         );
         background-size: 200% 100%;
         z-index: -1;
@@ -650,7 +740,6 @@
     .recorder-container :global(.gradient-border-button:hover::before) {
         background-position: 100% 0;
     }
-
 
     .control-button.disabled {
         opacity: 0.5;
