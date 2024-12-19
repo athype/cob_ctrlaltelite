@@ -117,6 +117,18 @@
     let halfHeight = 0;
 
     /**
+     * @type {number} The current recording time in hundredths of a second.
+     * For example, 125 represents 1.25 seconds.
+     */
+    let recordingTime = $state(0);
+
+    /**
+     * Interval ID for the high-resolution timer (every 10ms).
+     * @type {number|undefined}
+     */
+    let recordingInterval;
+
+    /**
      * Sets a message and makes it visible to the user.
      * @param {string} text The message text to display.
      */
@@ -221,6 +233,8 @@
                 justSaved = true;
                 justCleared = false;
                 justStopped = false;
+                // Reset the timer only after saving
+                recordingTime = 0;
                 resetIndicatorStateLater();
             } else {
                 console.error('Failed to upload audio:', await response.text());
@@ -264,6 +278,10 @@
         justSaved = false;
         justStopped = false;
         isPlaying = false;
+
+        // Reset recording time whenever we start a new recording
+        recordingTime = 0;
+
         recorder.start();
     }
 
@@ -438,6 +456,8 @@
         justCleared = true;
         justSaved = false;
         justStopped = false;
+        // Reset the timer after clearing
+        recordingTime = 0;
         resetIndicatorStateLater();
     }
 
@@ -523,6 +543,45 @@
         return { type: 'none' };
     }
 
+    /**
+     * Formats the given recording time in hundredths of a second into MM:SS.hh format.
+     * @param {number} hundredths - The time in hundredths of a second.
+     * @returns {string} Formatted time as "MM:SS.hh"
+     */
+    function formatTime(hundredths) {
+        const totalSeconds = Math.floor(hundredths / 100);
+        const h = hundredths % 100; // hundredths of a second
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+
+        const mm = m < 10 ? '0' + m : m;
+        const ss = s < 10 ? '0' + s : s;
+        const hh = h < 10 ? '0' + h : h;
+
+        return `${mm}:${ss}.${hh}`;
+    }
+
+    /**
+     * Effect that handles the high-resolution recording timer.
+     * When recording and not paused, increment recordingTime every 10ms.
+     */
+    $effect(() => {
+        if (isRecording && !isPaused) {
+            // Start or continue the interval if not already set
+            if (!recordingInterval) {
+                recordingInterval = setInterval(() => {
+                    recordingTime++;
+                },10); // increment every 10ms
+            }
+        } else {
+            // Not actively recording, clear the interval if set
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+                recordingInterval = undefined;
+            }
+        }
+    });
+
 </script>
 
 <div class="recorder-container gradient-border">
@@ -552,6 +611,10 @@
         {/if}
     </div>
     <div class="audio-recorder">
+        <!-- Display current recording time in MM:SS.hh -->
+        <div class="recording-time">
+            {formatTime(recordingTime)}
+        </div>
         <div class="waveform">
             <canvas
                     bind:this={canvas}
@@ -700,6 +763,14 @@
         width: 15px;
         height: 15px;
         background-color: green;
+    }
+
+    /* Display time on top */
+    .recording-time {
+        text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: white;
     }
 
     .recorder-container :global(.gradient-border-button) {
