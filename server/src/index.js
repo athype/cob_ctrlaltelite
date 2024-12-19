@@ -20,6 +20,7 @@ if (!fs.existsSync(uploadsDir)) {
     console.log(`Created uploads directory at: ${uploadsDir}`);
 }
 
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
