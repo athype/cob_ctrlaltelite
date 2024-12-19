@@ -17,6 +17,13 @@
     let message = $state('');
     let messageVisible = $state(false);
 
+
+    // Additional state to track status after actions
+    let justCleared = $state(false);
+    let justSaved = $state(false);
+    let justStopped = $state(false);
+    let justStoppedPlaying = $state(false);
+
     // DOM references
     let canvas;
     let audioPlayer;
@@ -127,6 +134,11 @@
                 const result = await response.json();
                 console.log('Audio uploaded successfully:', result);
                 onRecordingSaved?.();
+                // Indicate that we have just saved
+                justSaved = true;
+                justCleared = false;
+                justStopped = false;
+                resetIndicatorStateLater();
             } else {
                 console.error('Failed to upload audio:', await response.text());
             }
@@ -164,6 +176,13 @@
      */
     function startRecording() {
         isRecording = true;
+
+        isPaused = false;
+        justCleared = false;
+        justSaved = false;
+        justStopped = false;
+        isPlaying = false;
+
         recorder.start();
     }
 
@@ -194,6 +213,12 @@
     function toggleRecording() {
         if (isRecording) {
             stopRecording();
+            justStopped = true;
+            justCleared = false;
+            justSaved = false;
+            isPaused = false;
+            isPlaying = false;
+            resetIndicatorStateLater();
         } else {
             startRecording();
         }
@@ -278,6 +303,12 @@
      */
     function play() {
         isPlaying = true;
+
+        isPaused = false; // If playing a recorded audio, not recording anymore
+        justCleared = false;
+        justSaved = false;
+        justStopped = false;
+
         audioPlayer.play();
     }
 
@@ -296,8 +327,14 @@
     function togglePlay() {
         if (isPlaying) {
             stop();
+            justStoppedPlaying = true;
+            justCleared = false;
+            justSaved = false;
+            justStopped = false; // Ensure other states are reset if needed
+            resetIndicatorStateLater();
         } else {
             play();
+            justStoppedPlaying = false; // reset when starting to play
         }
     }
 
@@ -310,9 +347,14 @@
         }
         isRecording = false;
         isPaused = false;
+        isPlaying = false;
         bars = [];
         renderBars(bars);
         recording = null;
+        justCleared = true;
+        justSaved = false;
+        justStopped = false;
+        resetIndicatorStateLater();
     }
 
     /**
@@ -330,8 +372,93 @@
             }
         };
     });
+
+    /**
+     * Resets the indicator state after a few seconds
+     * if cleared or saved action was performed.
+     */
+    function resetIndicatorStateLater() {
+        setTimeout(() => {
+            if (!isRecording && !isPlaying && !isPaused && !justSaved && !justCleared && !justStopped) {
+                // Reset states if needed
+            }
+        }, 3000);
+    }
+
+    /**
+     * Derive the current indicator state based on the
+     * recording/playback conditions.
+     */
+
+// Initialize indicatorSymbol with a default object
+    let indicatorSymbol = $state({ type: 'none' });
+
+    // If you're using $effect to derive indicatorSymbol's value:
+    $effect(() => {
+        indicatorSymbol = getIndicatorSymbol();
+    });
+
+    function getIndicatorSymbol() {
+        // Priority: if recording and not paused -> blinking red circle
+        if (isRecording && !isPaused) {
+            return { type: 'recording' };
+        }
+        // If paused
+        if (isPaused) {
+            return { type: 'paused' };
+        }
+        // If playing
+        if (isPlaying) {
+            return { type: 'playing' };
+        }
+        // If just cleared
+        if (justCleared) {
+            return { type: 'cleared' };
+        }
+        // If just saved
+        if (justSaved) {
+            return { type: 'saved' };
+        }
+        // If just stopped by pressing record again
+        if (justStopped) {
+            return {type: 'stopped'};
+        }
+        if (justStoppedPlaying) {
+            return { type: 'stoppedPlaying' };
+        }
+
+        // Default, no active icon
+        return { type: 'none' };
+    }
+
 </script>
 <div class="recorder-container gradient-border">
+    <!-- Indicator in the top-right corner -->
+    <div class="status-indicator {indicatorSymbol.type}">
+        {#if indicatorSymbol.type === 'recording'}
+            <!-- Red blinking circle -->
+            <div class="icon circle"></div>
+        {:else if indicatorSymbol.type === 'paused'}
+            <!-- Green pause sign -->
+            <div class="icon pause">&#10073;&#10073;</div>
+        {:else if indicatorSymbol.type === 'playing'}
+            <!-- Green play triangle -->
+            <div class="icon play">&#9658;</div>
+        {:else if indicatorSymbol.type === 'cleared'}
+            <!-- Red cross -->
+            <div class="icon cleared">&#10006;</div>
+        {:else if indicatorSymbol.type === 'saved'}
+            <!-- Green checkmark -->
+            <div class="icon saved">&#10004;</div>
+        {:else if indicatorSymbol.type === 'stopped'}
+            <!-- White square -->
+            <div class="icon stopped"></div>
+        {:else if indicatorSymbol.type === 'stoppedPlaying'}
+            <!-- Green square -->
+            <div class="icon stoppedPlaying"></div>
+        {/if}
+
+    </div>
     <div class="audio-recorder">
         <div class="waveform">
             <canvas
@@ -417,6 +544,73 @@
         border-radius: 10px;
     }
 
+    .status-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .status-indicator .icon {
+        font-size: 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* For recording: red blinking circle */
+    .status-indicator.recording .icon.circle {
+        width: 15px;
+        height: 15px;
+        background-color: red;
+        border-radius: 50%;
+        animation: blink 1s infinite alternate;
+    }
+
+    @keyframes blink {
+        0% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    /* Paused: green pause icon */
+    .status-indicator.paused .icon.pause {
+        color: green;
+    }
+
+    /* Playing: green play triangle */
+    .status-indicator.playing .icon.play {
+        color: green;
+        /* Add blinking animation */
+        animation: blink 1s infinite alternate;
+    }
+
+    /* Cleared: red cross */
+    .status-indicator.cleared .icon.cleared {
+        color: red;
+    }
+
+    /* Saved: green checkmark */
+    .status-indicator.saved .icon.saved {
+        color: green;
+    }
+
+    /* White square for stopped state */
+    .status-indicator.stopped .icon.stopped {
+        width: 15px;
+        height: 15px;
+        background-color: white;
+    }
+
+    .status-indicator.stoppedPlaying .icon.stoppedPlaying {
+        width: 15px;
+        height: 15px;
+        background-color: green;
+    }
+
     /* Nasty hack to get the gradient buttons to work */
 
     .recorder-container :global(.gradient-border-button) {
@@ -486,6 +680,11 @@
         align-items: center;
         gap: 1rem;
         padding: 1rem 0;
+    }
+
+    .control-button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
     .disabled {

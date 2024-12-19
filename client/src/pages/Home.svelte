@@ -166,7 +166,7 @@
         <AudioRecorder onRecordingSaved={fetchFeedback} />
         <TitleInputField  bind:title={textFeedbackTitle}/>
         <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
-        <button on:click={handleSend} class="send-button">Save Text Feedback</button>
+        <button onclick={handleSend} class="send-button">Save Text Feedback</button>
     </section>
 </main>
 
