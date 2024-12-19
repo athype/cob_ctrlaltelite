@@ -28,13 +28,20 @@ app.use('/uploads', express.static(uploadsDir));
 initDatabase();
 insertMockData();
 
+/**
+ * Base route to test if the server is running.
+ */
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'Server is running and database is initialized!' });
 });
 
+// Mount routes
 app.use(audioFeedbackRoutes);
 app.use(textFeedbackRoutes);
 
+/**
+ * Starts the Express server and listens on the specified port.
+ */
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

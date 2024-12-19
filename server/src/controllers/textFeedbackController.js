@@ -1,5 +1,10 @@
 import { getAllTextFeedback, getTextFeedbackById, saveTextFeedback } from '../services/textFeedbackService.js';
 
+/**
+ * Controller to get a list of all text feedback records.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ */
 export function getTextFeedbackList(req, res) {
     const rows = getAllTextFeedback();
     if (rows.length === 0) {
@@ -8,6 +13,12 @@ export function getTextFeedbackList(req, res) {
     res.json(rows);
 }
 
+/**
+ * Controller to get a single text feedback record by ID.
+ * Returns the feedback text as plain text.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ */
 export function getSingleTextFeedback(req, res) {
     const { id } = req.params;
     const row = getTextFeedbackById(id);
@@ -19,6 +30,13 @@ export function getSingleTextFeedback(req, res) {
     res.type('text').send(row.feedback_text);
 }
 
+/**
+ * Controller to create a new text feedback record.
+ * Expects `req.body.feedback_text` and `req.body.name`.
+ * Optionally `req.body.user_id`.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ */
 export function createTextFeedback(req, res) {
     try {
         const { feedback_text, name, user_id } = req.body;

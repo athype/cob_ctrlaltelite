@@ -1,6 +1,12 @@
 import path from 'path';
 import { getAllAudioFeedback, getAudioFeedbackById, saveAudioFeedback } from '../services/audioFeedbackService.js';
 
+/**
+ * Controller for handling audio file uploads.
+ * Expects `req.file`, `req.body.duration`, and `req.body.name`.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ */
 export function uploadAudioFeedback(req, res) {
     try {
         if (!req.file) {
@@ -24,6 +30,11 @@ export function uploadAudioFeedback(req, res) {
     }
 }
 
+/**
+ * Controller to get a list of all audio feedback.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ */
 export function getAudioFeedbackList(req, res) {
     const rows = getAllAudioFeedback();
     if (rows.length === 0) {
@@ -32,6 +43,11 @@ export function getAudioFeedbackList(req, res) {
     res.json(rows);
 }
 
+/**
+ * Controller to get a single audio file by ID and send it as a file response.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ */
 export function getSingleAudioFeedback(req, res) {
     const { id } = req.params;
     const row = getAudioFeedbackById(id);

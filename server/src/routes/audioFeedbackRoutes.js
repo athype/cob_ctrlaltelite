@@ -24,8 +24,19 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+/**
+ * Route to handle file uploads for audio feedback.
+ */
 router.post('/upload-audio', upload.single('audio'), uploadAudioFeedback);
+
+/**
+ * Route to retrieve all audio feedback.
+ */
 router.get('/audio-feedback', getAudioFeedbackList);
+
+/**
+ * Route to retrieve a single audio feedback record by ID.
+ */
 router.get('/audio-feedback/:id', getSingleAudioFeedback);
 
 export default router;
