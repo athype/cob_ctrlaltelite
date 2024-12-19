@@ -208,3 +208,40 @@
 
 - **Next meeting on & at:** Thursday 19th of December
 - **Closing time:** 14:30---
+
+
+
+
+# `19/12/2024`
+- **Present:** Anastasiia, Krisztián, Kryztof, Anh, Din
+- **Not Present:** David, Andre
+- **Scrum-master this meeting:** Anastasiia
+- **Minutes taken by:** Din
+---
+- **Opening time:** 13:15
+- **Announcements:** 
+- **Approval of mergings:**
+---
+### last session's action points
+- _`General:`_
+- **Anastasiia:** implement database titles properly.
+- **Andre:** 
+- **Anh:** converting audio sampling, database problem fix.
+- **Kryztof:** did whisper research
+- **David:**
+- **Din:** fix the separation of concerns.
+- **Krisztián:** code review for feature branches, handling merging(tweaking anf fixing)
+---
+### Current action points
+- _`General:`_
+- **Anastasiia:** information about availability during the holidays will be notified
+- **Andre:** has part-time job but is open for new tasks
+- **Anh:** 
+- **Kryztof:** open to obtain another task
+- **David:**
+- **Din:** open to work on holidays
+- **Krisztián:** implement themes
+---
+
+- **Next meeting on & at:** after the holidays.
+- **Closing time:** 14:30---
