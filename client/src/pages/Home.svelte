@@ -11,6 +11,12 @@
     let selectedFeedback = $state(null);
     let textFeedbackTitle = $state('');
 
+
+    // For the typewriter effect
+    let typedText = $state('');
+    let typingInterval;
+    // Fetch feedback data periodically
+
     // Side effect that runs whenever a reactive variable changes, also polling backend for feedback every 5 seconds.
     $effect(() => {
         fetchFeedback();
@@ -121,6 +127,29 @@
         saveTextFeedback(feedbackText);
     }
 
+    // Typewriter effect: run whenever selectedFeedback changes
+    $effect(() => {
+        if (selectedFeedback?.type === 'text') {
+            // Clear any ongoing interval
+            clearInterval(typingInterval);
+            typedText = '';
+
+            const text = selectedFeedback.content;
+            let index = 0;
+
+            typingInterval = setInterval(() => {
+                typedText += text[index];
+                index++;
+                if (index >= text.length) {
+                    clearInterval(typingInterval);
+                }
+            }, 40); // Adjust typing speed (in ms) as desired
+        } else {
+            typedText = '';
+            clearInterval(typingInterval);
+        }
+    });
+
 </script>
 
 <main class="container">
@@ -154,7 +183,8 @@
                     </audio>
                 {/key}
             {:else if selectedFeedback.type === 'text'}
-                <p>{selectedFeedback.content}</p>
+                <!-- Display the typed text instead of the full content -->
+                <p>{typedText}</p>
             {/if}
         {:else}
             <p style="text-align: center; padding-bottom: 5vh">Select a feedback to view it here.</p>
