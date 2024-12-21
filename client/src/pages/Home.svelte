@@ -82,7 +82,7 @@
      * @param recording
      */
     function isAudioFeedbackSelected(recording) {
-        return selectedFeedback?.type === 'audio' && selectedFeedback?.id ===  recording.id;
+        return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
     }
 
     /**
