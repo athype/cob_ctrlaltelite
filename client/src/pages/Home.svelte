@@ -11,6 +11,11 @@
     let selectedFeedback = $state(null);
     let textFeedbackTitle = $state('');
 
+    // New state variables for validation and feedback
+    let titleError = $state(false);
+    let feedbackError = $state(false);
+    let feedbackSaved = $state(false); // To track if feedback was successfully saved
+
 
     // For the typewriter effect
     let typedText = $state('');
@@ -112,6 +117,7 @@
                 console.log('Text feedback saved successfully:', result);
                 feedbackText = '';
                 textFeedbackTitle = '';
+                feedbackSaved = true;
                 await fetchFeedback();
             } else {
                 console.error('Failed to save text:', await response.text());
@@ -125,6 +131,24 @@
      * Handler function that calls save function.
      */
     function handleSend() {
+        // Reset errors first
+        titleError = false;
+        feedbackError = false;
+
+        // Check if title or feedback text are empty
+        if (!textFeedbackTitle.trim()) {
+            titleError = true;
+        }
+        if (!feedbackText.trim()) {
+            feedbackError = true;
+        }
+
+        // If either error is true, don't save
+        if (titleError || feedbackError) {
+            return;
+        }
+
+        // Proceed to save if no errors
         saveTextFeedback(feedbackText);
     }
 
@@ -144,10 +168,22 @@
                 if (index >= text.length) {
                     clearInterval(typingInterval);
                 }
-            }, 20); // Adjust typing speed (in ms) as desired
+            }, 10); // Adjust typing speed (in ms) as desired
         } else {
             typedText = '';
             clearInterval(typingInterval);
+        }
+        // If user starts typing again, reset saved state and errors
+        if (textFeedbackTitle || feedbackText) {
+            feedbackSaved = false;
+            // Don't clear errors here if fields are empty;
+            // only clear them if user actually typed something non-empty
+            if (textFeedbackTitle.trim()) {
+                titleError = false;
+            }
+            if (feedbackText.trim()) {
+                feedbackError = false;
+            }
         }
     });
 
@@ -196,8 +232,21 @@
     <section class="feedback-input">
         <AudioRecorder onRecordingSaved={fetchFeedback} />
         <TitleInputField  bind:title={textFeedbackTitle}/>
+        {#if titleError}
+            <p class="error">Title is required</p>
+        {/if}
         <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
-        <button onclick={handleSend} class="send-button">Save Text Feedback</button>
+        {#if feedbackError}
+            <p class="error">Feedback text is required</p>
+        {/if}
+
+        <!-- Change button style based on feedbackSaved state -->
+        <button
+                onclick={handleSend}
+                class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
+        >
+            {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
+        </button>
     </section>
 </main>
 
@@ -286,6 +335,7 @@
         width: 20rem;
         align-self: center;
         border-radius: 0.625rem;
+        transition: background-color 0.3s, color 0.3s;
     }
 
     .send-button:hover {
@@ -293,6 +343,10 @@
         color: white;
     }
 
+    .saved-button {
+        background-color: green !important;
+        color: white !important;
+    }
 
     textarea {
         padding: 1rem;
@@ -306,5 +360,11 @@
 
     audio {
         width: 100%;
+    }
+
+    .error {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: -1rem; /* Adjust if needed */
     }
 </style>
