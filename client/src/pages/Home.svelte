@@ -144,7 +144,7 @@
                 if (index >= text.length) {
                     clearInterval(typingInterval);
                 }
-            }, 40); // Adjust typing speed (in ms) as desired
+            }, 20); // Adjust typing speed (in ms) as desired
         } else {
             typedText = '';
             clearInterval(typingInterval);
