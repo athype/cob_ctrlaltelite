@@ -1,4 +1,8 @@
 import path from 'path';
+import fs from 'fs';
+import { promises as fsPromises } from 'fs';
+import ffmpeg from 'fluent-ffmpeg';
+import ffmpegStatic from 'ffmpeg-static';
 import { getAllAudioFeedback, getAudioFeedbackById, saveAudioFeedback } from '../services/audioFeedbackService.js';
 
 /**
@@ -7,13 +11,14 @@ import { getAllAudioFeedback, getAudioFeedbackById, saveAudioFeedback } from '..
  * @param {import('express').Request} req - Express request object.
  * @param {import('express').Response} res - Express response object.
  */
-export function uploadAudioFeedback(req, res) {
+export async function uploadAudioFeedback(req, res) {
     try {
         if (!req.file) {
             return res.status(400).send('No file uploaded.');
         }
 
-        const filePath = path.join('uploads', req.file.filename).replace('\\', '/');
+        const filePath = path.resolve('src', 'uploads', req.file.filename).replace('\\', '/');
+        const outputFilePath = path.resolve('src', 'uploads', `converted_${req.file.filename}`);
         const duration = parseInt(req.body.duration, 10);
         const name = req.body.name || 'Untitled';
 
@@ -21,9 +26,57 @@ export function uploadAudioFeedback(req, res) {
             return res.status(400).json({ error: 'Name and duration are required fields.' });
         }
 
-        saveAudioFeedback(filePath, duration, name);
+        ffmpeg.setFfmpegPath(ffmpegStatic);
 
-        return res.status(200).json({ message: 'Audio uploaded successfully!', filePath, duration, name });
+        fsPromises.access(filePath, fs.constants.F_OK)
+            .then(() => {
+                console.log('File exists, starting FFmpeg...');
+
+                // Start FFmpeg conversion after file upload completes
+                ffmpeg(filePath)
+                    .audioFrequency(16000)
+                    .audioChannels(1)
+                    .toFormat('wav')
+                    .on('end', () => {
+                        console.log('FFmpeg conversion finished');
+
+                
+                        fsPromises.unlink(filePath) // Delete the original file
+                            .then(() => {
+                                fsPromises.rename(outputFilePath, filePath) // Replace the original file with the converted one
+                                    .then(() => {
+                                        // Save the file metadata after conversion
+                                        saveAudioFeedback(filePath, req.body.duration, req.body.name || 'Untitled');
+                                        res.status(200).json({
+                                            message: 'Audio uploaded and processed!',
+                                            filePath,
+                                            duration: req.body.duration,
+                                            name: req.body.name || 'Untitled',
+                                        });
+                                    })
+                                    .catch((err) => {
+                                        console.error('Error renaming file:', err);
+                                        res.status(500).send('Failed to rename converted file.');
+                                    });
+                            })
+                            .catch((err) => {
+                                console.error('Error deleting original file:', err);
+                                res.status(500).send('Failed to delete original file.');
+                            });
+                    })
+                    .on('error', (err) => {
+                        console.error('Error processing audio:', err);
+                        res.status(500).send('Audio processing failed.');
+                    })
+                    .save(outputFilePath); // Save to a new output file
+
+            })
+            .catch((err) => {
+                console.error('File not found:', filePath, err);
+                res.status(400).send('Uploaded file not found.');
+            });
+
+        // return res.status(200).json({ message: 'Audio uploaded successfully!', filePath, duration, name });
     } catch (err) {
         console.error('Error uploading audio:', err);
         return res.status(500).send('Internal Server Error');
