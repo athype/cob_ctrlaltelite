@@ -7,6 +7,7 @@ import { initDatabase, insertMockData } from './db.js';
 
 import audioFeedbackRoutes from './routes/audioFeedbackRoutes.js';
 import textFeedbackRoutes from './routes/textFeedbackRoutes.js';
+import transcriptionRoutes from "./routes/transcriptionRoutes.js";
 
 const app = express();
 const PORT = 3000;
@@ -42,6 +43,7 @@ app.get('/', (req, res) => {
 // Mount routes
 app.use(audioFeedbackRoutes);
 app.use(textFeedbackRoutes);
+app.use(transcriptionRoutes);
 
 /**
  * Starts the Express server and listens on the specified port.
