@@ -54,7 +54,7 @@
             id: recording.id,
             type: 'audio',
             filePath: recording.file_path,
-            name: `Audio Feedback ${recording.id}`
+            name: `Audio Feedback ${recording.name}`
         };
     }
 
@@ -65,8 +65,9 @@
     function handleTextFeedbackClick(text) {
         selectedFeedback = {
             type: 'text',
+            id: text.id,
             content: text.feedback_text,
-            name: `Text Feedback ${text.id}`
+            name: `Text Feedback ${text.name}`
         };
     }
 
@@ -75,7 +76,7 @@
      * @param recording
      */
     function isAudioFeedbackSelected(recording) {
-        return selectedFeedback?.id === recording.id && selectedFeedback?.type === 'audio';
+        return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
     }
 
     /**
@@ -83,7 +84,7 @@
      * @param text
      */
     function isTextFeedbackSelected(text) {
-        return selectedFeedback?.content === text.feedback_text && selectedFeedback?.type === 'text';
+        return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
     }
 
     /**
