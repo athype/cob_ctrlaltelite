@@ -121,18 +121,18 @@
             const response = await fetch('http://localhost:3000/upload-audio', {
                 method: 'POST',
                 body: formData,
-            });
+        });
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Audio uploaded successfully:', result);
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Audio uploaded successfully:', result);
                 onRecordingSaved?.();
-            } else {
-                console.error('Failed to upload audio:', await response.text());
-            }
-        } catch (error) {
-            console.error('Error uploading audio:', error);
+        } else {
+            console.error('Failed to upload audio:', await response.text());
         }
+            } catch (error) {
+        console.error('Error uploading audio:', error);
+    }   
     }
 
     /**
@@ -156,7 +156,7 @@
                 console.log('Blob prepared for upload:', blob);
                 uploadAudio(blob, audioName);
             })
-            .catch((error) => console.error('Error preparing audio for upload:', error));
+        .catch((error) => console.error('Error preparing audio for upload:', error));
     }
 
     /**
