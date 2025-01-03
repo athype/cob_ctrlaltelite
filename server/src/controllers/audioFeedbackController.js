@@ -19,6 +19,7 @@ export async function uploadAudioFeedback(req, res) {
 
         const filePath = path.resolve('src', 'uploads', req.file.filename).replace('\\', '/');
         const outputFilePath = path.resolve('src', 'uploads', `converted_${req.file.filename}`);
+        const filePathForDb  = path.join('uploads', req.file.filename).replace('\\', '/');
         const duration = parseInt(req.body.duration, 10);
         const name = req.body.name || 'Untitled';
 
@@ -46,7 +47,7 @@ export async function uploadAudioFeedback(req, res) {
                                 fsPromises.rename(outputFilePath, filePath) // Replace the original file with the converted one
                                     .then(() => {
                                         // Save the file metadata after conversion
-                                        saveAudioFeedback(filePath, req.body.duration, req.body.name || 'Untitled');
+                                        saveAudioFeedback(filePathForDb, req.body.duration, req.body.name || 'Untitled');
                                         res.status(200).json({
                                             message: 'Audio uploaded and processed!',
                                             filePath,
