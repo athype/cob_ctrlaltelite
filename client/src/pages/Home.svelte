@@ -3,6 +3,7 @@
     import {onMount} from "svelte";
     import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
+    import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
 
     // Declare reactive variables
     let feedbackText = $state('');
@@ -10,6 +11,7 @@
     let texts = $state([]);
     let selectedFeedback = $state(null);
     let textFeedbackTitle = $state('');
+    let showTranscription = $state(false);
 
     // Side effect that runs whenever a reactive variable changes, also polling backend for feedback every 5 seconds.
     $effect(() => {
@@ -50,6 +52,7 @@
      * @param recording
      */
     function handleAudioFeedbackClick(recording) {
+        showTranscription = false;
         selectedFeedback = {
             id: recording.id,
             type: 'audio',
@@ -121,6 +124,10 @@
         saveTextFeedback(feedbackText);
     }
 
+    async function handleTranscriptionClick() {
+        showTranscription = true;
+    }
+
 </script>
 
 <main class="container">
@@ -152,6 +159,10 @@
                         <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
                         Your browser does not support the audio element.
                     </audio>
+                    <button on:click={handleTranscriptionClick} class="send-button">Transcribe</button>
+                    {#if showTranscription}
+                        <TranscriptionDisplay id={selectedFeedback.id}/>
+                    {/if}
                 {/key}
             {:else if selectedFeedback.type === 'text'}
                 <p>{selectedFeedback.content}</p>
