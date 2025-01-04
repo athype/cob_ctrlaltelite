@@ -4,6 +4,7 @@
     import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
     import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
+    import ThemeSwitch from "../components/ThemeSwitch.svelte";
 
     // Declare reactive variables
     let feedbackText = $state('');
@@ -131,6 +132,7 @@
 
 </script>
 
+<ThemeSwitch/>
 <main class="container">
     <h1>Feedbacks</h1>
     <section class="feedback-sections">

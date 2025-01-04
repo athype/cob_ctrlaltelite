@@ -1,5 +1,5 @@
 :root {
-    --clr-dark: #101010;
+    --clr-dark: #222222;
     --clr-light: #f1f5f9;
     --clr-purple: #9400FF;
     --clr-pink: #F461E4;
@@ -9,6 +9,9 @@
     --clr-slate400: #8d99ae;
     --clr-slate600: #475569;
     --clr-slate800: #1e293b;
+
+    --clr-background: var(--clr-light);
+    --clr-text: var(--clr-dark);
 
 
     /* sizes */
@@ -31,15 +34,26 @@
     --transition-delay: 0.5s;
 }
 
+[data-theme="dark"] {
+    --clr-background: var(--clr-dark);
+    --clr-text: var(--clr-light);
+}
+
+[data-theme="contrast"] {
+    --clr-background: #1a1a1a;
+    --clr-text: #FAFA00;
+}
+
 * {
     margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
     line-height: calc(1em + 0.5rem);
 }
 
 body {
     font-family: 'IBM Plex Sans', sans-serif;
-    background-color: var(--clr-dark);
-    color: var(--clr-light);
+    background-color: var(--clr-background);
+    color: var(--clr-text);
 }
 
 main {
