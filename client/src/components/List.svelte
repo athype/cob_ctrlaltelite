@@ -27,13 +27,13 @@
 <style>
     .list {
         flex: 1;
-        background-color: #2c2c2c;
+        background-color: var(--clr-background);
         padding: 1rem;
         border-radius: 0.5rem;
-        border: 0.125rem solid var(--clr-purple);
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
+        border: 0.225rem solid var(--clr-border);
+        /*border-left: 0;*/
+        /*border-right: 0;*/
+        /*border-bottom: 0;*/
         overflow-y: auto;
         max-height: 18.75rem;
         min-width: 20rem;

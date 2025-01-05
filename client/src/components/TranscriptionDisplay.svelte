@@ -30,10 +30,10 @@
 
 <style>
     .transcription-display {
-        background-color: #2c2c2c;
+        background-color: var(--clr-background);
         padding: 1rem;
         border-radius: 0.5rem;
-        color: white;
+        color: var(--clr-text);
         font-size: 1.5rem;
         text-align: left;
         display: flex;

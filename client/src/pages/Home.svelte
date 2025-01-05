@@ -187,7 +187,6 @@
 
 <style>
 
-    /* main container*/
     .container {
         display: flex;
         flex-direction: column;
@@ -202,7 +201,7 @@
     }
 
     header h2 {
-        color: white;
+        color: var(--clr-text);
         font-size: 1.25rem;
         margin-bottom: 1rem;
     }
@@ -214,11 +213,12 @@
 
     .selected-feedback-display {
         position: relative;
-        background-color: #2c2c2c;
+        background-color: var(--clr-background);
         padding: 4rem 1rem 1rem;
         border-radius: 0.5rem;
-        border-top: 0.1rem solid var(--clr-pink);
-        color: white;
+        border: 0.225rem solid var(--clr-border);
+        /*border-top: 0.1rem solid var(--clr-pink);*/
+        color: var(--clr-text);
         font-size: 1.5rem;
         text-align: left;
         display: flex;
@@ -248,10 +248,10 @@
         left: 0.625rem;
         font-size: 1rem;
         font-weight: bold;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: var(--clr-background);
         padding: 0.5rem;
         border-radius: 0.25rem;
-        color: white;
+        color: var(--clr-text);
     }
 
     .feedback-input {
@@ -264,16 +264,17 @@
 
     .send-button {
         background-color: var(--clr-pink);
-        color: #101010;
+        color: var(--clr-text);
         padding: 1rem;
         width: 20rem;
         align-self: center;
         border-radius: 0.625rem;
+        transition: box-shadow var(--transition-delay), color var(--transition-delay);
     }
 
     .send-button:hover {
-        box-shadow: 0 0 0.3125rem 0.0625rem #9400FF;
-        color: white;
+        box-shadow: 0 0 0.3125rem 0.0625rem var(--clr-purple);
+        color: var(--clr-background);
     }
 
 
@@ -281,10 +282,10 @@
         padding: 1rem;
         min-height: 10vh;
         border-radius: 4px;
-        background-color: #353535;
-        color: #ffffff;
-        border: 0 solid darkgrey;
-        border-top-width: 1px;
+        background-color: var(--clr-background);
+        color: var(--clr-text);
+        border: 3px solid var(--clr-border);
+        /*border-top-width: 1px;*/
     }
 
     audio {
