@@ -1,5 +1,6 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
+    import VideoRecorder from "../components/VideoRecorder.svelte";
     import {onMount} from "svelte";
     import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
@@ -175,10 +176,11 @@
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
-        <AudioRecorder onRecordingSaved={fetchFeedback} />
         <TitleInputField  bind:title={textFeedbackTitle}/>
         <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
         <button on:click={handleSend} class="send-button">Save Text Feedback</button>
+        <AudioRecorder onRecordingSaved={fetchFeedback} />
+        <VideoRecorder  />
     </section>
 </main>
 
