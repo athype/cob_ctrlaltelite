@@ -263,7 +263,8 @@
 
 
     .send-button {
-        background-color: var(--clr-pink);
+        background-color: var(--clr-background);
+        border: 3px solid var(--clr-border);
         color: var(--clr-text);
         padding: 1rem;
         width: 20rem;
