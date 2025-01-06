@@ -149,7 +149,7 @@
 
     .video-section video {
         width: 100%;
-        max-width: 450px;
+        max-width: 400px;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
@@ -171,7 +171,7 @@
 
     .output-section video {
         width: 100%;
-        max-width: 600px;
+        max-width: 420px;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
@@ -210,7 +210,7 @@
         cursor: pointer;
         font-size: 1rem;
         font-weight: bold;
-        border-radius: 30px;
+        border-radius: 10px;
         margin: 0 5px;
         transition: background 0.3s ease;
     }
