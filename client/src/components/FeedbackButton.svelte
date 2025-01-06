@@ -16,6 +16,8 @@
         color: var(--text-color);
         font-size: 1rem;
         width: 100%;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
     }
 
     button:hover {

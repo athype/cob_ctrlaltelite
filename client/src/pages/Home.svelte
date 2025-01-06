@@ -322,6 +322,8 @@
         width: 20rem;
         align-self: center;
         border-radius: 0.625rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
     }
 
     .send-button:hover {
