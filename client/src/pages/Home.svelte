@@ -322,7 +322,6 @@
         width: 20rem;
         align-self: center;
         border-radius: 0.625rem;
-        transition: box-shadow var(--transition-delay), color var(--transition-delay);
     }
 
     .send-button:hover {
