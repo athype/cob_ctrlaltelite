@@ -180,7 +180,7 @@
         <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
         <button on:click={handleSend} class="send-button">Save Text Feedback</button>
         <AudioRecorder onRecordingSaved={fetchFeedback} />
-        <VideoRecorder  />
+        <VideoRecorder/>
     </section>
 </main>
 
