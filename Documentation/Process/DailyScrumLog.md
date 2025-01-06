@@ -245,3 +245,37 @@
 
 - **Next meeting on & at:** after the holidays.
 - **Closing time:** 14:30---
+
+# `6/1/2025`
+- **Present:** Anastasiia, Krisztián, Kryztof, Anh, Din, David, Andre
+- **Not Present:** 
+- **Scrum-master this meeting:** Anastasiia
+- **Minutes taken by:** Din
+---
+- **Opening time:** 14:12
+- **Announcements:**
+- **Approval of mergings:** 
+---
+### last session's action points
+- _`General:`_
+- **Anastasiia:** connected whisper to the actual project and the frontend, Planning for Sprint 3 and issues and agenda items, 
+- **Andre:** Did the learning plan and personal reflection, improve the display of feedbacks, 
+- **Anh:** busy with retake. bug fixing with svelet components(runes), sample rate fix and conversion, 
+- **Kryztof:** was on vacation. Ana took over his tasks.
+- **David:** took the holidays off. worked on bug fixing. finished testing for different video frameworks. compiled a document for it. did some implementation tets
+- **Din:** audio recorder indicators, stopwatch indicators, text feedback edge cases and visual effects, typewriter effect(scrapped)
+- **Krisztián:** implementations of themes are complete, restructred all the css component for compatibiltlity
+---
+### Current action points
+- _`General:`_
+- **Anastasiia:** go through the draft of issues.
+- **Andre:** open for new tasks
+- **Anh:** finishing backend for video.
+- **Kryztof:** open to obtain another task
+- **David:** implmenting the video framework.
+- **Din:** 
+- **Krisztián:** implement themes
+---
+
+- **Next meeting on & at:** 9/1/2024
+- **Closing time:** 14:45---
