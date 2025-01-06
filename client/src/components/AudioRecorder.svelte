@@ -782,28 +782,11 @@
         cursor: pointer;
     }
 
-    .recorder-container :global(.gradient-border-button::before) {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        background: linear-gradient(
-                90deg,
-                var(--clr-pink),
-                var(--clr-dark-blue),
-                var(--clr-cyan),
-                var(--clr-pink)
-        );
-        background-size: 200% 100%;
-        z-index: -1;
-        transition: all 0.5s ease;
-        border-radius: inherit;
-    }
-
     .recorder-container :global(.gradient-border-button::after) {
         content: '';
         position: absolute;
         inset: 2px;
-        background: var(--clr-dark);
+        background: var(--clr-background);
         z-index: -1;
         border-radius: inherit;
     }
