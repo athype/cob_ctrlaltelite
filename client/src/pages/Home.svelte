@@ -1,6 +1,6 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import {onMount} from "svelte";
+    import { onMount } from "svelte";
     import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
     import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
@@ -14,7 +14,12 @@
     let textFeedbackTitle = $state('');
     let showTranscription = $state(false);
 
-    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback every 5 seconds.
+    // New state variables for validation and feedback
+    let titleError = $state(false);
+    let feedbackError = $state(false);
+    let feedbackSaved = $state(false); // To track if feedback was successfully saved
+
+    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
     $effect(() => {
         fetchFeedback();
     });
@@ -47,7 +52,6 @@
         }
     }
 
-
     /**
      * When an audio feedback is clicked, selected feedback is updated with its data.
      * @param recording
@@ -63,7 +67,7 @@
     }
 
     /**
-     * When text feedback button is clicked, selected feedback is updated with its data.
+     * When text feedback is clicked, selected feedback is updated with its data.
      * @param text
      */
     function handleTextFeedbackClick(text) {
@@ -102,14 +106,17 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ feedback_text: text_feedback,
-                name: textFeedbackTitle}),
+                body: JSON.stringify({
+                    feedback_text: text_feedback,
+                    name: textFeedbackTitle
+                }),
             });
             if (response.ok) {
                 const result = await response.json();
                 console.log('Text feedback saved successfully:', result);
                 feedbackText = '';
                 textFeedbackTitle = '';
+                feedbackSaved = true;
                 await fetchFeedback();
             } else {
                 console.error('Failed to save text:', await response.text());
@@ -123,6 +130,24 @@
      * Handler function that calls save function.
      */
     function handleSend() {
+        // Reset errors first
+        titleError = false;
+        feedbackError = false;
+
+        // Check if title or feedback text are empty
+        if (!textFeedbackTitle.trim()) {
+            titleError = true;
+        }
+        if (!feedbackText.trim()) {
+            feedbackError = true;
+        }
+
+        // If either error is true, don't save
+        if (titleError || feedbackError) {
+            return;
+        }
+
+        // Proceed to save if no errors
         saveTextFeedback(feedbackText);
     }
 
@@ -130,27 +155,37 @@
         showTranscription = true;
     }
 
+    // Effect that resets the "Feedback Saved" state when the user starts typing again
+    $effect(() => {
+        if (textFeedbackTitle || feedbackText) {
+            feedbackSaved = false;
+            // Reset errors if user typed something non-empty
+            if (textFeedbackTitle.trim()) {
+                titleError = false;
+            }
+            if (feedbackText.trim()) {
+                feedbackError = false;
+            }
+        }
+    });
 </script>
 
 <ThemeSwitch/>
 <main class="container">
     <h1>Feedbacks</h1>
     <section class="feedback-sections">
-
         <List
                 items={texts}
                 labelPrefix="Text"
                 handleClick={handleTextFeedbackClick}
                 isSelected={isTextFeedbackSelected}
         />
-
         <List
                 items={recordings}
                 labelPrefix="Audio"
                 handleClick={handleAudioFeedbackClick}
                 isSelected={isAudioFeedbackSelected}
         />
-
     </section>
 
     <section class="selected-feedback-display">
@@ -168,22 +203,42 @@
                     {/if}
                 {/key}
             {:else if selectedFeedback.type === 'text'}
+                <!-- Directly display the content (no typewriter effect) -->
                 <p>{selectedFeedback.content}</p>
             {/if}
         {:else}
-            <p style="text-align: center; padding-bottom: 5vh">Select a feedback to view it here.</p>
+            <p style="text-align: center; padding-bottom: 5vh">
+                Select a feedback to view it here.
+            </p>
         {/if}
     </section>
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
         <AudioRecorder onRecordingSaved={fetchFeedback} />
-        <TitleInputField  bind:title={textFeedbackTitle}/>
-        <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
-        <button on:click={handleSend} class="send-button">Save Text Feedback</button>
+        <TitleInputField bind:title={textFeedbackTitle}/>
+        {#if titleError}
+            <p class="error">Title is required</p>
+        {/if}
+
+        <textarea
+                bind:value={feedbackText}
+                placeholder="Type your feedback here..."
+                rows="3"
+        ></textarea>
+        {#if feedbackError}
+            <p class="error">Feedback text is required</p>
+        {/if}
+
+        <!-- Change button style based on feedbackSaved state -->
+        <button
+                on:click={handleSend}
+                class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
+        >
+            {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
+        </button>
     </section>
 </main>
-
 
 <style>
 
@@ -197,7 +252,6 @@
     .container h1 {
         font-size: 1.75rem;
         margin-top: 3vh;
-
     }
 
     header h2 {
@@ -241,7 +295,6 @@
         border-radius: 0.5rem;
     }
 
-
     .feedback-header {
         position: absolute;
         top: 0.625rem;
@@ -261,7 +314,6 @@
         gap: 2rem;
     }
 
-
     .send-button {
         background-color: var(--clr-background);
         border: 3px solid var(--clr-border);
@@ -278,6 +330,10 @@
         color: var(--clr-background);
     }
 
+    .saved-button {
+        background-color: green !important;
+        color: white !important;
+    }
 
     textarea {
         padding: 1rem;
@@ -291,5 +347,11 @@
 
     audio {
         width: 100%;
+    }
+
+    .error {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: -1rem; /* Adjust if needed */
     }
 </style>
