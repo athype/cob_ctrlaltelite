@@ -1,14 +1,20 @@
 :root {
-    --clr-dark: #101010;
+    --clr-dark: #222222;
     --clr-light: #f1f5f9;
     --clr-purple: #9400FF;
     --clr-pink: #F461E4;
     --clr-cyan: #31DEF7;
     --clr-indigo: #3963F2;
+    --clr-yellow: #FAFA00;
     --clr-dark-blue: #0e2a75;
     --clr-slate400: #8d99ae;
     --clr-slate600: #475569;
     --clr-slate800: #1e293b;
+
+    --clr-background: var(--clr-light);
+    --clr-text: var(--clr-dark);
+    --clr-border: var(--clr-purple);
+    --clr-filler: var(--clr-purple);
 
 
     /* sizes */
@@ -31,15 +37,30 @@
     --transition-delay: 0.5s;
 }
 
+[data-theme="dark"] {
+    --clr-background: var(--clr-dark);
+    --clr-text: var(--clr-light);
+    --clr-border: var(--clr-purple);
+    --clr-filler: var(--clr-purple);
+}
+
+[data-theme="contrast"] {
+    --clr-background: #000000;
+    --clr-text: var(--clr-yellow);
+    --clr-border: var(--clr-yellow);
+    --clr-filler: var(--clr-yellow);
+}
+
 * {
     margin: 0;
+    transition: background-color var(--transition-delay) ease, color var(--transition-delay) ease;
     line-height: calc(1em + 0.5rem);
 }
 
 body {
     font-family: 'IBM Plex Sans', sans-serif;
-    background-color: var(--clr-dark);
-    color: var(--clr-light);
+    background-color: var(--clr-background);
+    color: var(--clr-text);
 }
 
 main {
@@ -62,7 +83,7 @@ button {
     border: none;
     background: none;
     cursor: pointer;
-    color: inherit;
+    color: var(--clr-text);
 }
 
 a {

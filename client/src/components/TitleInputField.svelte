@@ -19,9 +19,9 @@
         padding: 1rem;
         min-height: 5vh;
         border-radius: 4px;
-        background-color: #353535;
-        color: #ffffff;
-        border: 0 solid darkgrey;
+        background-color: var(--clr-background);
+        color: var(--clr-text);
+        border: 0 solid var(--clr-border);
         border-top-width: 1px;
         width: 100%;
     }
