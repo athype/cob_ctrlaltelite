@@ -1,6 +1,6 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import {onMount} from "svelte";
+    import { onMount } from "svelte";
     import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
 
@@ -16,13 +16,7 @@
     let feedbackError = $state(false);
     let feedbackSaved = $state(false); // To track if feedback was successfully saved
 
-
-    // For the typewriter effect
-    let typedText = $state('');
-    let typingInterval;
-    // Fetch feedback data periodically
-
-    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback every 5 seconds.
+    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
     $effect(() => {
         fetchFeedback();
     });
@@ -55,7 +49,6 @@
         }
     }
 
-
     /**
      * When an audio feedback is clicked, selected feedback is updated with its data.
      * @param recording
@@ -70,7 +63,7 @@
     }
 
     /**
-     * When text feedback button is clicked, selected feedback is updated with its data.
+     * When text feedback is clicked, selected feedback is updated with its data.
      * @param text
      */
     function handleTextFeedbackClick(text) {
@@ -109,8 +102,10 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ feedback_text: text_feedback,
-                name: textFeedbackTitle}),
+                body: JSON.stringify({
+                    feedback_text: text_feedback,
+                    name: textFeedbackTitle
+                }),
             });
             if (response.ok) {
                 const result = await response.json();
@@ -152,32 +147,11 @@
         saveTextFeedback(feedbackText);
     }
 
-    // Typewriter effect: run whenever selectedFeedback changes
+    // Effect that resets the "Feedback Saved" state when the user starts typing again
     $effect(() => {
-        if (selectedFeedback?.type === 'text') {
-            // Clear any ongoing interval
-            clearInterval(typingInterval);
-            typedText = '';
-
-            const text = selectedFeedback.content;
-            let index = 0;
-
-            typingInterval = setInterval(() => {
-                typedText += text[index];
-                index++;
-                if (index >= text.length) {
-                    clearInterval(typingInterval);
-                }
-            }, 10); // Adjust typing speed (in ms) as desired
-        } else {
-            typedText = '';
-            clearInterval(typingInterval);
-        }
-        // If user starts typing again, reset saved state and errors
         if (textFeedbackTitle || feedbackText) {
             feedbackSaved = false;
-            // Don't clear errors here if fields are empty;
-            // only clear them if user actually typed something non-empty
+            // Reset errors if user typed something non-empty
             if (textFeedbackTitle.trim()) {
                 titleError = false;
             }
@@ -186,27 +160,23 @@
             }
         }
     });
-
 </script>
 
 <main class="container">
     <h1>Feedbacks</h1>
     <section class="feedback-sections">
-
         <List
                 items={texts}
                 labelPrefix="Text"
                 handleClick={handleTextFeedbackClick}
                 isSelected={isTextFeedbackSelected}
         />
-
         <List
                 items={recordings}
                 labelPrefix="Audio"
                 handleClick={handleAudioFeedbackClick}
                 isSelected={isAudioFeedbackSelected}
         />
-
     </section>
 
     <section class="selected-feedback-display">
@@ -220,29 +190,36 @@
                     </audio>
                 {/key}
             {:else if selectedFeedback.type === 'text'}
-                <!-- Display the typed text instead of the full content -->
-                <p>{typedText}</p>
+                <!-- Directly display the content (no typewriter effect) -->
+                <p>{selectedFeedback.content}</p>
             {/if}
         {:else}
-            <p style="text-align: center; padding-bottom: 5vh">Select a feedback to view it here.</p>
+            <p style="text-align: center; padding-bottom: 5vh">
+                Select a feedback to view it here.
+            </p>
         {/if}
     </section>
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
         <AudioRecorder onRecordingSaved={fetchFeedback} />
-        <TitleInputField  bind:title={textFeedbackTitle}/>
+        <TitleInputField bind:title={textFeedbackTitle}/>
         {#if titleError}
             <p class="error">Title is required</p>
         {/if}
-        <textarea bind:value={feedbackText} placeholder="Type your feedback here..." rows="3"></textarea>
+
+        <textarea
+                bind:value={feedbackText}
+                placeholder="Type your feedback here..."
+                rows="3"
+        ></textarea>
         {#if feedbackError}
             <p class="error">Feedback text is required</p>
         {/if}
 
         <!-- Change button style based on feedbackSaved state -->
         <button
-                onclick={handleSend}
+                on:click={handleSend}
                 class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
         >
             {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
@@ -250,9 +227,7 @@
     </section>
 </main>
 
-
 <style>
-
     /* main container*/
     .container {
         display: flex;
@@ -264,7 +239,6 @@
     .container h1 {
         font-size: 1.75rem;
         margin-top: 3vh;
-
     }
 
     header h2 {
@@ -295,7 +269,6 @@
         word-wrap: break-word;
     }
 
-    /* scroll bar css to be deleted later after list component maybe */
     .selected-feedback-display::-webkit-scrollbar,
     textarea::-webkit-scrollbar {
         width: 0.1rem;
@@ -306,7 +279,6 @@
         background: var(--clr-purple);
         border-radius: 0.5rem;
     }
-
 
     .feedback-header {
         position: absolute;
@@ -326,7 +298,6 @@
         justify-content: space-between;
         gap: 2rem;
     }
-
 
     .send-button {
         background-color: var(--clr-pink);
