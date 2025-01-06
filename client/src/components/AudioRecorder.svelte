@@ -453,6 +453,7 @@
         bars = [];
         renderBars(bars);
         recording = null;
+        chunks = [];
         justCleared = true;
         justSaved = false;
         justStopped = false;
