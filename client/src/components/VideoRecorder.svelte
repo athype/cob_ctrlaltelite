@@ -1,4 +1,10 @@
 <script lang="ts">
+
+    //sources:
+    // https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder
+    // https://dev.to/koolkamalkishor/recording-videos-using-javascript-and-browser-apis-302k
+
+
     import { onMount } from 'svelte';
 
     let videoElement: HTMLVideoElement | null = null;
@@ -106,7 +112,6 @@
 
 
 <style>
-
     body {
         margin: 0;
         padding: 0;
@@ -120,11 +125,11 @@
 
     .recorder-container {
         width: 100%;
-        max-width: 600vw;
-        padding: 1.5rem;
-        border-radius: 10px;
+        max-width: 60vw;
+        padding: 2rem;
+        border-radius: 0.625rem;
         background: #222;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.3);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -135,7 +140,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        gap: 2rem;
+        gap: 3rem;
         width: 100%;
     }
 
@@ -149,16 +154,16 @@
 
     .video-section video {
         width: 100%;
-        max-width: 450px;
-        border-radius: 10px;
-        margin-bottom: 1rem;
+        max-width: 50vw;
+        border-radius: 0.625rem;
+        margin-bottom: 2rem;
     }
 
     .controls {
         display: flex;
         justify-content: center;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: 2rem;
+        margin-top: 2rem;
     }
 
     .output-section {
@@ -171,14 +176,14 @@
 
     .output-section video {
         width: 100%;
-        max-width: 600px;
-        border-radius: 10px;
-        margin-bottom: 1rem;
+        max-width: 60vw;
+        border-radius: 0.625rem;
+        margin-bottom: 2rem;
     }
 
     .download-btn {
         display: none;
-        margin-top: 1rem;
+        margin-top: 2rem;
         text-decoration: none;
         color: var(--clr-cyan);
         font-weight: bold;
@@ -188,17 +193,10 @@
         color: var(--clr-pink);
     }
 
-
-
-
     h1, h2 {
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
         color: white;
     }
-
-
-
-
 
     .gradient-border-button {
         position: relative;
@@ -206,19 +204,19 @@
         color: #fff;
         z-index: 0;
         border: none;
-        padding: 10px 20px;
+        padding: 0.625rem 1.25rem;
         cursor: pointer;
         font-size: 1rem;
         font-weight: bold;
-        border-radius: 30px;
-        margin: 0 5px;
+        border-radius: 1.875rem;
+        margin: 0 1.25rem;
         transition: background 0.3s ease;
     }
 
     .gradient-border-button::before {
         content: '';
         position: absolute;
-        inset: -2px;
+        inset: -0.125rem;
         background: linear-gradient(90deg, var(--clr-pink), var(--clr-dark-blue), var(--clr-cyan), var(--clr-pink));
         background-size: 200% 100%;
         z-index: -1;
