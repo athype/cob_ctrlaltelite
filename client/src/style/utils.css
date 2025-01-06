@@ -47,7 +47,7 @@
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    color: white;
+    color: var(--clr-text);
     background: transparent;
 }
 
@@ -73,13 +73,23 @@
     content: '';
     position: absolute;
     inset: 2px;
-    background: var(--clr-dark);
+    background: var(--clr-background);
     border-radius: 6px;
     z-index: -1;
 }
 
 .gradient-border-button:hover::before {
     background-position: 100% 0;
+}
+
+/* Override for contrast mode */
+[data-theme="contrast"] .gradient-border-button::before {
+    background: var(--clr-yellow);
+    background-size: 100%;
+}
+
+[data-theme="contrast"] .gradient-border-button:hover::before {
+    background-position: 0 0;
 }
 
 .gradient-border {
@@ -108,9 +118,19 @@
     content: '';
     position: absolute;
     inset: 2px; /* Should match the negative of the before inset */
-    background: var(--clr-dark, #000); /* Fallback to black if variable not set */
+    background: var(--clr-background, #000); /* Fallback to black if variable not set */
     z-index: -1;
     border-radius: inherit;
+}
+
+/* Override for contrast mode */
+[data-theme="contrast"] .gradient-border::before {
+    background: var(--clr-yellow);
+    background-size: 100%;
+}
+
+[data-theme="contrast"] .gradient-border:hover::before {
+    background-position: 0 0;
 }
 
 .gradient-text {

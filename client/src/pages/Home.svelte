@@ -1,29 +1,104 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import FeedbackButton from "../components/feedback-button.svelte";
-    import {onMount} from "svelte";
-    let feedbackText = '';
-    let recordings = [];
-    let texts = [];
-    let selectedFeedback = null;
+    import { onMount } from "svelte";
+    import List from "../components/List.svelte";
+    import TitleInputField from "../components/TitleInputField.svelte";
+    import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
+    import ThemeSwitch from "../components/ThemeSwitch.svelte";
 
-    // Fetch recordings and text feedback from the backend
+    // Declare reactive variables
+    let feedbackText = $state('');
+    let recordings = $state([]);
+    let texts = $state([]);
+    let selectedFeedback = $state(null);
+    let textFeedbackTitle = $state('');
+    let showTranscription = $state(false);
+
+    // New state variables for validation and feedback
+    let titleError = $state(false);
+    let feedbackError = $state(false);
+    let feedbackSaved = $state(false); // To track if feedback was successfully saved
+
+    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
+    $effect(() => {
+        fetchFeedback();
+    });
+
+    /**
+     * Fetches both audio and text feedback from backend api via await.
+     */
     async function fetchFeedback() {
         try {
+            // Fetch audio feedback
             const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
-            const textsResponse = await fetch('http://localhost:3000/text-feedback');
+            if (recordingsResponse.ok) {
+                recordings = await recordingsResponse.json();
+            } else if (recordingsResponse.status === 404) {
+                console.warn('No audio feedback found.');
+                recordings = [];
+            } else {
+                console.error('Failed to fetch audio feedback:', await recordingsResponse.text());
+            }
 
-            recordings = await recordingsResponse.json();
-            texts = await textsResponse.json();
+            // Fetch text feedback
+            const textsResponse = await fetch('http://localhost:3000/text-feedback');
+            if (textsResponse.ok) {
+                texts = await textsResponse.json();
+            } else {
+                console.error('Failed to fetch text feedback:', await textsResponse.text());
+            }
         } catch (error) {
             console.error('Error fetching feedback:', error);
         }
     }
 
-    function handleFeedbackClick(feedback, type) {
-        selectedFeedback = { ...feedback, type };
+    /**
+     * When an audio feedback is clicked, selected feedback is updated with its data.
+     * @param recording
+     */
+    function handleAudioFeedbackClick(recording) {
+        showTranscription = false;
+        selectedFeedback = {
+            id: recording.id,
+            type: 'audio',
+            filePath: recording.file_path,
+            name: `Audio Feedback ${recording.name}`
+        };
     }
 
+    /**
+     * When text feedback is clicked, selected feedback is updated with its data.
+     * @param text
+     */
+    function handleTextFeedbackClick(text) {
+        selectedFeedback = {
+            type: 'text',
+            id: text.id,
+            content: text.feedback_text,
+            name: `Text Feedback ${text.name}`
+        };
+    }
+
+    /**
+     * Helper function for determining if an audio is selected.
+     * @param recording
+     */
+    function isAudioFeedbackSelected(recording) {
+        return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
+    }
+
+    /**
+     * Helper function for determining if a text is selected.
+     * @param text
+     */
+    function isTextFeedbackSelected(text) {
+        return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
+    }
+
+    /**
+     * Sends text feedback to the db.
+     * @param text_feedback
+     */
     async function saveTextFeedback(text_feedback) {
         try {
             const response = await fetch('http://localhost:3000/text_feedback', {
@@ -31,12 +106,18 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ feedback_text: text_feedback }),
+                body: JSON.stringify({
+                    feedback_text: text_feedback,
+                    name: textFeedbackTitle
+                }),
             });
             if (response.ok) {
                 const result = await response.json();
                 console.log('Text feedback saved successfully:', result);
-                fetchFeedback(); // Refresh feedbacks after submission
+                feedbackText = '';
+                textFeedbackTitle = '';
+                feedbackSaved = true;
+                await fetchFeedback();
             } else {
                 console.error('Failed to save text:', await response.text());
             }
@@ -45,84 +126,122 @@
         }
     }
 
+    /**
+     * Handler function that calls save function.
+     */
     function handleSend() {
-        if (feedbackText.trim() === '') {
-            console.log("No feedback provided!");
+        // Reset errors first
+        titleError = false;
+        feedbackError = false;
+
+        // Check if title or feedback text are empty
+        if (!textFeedbackTitle.trim()) {
+            titleError = true;
+        }
+        if (!feedbackText.trim()) {
+            feedbackError = true;
+        }
+
+        // If either error is true, don't save
+        if (titleError || feedbackError) {
             return;
         }
-        console.log("Feedback received:", feedbackText);
+
+        // Proceed to save if no errors
         saveTextFeedback(feedbackText);
-        feedbackText = '';
     }
 
-    // Fetch feedback when the component is mounted
-    onMount(fetchFeedback);
+    async function handleTranscriptionClick() {
+        showTranscription = true;
+    }
+
+    // Effect that resets the "Feedback Saved" state when the user starts typing again
+    $effect(() => {
+        if (textFeedbackTitle || feedbackText) {
+            feedbackSaved = false;
+            // Reset errors if user typed something non-empty
+            if (textFeedbackTitle.trim()) {
+                titleError = false;
+            }
+            if (feedbackText.trim()) {
+                feedbackError = false;
+            }
+        }
+    });
 </script>
 
-
+<ThemeSwitch/>
 <main class="container">
-    <h1 style="margin-top: 50px">Feedbacks:</h1>
+    <h1>Feedbacks</h1>
     <section class="feedback-sections">
-        <!-- Recordings Section -->
-        <section class="recordings">
-            <header>
-                <h2>Recordings</h2>
-            </header>
-            {#each recordings as recording}
-                <FeedbackButton label={recording.file_path} onClick={() => handleFeedbackClick(recording)} />
-            {/each}
-        </section>
-
-        <!-- Text Feedback Section -->
-        <section class="texts">
-            <header>
-                <h2>Texts</h2>
-            </header>
-            {#each texts as text}
-                <FeedbackButton label={text.file_path} onClick={() => handleFeedbackClick(text)} />
-            {/each}
-        </section>
+        <List
+                items={texts}
+                labelPrefix="Text"
+                handleClick={handleTextFeedbackClick}
+                isSelected={isTextFeedbackSelected}
+        />
+        <List
+                items={recordings}
+                labelPrefix="Audio"
+                handleClick={handleAudioFeedbackClick}
+                isSelected={isAudioFeedbackSelected}
+        />
     </section>
 
-    <!-- Selected Feedback Display -->
     <section class="selected-feedback-display">
         {#if selectedFeedback}
-            <header>
-                <h3>
-                    {selectedFeedback.type === 'audio'
-                        ? selectedFeedback.file_path
-                        : selectedFeedback.feedback_text}
-                </h3>
-            </header>
+            <div class="feedback-header">{selectedFeedback.name}</div>
+            {#if selectedFeedback.type === 'audio'}
+                {#key selectedFeedback.id}
+                    <audio controls autoplay>
+                        <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
+                        Your browser does not support the audio element.
+                    </audio>
+                    <button on:click={handleTranscriptionClick} class="send-button">Transcribe</button>
+                    {#if showTranscription}
+                        <TranscriptionDisplay id={selectedFeedback.id}/>
+                    {/if}
+                {/key}
+            {:else if selectedFeedback.type === 'text'}
+                <!-- Directly display the content (no typewriter effect) -->
+                <p>{selectedFeedback.content}</p>
+            {/if}
         {:else}
-            <section>Select a feedback to view it here!</section>
+            <p style="text-align: center; padding-bottom: 5vh">
+                Select a feedback to view it here.
+            </p>
         {/if}
     </section>
 
-    <!-- Input Feedback Section -->
-    <h1 style="margin-top: 50px">Add Feedback:</h1>
+    <h1>Add Feedback</h1>
     <section class="feedback-input">
-        <AudioRecorder />
-        <div class="text-feedback">
-            <textarea bind:value={feedbackText} placeholder="Type here..." rows="3"></textarea>
-            <button on:click={handleSend} class="send-button">Send</button>
-        </div>
+        <AudioRecorder onRecordingSaved={fetchFeedback} />
+        <TitleInputField bind:title={textFeedbackTitle}/>
+        {#if titleError}
+            <p class="error">Title is required</p>
+        {/if}
+
+        <textarea
+                bind:value={feedbackText}
+                placeholder="Type your feedback here..."
+                rows="3"
+        ></textarea>
+        {#if feedbackError}
+            <p class="error">Feedback text is required</p>
+        {/if}
+
+        <!-- Change button style based on feedbackSaved state -->
+        <button
+                on:click={handleSend}
+                class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
+        >
+            {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
+        </button>
     </section>
 </main>
 
-
 <style>
 
-    /* general page */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #1e1e1e;
-        color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* main container*/
     .container {
         display: flex;
         flex-direction: column;
@@ -131,100 +250,61 @@
     }
 
     .container h1 {
-        font-size: 1.25rem;
+        font-size: 1.75rem;
+        margin-top: 3vh;
     }
 
     header h2 {
-        color: white;
+        color: var(--clr-text);
         font-size: 1.25rem;
         margin-bottom: 1rem;
     }
-
-
-
-
 
     .feedback-sections {
         display: flex;
         gap: 2rem;
     }
 
-    /* recordings and texts */
-    .recordings, .texts {
-        flex: 1;
-        background-color: #2c2c2c;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 2px solid var(--clr-purple);
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
-        overflow-y: auto;
-        max-height: 300px;
+    .selected-feedback-display {
+        position: relative;
+        background-color: var(--clr-background);
+        padding: 4rem 1rem 1rem;
+        border-radius: 0.5rem;
+        border: 0.225rem solid var(--clr-border);
+        /*border-top: 0.1rem solid var(--clr-pink);*/
+        color: var(--clr-text);
+        font-size: 1.5rem;
+        text-align: left;
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        max-height: 50vh;
+        overflow-y: auto;
+        word-wrap: break-word;
     }
-    .recordings button, .texts button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: var(--clr-purple);
-        color: black;
+
+    /* scroll bar css to be deleted later after list component maybe */
+    .selected-feedback-display::-webkit-scrollbar,
+    textarea::-webkit-scrollbar {
+        width: 0.1rem;
+    }
+
+    .selected-feedback-display::-webkit-scrollbar-thumb,
+    textarea::-webkit-scrollbar-thumb {
+        background: var(--clr-purple);
+        border-radius: 0.5rem;
+    }
+
+    .feedback-header {
+        position: absolute;
+        top: 0.625rem;
+        left: 0.625rem;
         font-size: 1rem;
-        width: 100%;
-    }
-    .recordings button:hover, .texts button:hover {
-        box-shadow: 0px 0px 5px 1px #9400FF;
-        color: white;
-    }
-
-
-
-
-
-    .recording, .feedback-item {
-        display: flex;
-        align-items: center;
-        background-color: #353535;
-        border: 1px solid var(--clr-purple);
-        border-radius: 5px;
+        font-weight: bold;
+        background-color: var(--clr-background);
         padding: 0.5rem;
-        margin-bottom: 0.5rem;
-        cursor: pointer;
-    }
-    .recording:hover, .feedback-item:hover {
-        background-color: var(--clr-purple);
-        color: #ffffff;
-    }
-
-
-
-
-    /* Selected feedback */
-    .selected-feedback-display {
-        background-color: #2c2c2c;
-        padding: 1rem; /* Consistent padding */
-        padding-bottom: 10vh; /* Relative unit for bottom padding */
-        border-radius: 0.5rem; /* Relative unit for border-radius */
-        border-top: 0.1rem solid var(--clr-pink); /* Relative unit for border */
-        color: white;
-        font-size: 1.25rem; /* Relative font size */
-        text-align: center;
-
-        /* Flexbox for layout */
-        display: flex;
-        flex-direction: column; /* Stack items vertically */
-        justify-content: center; /* Center all items vertically */
-        align-items: center; /* Center all items horizontally */
-
-        height: 50vh; /* Relative height */
-        overflow-y: auto; /* Enable scrolling if content overflows */
-    }
-
-    .feedback-content {
-        margin-top: 1rem;
+        border-radius: 0.25rem;
+        color: var(--clr-text);
     }
 
     .feedback-input {
@@ -234,116 +314,45 @@
         gap: 2rem;
     }
 
-
-
-
-    /* audio recording */
-    .record-audio {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        background-color: #2c2c2c;
+    .send-button {
+        background-color: var(--clr-background);
+        border: 3px solid var(--clr-border);
+        color: var(--clr-text);
         padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--clr-cyan);
-    }
-    .record-audio button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: #31DEF7;
-        color: black;
-        font-size: 1rem;
-    }
-    .record-audio button:hover {
-        background-color: darkcyan;
-        color: white;
+        width: 20rem;
+        align-self: center;
+        border-radius: 0.625rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
     }
 
-
-
-
-    /* text feedback */
-    .text-feedback {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        background-color: #2c2c2c;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--clr-cyan);
+    .send-button:hover {
+        box-shadow: 0 0 0.3125rem 0.0625rem var(--clr-purple);
+        color: var(--clr-background);
     }
 
-    .text-feedback button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: #31DEF7;
-        color: black;
-        font-size: 1rem;
+    .saved-button {
+        background-color: green !important;
+        color: white !important;
     }
-    .text-feedback button:hover {
-        background-color: darkcyan;
-        color: white;
-    }
-
-
-
-
-
-
-    /* audio recording container */
-    .record-audio-container {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        gap: 0.5rem;
-        background-color: #353535;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid darkgrey;
-    }
-    .record-audio-container button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        background-color: red;
-        color: black;
-        font-size: 1rem;
-    }
-    .record-audio-container button:hover {
-        box-shadow: 0px 0px 5px 1px red;
-        background-color: red;
-        color: white;
-    }
-
-
-
-
 
     textarea {
-        resize: none;
         padding: 1rem;
-        padding-bottom: 100px;
+        min-height: 10vh;
         border-radius: 4px;
-        border: 1px solid darkgrey;
-        background-color: #353535;
-        color: #ffffff;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
+        background-color: var(--clr-background);
+        color: var(--clr-text);
+        border: 3px solid var(--clr-border);
+        /*border-top-width: 1px;*/
     }
 
+    audio {
+        width: 100%;
+    }
 
-
-
-    .audio-waveform {
+    .error {
         color: red;
-        padding: 12px;
+        font-size: 0.9rem;
+        margin-top: -1rem; /* Adjust if needed */
     }
 </style>
