@@ -1,5 +1,6 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
+    import VideoRecorder from "../components/VideoRecorder.svelte";
     import { onMount } from "svelte";
     import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
@@ -215,28 +216,31 @@
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
+        <section class="text-recorder gradient-border">
+            <TitleInputField bind:title={textFeedbackTitle}/>
+            {#if titleError}
+                <p class="error">Title is required</p>
+            {/if}
+
+            <textarea
+                    bind:value={feedbackText}
+                    placeholder="Type your feedback here..."
+                    rows="3"
+            ></textarea>
+            {#if feedbackError}
+                <p class="error">Feedback text is required</p>
+            {/if}
+
+            <!-- Change button style based on feedbackSaved state -->
+            <button
+                    on:click={handleSend}
+                    class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
+            >
+                {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
+            </button>
+        </section>
         <AudioRecorder onRecordingSaved={fetchFeedback} />
-        <TitleInputField bind:title={textFeedbackTitle}/>
-        {#if titleError}
-            <p class="error">Title is required</p>
-        {/if}
-
-        <textarea
-                bind:value={feedbackText}
-                placeholder="Type your feedback here..."
-                rows="3"
-        ></textarea>
-        {#if feedbackError}
-            <p class="error">Feedback text is required</p>
-        {/if}
-
-        <!-- Change button style based on feedbackSaved state -->
-        <button
-                on:click={handleSend}
-                class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
-        >
-            {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
-        </button>
+        <VideoRecorder/>
     </section>
 </main>
 
@@ -314,6 +318,18 @@
         gap: 2rem;
     }
 
+    .text-recorder {
+        padding: 1.5rem;
+        gap: 1rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        border-radius: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+
     .send-button {
         background-color: var(--clr-background);
         border: 3px solid var(--clr-border);
@@ -340,6 +356,7 @@
         padding: 1rem;
         min-height: 10vh;
         border-radius: 4px;
+        width: 100%;
         background-color: var(--clr-background);
         color: var(--clr-text);
         border: 3px solid var(--clr-border);
