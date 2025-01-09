@@ -37,6 +37,16 @@ function initDatabase() {
         )
     `).run();
 
+    db.prepare(`
+        CREATE TABLE IF NOT EXISTS video_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            duration INTEGER NOT NULL
+        )
+    `).run();
+
     console.log('Database initialized and tables are ready.');
 }
 
