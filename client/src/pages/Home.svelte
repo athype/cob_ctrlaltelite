@@ -1,10 +1,10 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import { onMount } from "svelte";
     import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
     import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
+    import FeedbackTabs from "../components/FeedbackTabs.svelte";
 
     // Declare reactive variables
     let feedbackText = $state('');
@@ -171,8 +171,11 @@
 </script>
 
 <ThemeSwitch/>
+<FeedbackTabs/>
+
 <main class="container">
     <h1>Feedbacks</h1>
+
     <section class="feedback-sections">
         <List
                 items={texts}
@@ -187,6 +190,7 @@
                 isSelected={isAudioFeedbackSelected}
         />
     </section>
+
 
     <section class="selected-feedback-display">
         {#if selectedFeedback}
