@@ -771,7 +771,7 @@
         text-align: center;
         font-size: 1.2rem;
         margin-bottom: 1rem;
-        color: white;
+        color: var(--crl-text);
     }
 
     .recorder-container :global(.gradient-border-button) {
