@@ -18,6 +18,7 @@
         width: 100%;
         transition: background-color var(--transition-delay) ease,
         color var(--transition-delay) ease;
+
     }
 
     button:hover {

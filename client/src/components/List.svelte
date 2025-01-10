@@ -50,6 +50,7 @@
         color: black;
         font-size: 1rem;
         width: 100%;
+
     }
 
     .list button:hover {
@@ -59,7 +60,7 @@
 
     .list::-webkit-scrollbar,
     textarea::-webkit-scrollbar {
-        width: 8px;
+        width: 4px;
     }
     .list::-webkit-scrollbar-thumb,
     textarea::-webkit-scrollbar-thumb {

@@ -216,6 +216,7 @@
         overflow-y: auto;
         word-wrap: break-word;
         margin: 0 auto;
+        width: 40rem;
     }
 
     .feedback-header {
@@ -244,7 +245,8 @@
 
     .send-button:hover {
         box-shadow: 0 0 0.3125rem 0.0625rem var(--clr-purple);
-        color: var(--clr-background);
+        background: linear-gradient(90deg, var(--clr-cyan) 0%, var(--clr-purple) 35%, var(--clr-pink) 100%);
+        color: var(--clr-text);
     }
 
 
