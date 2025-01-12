@@ -36,7 +36,7 @@
         /*border-bottom: 0;*/
         overflow-y: auto;
         max-height: 18.75rem;
-        min-width: 20rem;
+        min-width: auto;
         display: flex;
         flex-direction: column;
         gap: 1rem;
@@ -67,5 +67,7 @@
         background: white;
         border-radius: 0.25rem;
     }
+
+
 
 </style>

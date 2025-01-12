@@ -179,23 +179,23 @@
 
     .right-container{
         flex: 2;
-        padding-right: 1rem;
         display: flex;
     }
 
     .feedback-container {
-        margin: 0 auto;
+        margin: auto;
         background-color: var(--clr-background);
         padding: 1rem;
         border-radius: 0.5rem;
-        /*border: 0.225rem solid var(--clr-border);*/
-    }
-
-    .feedback-container {
         display: flex;
         flex-wrap: wrap; /* Allow wrapping if needed */
         justify-content: center; /* Center labels in smaller screens */
         gap: 0.5rem; /* Add spacing between labels */
+        box-sizing: border-box;
+        flex-shrink: 1; /* Allow shrinking */
+        flex-grow: 1; /* Allow it to grow as needed */
+        flex-basis: 0; /* Basis for shrinking/growing */
+        max-width: 100%;
     }
 
     .content-text,
@@ -234,6 +234,7 @@
     #tab1:checked ~ #content-text,
     #tab2:checked ~ #content-audio {
         display: block;
+        min-width: 24rem;
     }
 
 
@@ -281,10 +282,10 @@
         color var(--transition-delay) ease;
     }
 
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 640px) {
         .feedback-container {
-            flex-direction: column; /* Stack labels on smaller screens */
             align-items: center; /* Center-align stacked labels */
+            max-width: 20rem;
         }
 
         label {
@@ -292,6 +293,7 @@
             width: 100%; /* Make labels responsive */
             text-align: center; /* Center text on smaller widths */
         }
+
     }
 
 </style>

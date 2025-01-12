@@ -69,30 +69,30 @@
     <!-- Listen for the feedbackUpdated event -->
     <FeedbackTabs on:feedbackUpdated={handleFeedbackUpdated}/>
 
-    <h1>Add Feedback</h1>
-    <section class="feedback-input">
-        <AudioRecorder />
-        <TitleInputField bind:title={textFeedbackTitle}/>
-        {#if titleError}
-            <p class="error">Title is required</p>
-        {/if}
+<!--    <h1>Add Feedback</h1>-->
+<!--    <section class="feedback-input">-->
+<!--        <AudioRecorder />-->
+<!--        <TitleInputField bind:title={textFeedbackTitle}/>-->
+<!--        {#if titleError}-->
+<!--            <p class="error">Title is required</p>-->
+<!--        {/if}-->
 
-        <textarea
-                bind:value={feedbackText}
-                placeholder="Type your feedback here..."
-                rows="3"
-        ></textarea>
-        {#if feedbackError}
-            <p class="error">Feedback text is required</p>
-        {/if}
+<!--        <textarea-->
+<!--                bind:value={feedbackText}-->
+<!--                placeholder="Type your feedback here..."-->
+<!--                rows="3"-->
+<!--        ></textarea>-->
+<!--        {#if feedbackError}-->
+<!--            <p class="error">Feedback text is required</p>-->
+<!--        {/if}-->
 
-        <button
-                on:click={handleSend}
-                class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
-        >
-            {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
-        </button>
-    </section>
+<!--        <button-->
+<!--                on:click={handleSend}-->
+<!--                class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}-->
+<!--        >-->
+<!--            {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}-->
+<!--        </button>-->
+<!--    </section>-->
 </main>
 
 <style>
@@ -178,5 +178,9 @@
         color: red;
         font-size: 0.9rem;
         margin-top: -1rem; /* Adjust if needed */
+    }
+
+    @media screen and (max-width: 600px) {
+
     }
 </style>
