@@ -3,7 +3,6 @@
     import VideoRecorder from "../components/VideoRecorder.svelte";
     import { onMount } from "svelte";
     import List from "../components/List.svelte";
-    import TitleInputField from "../components/TitleInputField.svelte";
     import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import TextRecorder from "../components/TextRecorder.svelte";
@@ -144,7 +143,7 @@
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
-        <TextRecorder/>
+        <TextRecorder onTextFeedbackSaved={fetchFeedback}/>
         <AudioRecorder onRecordingSaved={fetchFeedback} />
         <VideoRecorder/>
     </section>

@@ -1,12 +1,15 @@
 <script>
     import TitleInputField from "./TitleInputField.svelte";
+    import fetchFeedback from "../pages/Home.svelte";
 
     let feedbackText = $state('');
     let textFeedbackTitle = $state('');
     // New state variables for validation and feedback
     let titleError = $state(false);
     let feedbackError = $state(false);
-    let feedbackSaved = $state(false); // To track if feedback was successfully saved
+    let feedbackSaved = $state(false); // To track if feedback was successfully
+
+    const {onTextFeedbackSaved} = $props();
 
     /**
      * Sends text feedback to the db.
@@ -30,7 +33,7 @@
                 feedbackText = '';
                 textFeedbackTitle = '';
                 feedbackSaved = true;
-                await fetchFeedback();
+                onTextFeedbackSaved?.();
             } else {
                 console.error('Failed to save text:', await response.text());
             }
