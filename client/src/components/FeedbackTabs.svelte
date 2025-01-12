@@ -122,7 +122,7 @@
     </section>
 <!--    This is the container on the right which contains the feedback previews-->
     <section class="right-container">
-        <section class="selected-feedback-display">
+        <div class="selected-feedback-display">
             {#if selectedFeedback}
                 <div class="feedback-header">{selectedFeedback.name}</div>
                 {#if selectedFeedback.type === 'audio'}
@@ -131,7 +131,7 @@
                             <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
                             Your browser does not support the audio element.
                         </audio>
-                        <button on:click={handleTranscriptionClick} class="send-button">Transcribe</button>
+                        <button on:click={handleTranscriptionClick} class="send-button gradient-border">Transcribe</button>
                         {#if showTranscription}
                             <TranscriptionDisplay id={selectedFeedback.id}/>
                         {/if}
@@ -145,7 +145,7 @@
                     Select a feedback to view it here.
                 </p>
             {/if}
-        </section>
+        </div>
     </section>
 
 </section>
@@ -155,19 +155,18 @@
     .container{
         display: flex;
         border-radius: 0.225rem;
-        padding: 2rem;
-
+        padding: 1rem;
+        width: 100%;
     }
 
     .left-container{
-        display: grid;
-        text-align: center;
-        padding: 1rem;
+        flex: 1;
+        display: flex;
     }
 
     .right-container{
+        flex: 2;
         display: flex;
-        padding: 1rem;
     }
 
     .feedback-container {
@@ -181,7 +180,6 @@
     .content-text,
     .content-audio {
         display: none;
-        padding: 1.25rem 0 0;
         border-top: 0.225rem;
 
     }
@@ -197,8 +195,8 @@
         text-align: center;
         color: var(--clr-slate600);
         border: 0.225rem solid transparent;
-        min-width: 20rem;
-        max-width: 50rem;
+        min-width: 12rem;
+        max-width: 15rem;
     }
 
     label:hover {
@@ -208,9 +206,7 @@
 
     input:checked + label {
         color: var(--clr-purple);
-        border: 0.225rem solid var(--clr-border);
-        border-top-left-radius: 0.5rem;
-        border-top-right-radius: 0.5rem;
+        border-top: 0.225rem solid var(--clr-border);
     }
 
     #tab1:checked ~ #content-text,
@@ -220,33 +216,49 @@
 
 
     .selected-feedback-display {
+        flex: 1;
         display: flex;
+        padding: 1rem;
         flex-direction: column;
         background-color: var(--clr-background);
         border-radius: 0.5rem;
         border: 0.225rem solid var(--clr-border);
         color: var(--clr-text);
-        font-size: 1.5rem;
+        font-size: 1rem;
         text-align: left;
         gap: 1rem;
         word-wrap: break-word;
-        margin: 0 auto;
-        width: 40rem;
+
     }
 
     .feedback-header {
         font-size: 1rem;
         font-weight: bold;
-        padding: 0.5rem;
+        padding-top: 1rem;
         border-radius: 0.25rem;
         color: var(--clr-text);
+        padding-bottom: 3rem;
     }
 
     audio {
-        width: 50%;
+        width: 70%;
         margin-left: auto;
         margin-right: auto;
     }
 
+    .send-button{
+        position: relative;
+        border: 0.225rem;
+        color: var(--clr-text);
+        padding: 0.5rem;
+        align-self: center;
+        border-radius: 0.625rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
+    }
 
+    .send-button:hover{
+        background: linear-gradient(90deg, var(--clr-cyan) 0%, var(--clr-purple) 35%, var(--clr-pink) 100%);
+        color: var(--clr-text);
+    }
 </style>
