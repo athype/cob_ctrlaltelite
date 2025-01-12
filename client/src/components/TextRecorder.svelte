@@ -1,9 +1,9 @@
 <script>
     import TitleInputField from "./TitleInputField.svelte";
-    import fetchFeedback from "../pages/Home.svelte";
 
     let feedbackText = $state('');
     let textFeedbackTitle = $state('');
+
     // New state variables for validation and feedback
     let titleError = $state(false);
     let feedbackError = $state(false);
