@@ -34,7 +34,7 @@
         padding: 1rem;
         border-radius: 0.5rem;
         color: var(--clr-text);
-        font-size: 1.5rem;
+        font-size: 1rem;
         text-align: left;
         display: flex;
         flex-direction: column;

@@ -166,6 +166,7 @@
 
     .right-container{
         flex: 2;
+        padding-right: 1rem;
         display: flex;
     }
 
@@ -257,8 +258,4 @@
         color var(--transition-delay) ease;
     }
 
-    .send-button:hover{
-        background: linear-gradient(90deg, var(--clr-cyan) 0%, var(--clr-purple) 35%, var(--clr-pink) 100%);
-        color: var(--clr-text);
-    }
 </style>
