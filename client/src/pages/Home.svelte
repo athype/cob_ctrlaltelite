@@ -4,19 +4,50 @@
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import FeedbackTabs from "../components/FeedbackTabs.svelte";
 
+    // Declare reactive variables
     let feedbackText = $state('');
     let recordings = $state([]);
     let texts = $state([]);
+    let selectedFeedback = $state(null);
     let textFeedbackTitle = $state('');
+    let showTranscription = $state(false);
 
     // New state variables for validation and feedback
     let titleError = $state(false);
     let feedbackError = $state(false);
-    let feedbackSaved = $state(false);
+    let feedbackSaved = $state(false); // To track if feedback was successfully saved
 
-    function handleFeedbackUpdated(event) {
-        recordings = event.detail.recordings;
-        texts = event.detail.texts;
+    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
+    $effect(() => {
+        fetchFeedback();
+    });
+
+    /**
+     * Fetches both audio and text feedback from backend api via await.
+     */
+    async function fetchFeedback() {
+        try {
+            // Fetch audio feedback
+            const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
+            if (recordingsResponse.ok) {
+                recordings = await recordingsResponse.json();
+            } else if (recordingsResponse.status === 404) {
+                console.warn('No audio feedback found.');
+                recordings = [];
+            } else {
+                console.error('Failed to fetch audio feedback:', await recordingsResponse.text());
+            }
+
+            // Fetch text feedback
+            const textsResponse = await fetch('http://localhost:3000/text-feedback');
+            if (textsResponse.ok) {
+                texts = await textsResponse.json();
+            } else {
+                console.error('Failed to fetch text feedback:', await textsResponse.text());
+            }
+        } catch (error) {
+            console.error('Error fetching feedback:', error);
+        }
     }
 
     /**
@@ -36,9 +67,12 @@
                 }),
             });
             if (response.ok) {
+                const result = await response.json();
+                console.log('Text feedback saved successfully:', result);
                 feedbackText = '';
                 textFeedbackTitle = '';
                 feedbackSaved = true;
+                await fetchFeedback();
             } else {
                 console.error('Failed to save text:', await response.text());
             }
@@ -50,28 +84,57 @@
     /**
      * Handler function that calls save function.
      */
-
     function handleSend() {
-        titleError = !textFeedbackTitle.trim();
-        feedbackError = !feedbackText.trim();
+        // Reset errors first
+        titleError = false;
+        feedbackError = false;
 
-        if (!titleError && !feedbackError) {
-            saveTextFeedback(feedbackText);
+        // Check if title or feedback text are empty
+        if (!textFeedbackTitle.trim()) {
+            titleError = true;
         }
+        if (!feedbackText.trim()) {
+            feedbackError = true;
+        }
+
+        // If either error is true, don't save
+        if (titleError || feedbackError) {
+            return;
+        }
+
+        // Proceed to save if no errors
+        saveTextFeedback(feedbackText);
     }
+
+    async function handleTranscriptionClick() {
+        showTranscription = true;
+    }
+
+    // Effect that resets the "Feedback Saved" state when the user starts typing again
+    $effect(() => {
+        if (textFeedbackTitle || feedbackText) {
+            feedbackSaved = false;
+            // Reset errors if user typed something non-empty
+            if (textFeedbackTitle.trim()) {
+                titleError = false;
+            }
+            if (feedbackText.trim()) {
+                feedbackError = false;
+            }
+        }
+    });
 </script>
 
 <ThemeSwitch/>
 
 <main class="container">
-    <button class="addnew-button gradient-border-button">Add new feedback</button>
 
-    <!-- Listen for the feedbackUpdated event -->
-    <FeedbackTabs on:feedbackUpdated={handleFeedbackUpdated}/>
+    <button class="addnew-button gradient-border-button">Add new feedback</button>
+    <FeedbackTabs/>
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
-        <AudioRecorder />
+        <AudioRecorder onRecordingSaved={fetchFeedback} />
         <TitleInputField bind:title={textFeedbackTitle}/>
         {#if titleError}
             <p class="error">Title is required</p>
@@ -86,6 +149,7 @@
             <p class="error">Feedback text is required</p>
         {/if}
 
+        <!-- Change button style based on feedbackSaved state -->
         <button
                 on:click={handleSend}
                 class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
