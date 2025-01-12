@@ -93,29 +93,31 @@
 
         <section class="feedback-container">
 
-            <input id="tab1" type="radio" name="tabs" checked>
-            <label for="tab1">Text</label>
+            <section class="feedback-container">
+                <input id="tab1" type="radio" name="tabs" checked>
+                <label for="tab1">Text</label>
 
-            <input id="tab2" type="radio" name="tabs">
-            <label for="tab2">Audio</label>
+                <input id="tab2" type="radio" name="tabs">
+                <label for="tab2">Audio</label>
 
 
-            <section id="content-text" class="content-text">
-                <List
-                        items={texts}
-                        labelPrefix="Text"
-                        handleClick={handleTextFeedbackClick}
-                        isSelected={isTextFeedbackSelected}
-                />
-            </section>
+                <section id="content-text" class="content-text">
+                    <List
+                            items={texts}
+                            labelPrefix="Text"
+                            handleClick={handleTextFeedbackClick}
+                            isSelected={isTextFeedbackSelected}
+                    />
+                </section>
 
-            <section id="content-audio" class="content-audio">
-                <List
-                        items={recordings}
-                        labelPrefix="Audio"
-                        handleClick={handleAudioFeedbackClick}
-                        isSelected={isAudioFeedbackSelected}
-                />
+                <section id="content-audio" class="content-audio">
+                    <List
+                            items={recordings}
+                            labelPrefix="Audio"
+                            handleClick={handleAudioFeedbackClick}
+                            isSelected={isAudioFeedbackSelected}
+                    />
+                </section>
             </section>
 
         </section>
@@ -157,6 +159,7 @@
         border-radius: 0.225rem;
         padding: 1rem;
         width: 100%;
+        flex-wrap: wrap;
     }
 
     .left-container{
@@ -176,6 +179,13 @@
         padding: 1rem;
         border-radius: 0.5rem;
         /*border: 0.225rem solid var(--clr-border);*/
+    }
+
+    .feedback-container {
+        display: flex;
+        flex-wrap: wrap; /* Allow wrapping if needed */
+        justify-content: center; /* Center labels in smaller screens */
+        gap: 0.5rem; /* Add spacing between labels */
     }
 
     .content-text,
@@ -198,6 +208,7 @@
         border: 0.225rem solid transparent;
         min-width: 12rem;
         max-width: 15rem;
+        white-space: nowrap;
     }
 
     label:hover {
@@ -229,6 +240,8 @@
         text-align: left;
         gap: 1rem;
         word-wrap: break-word;
+        width: 100%;
+        box-sizing: border-box;
 
     }
 
@@ -256,6 +269,19 @@
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
         color var(--transition-delay) ease;
+    }
+
+    @media screen and (max-width: 600px) {
+        .feedback-container {
+            flex-direction: column; /* Stack labels on smaller screens */
+            align-items: center; /* Center-align stacked labels */
+        }
+
+        label {
+            min-width: auto; /* Allow labels to shrink on smaller screens */
+            width: 100%; /* Make labels responsive */
+            text-align: center; /* Center text on smaller widths */
+        }
     }
 
 </style>
