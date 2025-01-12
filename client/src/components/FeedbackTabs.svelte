@@ -1,14 +1,10 @@
 <script>
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
-    import { createEventDispatcher } from "svelte";
-
     let recordings = $state([]);
     let texts = $state([]);
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
-
-    const dispatch = createEventDispatcher();
 
     // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
     $effect(() => {
@@ -38,9 +34,6 @@
             } else {
                 console.error('Failed to fetch text feedback:', await textsResponse.text());
             }
-
-            // Dispatch updated feedback data to parent
-            dispatch("feedbackUpdated", { recordings, texts });
         } catch (error) {
             console.error('Error fetching feedback:', error);
         }
@@ -50,7 +43,6 @@
      * When text feedback is clicked, selected feedback is updated with its data.
      * @param text
      */
-
     function handleTextFeedbackClick(text) {
         selectedFeedback = {
             type: 'text',
@@ -64,7 +56,6 @@
      * Helper function for determining if a text is selected.
      * @param text
      */
-
     function isTextFeedbackSelected(text) {
         return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
     }
@@ -73,7 +64,6 @@
      * When an audio feedback is clicked, selected feedback is updated with its data.
      * @param recording
      */
-
     function handleAudioFeedbackClick(recording) {
         showTranscription = false;
         selectedFeedback = {
@@ -88,7 +78,6 @@
      * Helper function for determining if an audio is selected.
      * @param recording
      */
-
     function isAudioFeedbackSelected(recording) {
         return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
     }
@@ -96,6 +85,7 @@
     async function handleTranscriptionClick() {
         showTranscription = true;
     }
+
 </script>
 <section class="container gradient-border">
 <!--    This is the container on the left which contains Add new feedback button and feedback tab list-->
