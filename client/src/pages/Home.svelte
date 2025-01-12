@@ -1,8 +1,6 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
-    import List from "../components/List.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
-    import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import FeedbackTabs from "../components/FeedbackTabs.svelte";
 
@@ -50,49 +48,6 @@
         } catch (error) {
             console.error('Error fetching feedback:', error);
         }
-    }
-
-    /**
-     * When an audio feedback is clicked, selected feedback is updated with its data.
-     * @param recording
-     */
-    function handleAudioFeedbackClick(recording) {
-        showTranscription = false;
-        selectedFeedback = {
-            id: recording.id,
-            type: 'audio',
-            filePath: recording.file_path,
-            name: `Audio Feedback ${recording.name}`
-        };
-    }
-
-    /**
-     * When text feedback is clicked, selected feedback is updated with its data.
-     * @param text
-     */
-    function handleTextFeedbackClick(text) {
-        selectedFeedback = {
-            type: 'text',
-            id: text.id,
-            content: text.feedback_text,
-            name: `Text Feedback ${text.name}`
-        };
-    }
-
-    /**
-     * Helper function for determining if an audio is selected.
-     * @param recording
-     */
-    function isAudioFeedbackSelected(recording) {
-        return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
-    }
-
-    /**
-     * Helper function for determining if a text is selected.
-     * @param text
-     */
-    function isTextFeedbackSelected(text) {
-        return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
     }
 
     /**
@@ -171,51 +126,11 @@
 </script>
 
 <ThemeSwitch/>
-<FeedbackTabs/>
 
 <main class="container">
-    <h1>Feedbacks</h1>
 
-    <section class="feedback-sections">
-        <List
-                items={texts}
-                labelPrefix="Text"
-                handleClick={handleTextFeedbackClick}
-                isSelected={isTextFeedbackSelected}
-        />
-        <List
-                items={recordings}
-                labelPrefix="Audio"
-                handleClick={handleAudioFeedbackClick}
-                isSelected={isAudioFeedbackSelected}
-        />
-    </section>
-
-
-    <section class="selected-feedback-display">
-        {#if selectedFeedback}
-            <div class="feedback-header">{selectedFeedback.name}</div>
-            {#if selectedFeedback.type === 'audio'}
-                {#key selectedFeedback.id}
-                    <audio controls autoplay>
-                        <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
-                        Your browser does not support the audio element.
-                    </audio>
-                    <button on:click={handleTranscriptionClick} class="send-button">Transcribe</button>
-                    {#if showTranscription}
-                        <TranscriptionDisplay id={selectedFeedback.id}/>
-                    {/if}
-                {/key}
-            {:else if selectedFeedback.type === 'text'}
-                <!-- Directly display the content (no typewriter effect) -->
-                <p>{selectedFeedback.content}</p>
-            {/if}
-        {:else}
-            <p style="text-align: center; padding-bottom: 5vh">
-                Select a feedback to view it here.
-            </p>
-        {/if}
-    </section>
+    <button class="addnew-button gradient-border-button">Add new feedback</button>
+    <FeedbackTabs/>
 
     <h1>Add Feedback</h1>
     <section class="feedback-input">
@@ -246,7 +161,7 @@
 
 <style>
 
-    .container {
+    .container{
         display: flex;
         flex-direction: column;
         gap: 2rem;
@@ -264,58 +179,30 @@
         margin-bottom: 1rem;
     }
 
-    .feedback-sections {
-        display: flex;
-        gap: 2rem;
-    }
-
-    .selected-feedback-display {
-        position: relative;
-        background-color: var(--clr-background);
-        padding: 4rem 1rem 1rem;
-        border-radius: 0.5rem;
-        border: 0.225rem solid var(--clr-border);
-        /*border-top: 0.1rem solid var(--clr-pink);*/
-        color: var(--clr-text);
-        font-size: 1.5rem;
-        text-align: left;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        max-height: 50vh;
-        overflow-y: auto;
-        word-wrap: break-word;
-    }
-
-    /* scroll bar css to be deleted later after list component maybe */
-    .selected-feedback-display::-webkit-scrollbar,
-    textarea::-webkit-scrollbar {
-        width: 0.1rem;
-    }
-
-    .selected-feedback-display::-webkit-scrollbar-thumb,
-    textarea::-webkit-scrollbar-thumb {
-        background: var(--clr-purple);
-        border-radius: 0.5rem;
-    }
-
-    .feedback-header {
-        position: absolute;
-        top: 0.625rem;
-        left: 0.625rem;
-        font-size: 1rem;
-        font-weight: bold;
-        background-color: var(--clr-background);
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        color: var(--clr-text);
-    }
-
     .feedback-input {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         gap: 2rem;
+    }
+
+    .addnew-button {
+        position: relative;
+        border: 3px;
+        color: var(--clr-text);
+        padding: 1rem;
+        width: 20rem;
+        align-self: center;
+        border-radius: 0.625rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .addnew-button:hover {
+        background: linear-gradient(90deg, var(--clr-cyan) 0%, var(--clr-purple) 35%, var(--clr-pink) 100%);
+        color: var(--clr-text);
     }
 
     .send-button {
@@ -350,9 +237,6 @@
         /*border-top-width: 1px;*/
     }
 
-    audio {
-        width: 100%;
-    }
 
     .error {
         color: red;

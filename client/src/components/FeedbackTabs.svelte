@@ -1,16 +1,19 @@
 <script>
     import List from "./List.svelte";
-    import FeedbackButton from "./FeedbackButton.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
     let recordings = $state([]);
     let texts = $state([]);
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
 
+    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
     $effect(() => {
         fetchFeedback();
     });
 
+    /**
+     * Fetches both audio and text feedback from backend api via await.
+     */
     async function fetchFeedback() {
         try {
             // Fetch audio feedback
@@ -36,6 +39,10 @@
         }
     }
 
+    /**
+     * When text feedback is clicked, selected feedback is updated with its data.
+     * @param text
+     */
     function handleTextFeedbackClick(text) {
         selectedFeedback = {
             type: 'text',
@@ -45,10 +52,18 @@
         };
     }
 
+    /**
+     * Helper function for determining if a text is selected.
+     * @param text
+     */
     function isTextFeedbackSelected(text) {
         return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
     }
 
+    /**
+     * When an audio feedback is clicked, selected feedback is updated with its data.
+     * @param recording
+     */
     function handleAudioFeedbackClick(recording) {
         showTranscription = false;
         selectedFeedback = {
@@ -59,6 +74,10 @@
         };
     }
 
+    /**
+     * Helper function for determining if an audio is selected.
+     * @param recording
+     */
     function isAudioFeedbackSelected(recording) {
         return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
     }
@@ -68,10 +87,10 @@
     }
 
 </script>
-<section class="container">
+<section class="container gradient-border">
 <!--    This is the container on the left which contains Add new feedback button and feedback tab list-->
     <section class="left-container">
-        <button class="send-button">Add new feedback</button>
+
         <section class="feedback-container">
 
             <input id="tab1" type="radio" name="tabs" checked>
@@ -135,7 +154,9 @@
 
     .container{
         display: flex;
-        border: 0.225rem solid var(--clr-border);
+        border-radius: 0.225rem;
+        padding: 2rem;
+
     }
 
     .left-container{
@@ -147,13 +168,9 @@
     .right-container{
         display: flex;
         padding: 1rem;
-        margin-left: auto;
-        margin-right: auto;
     }
 
     .feedback-container {
-        min-width: 20rem;
-        max-width: 50rem;
         margin: 0 auto;
         background-color: var(--clr-background);
         padding: 1rem;
@@ -165,7 +182,7 @@
     .content-audio {
         display: none;
         padding: 1.25rem 0 0;
-        border-top: 0.225rem solid var(--clr-border);
+        border-top: 0.225rem;
 
     }
 
@@ -211,9 +228,7 @@
         color: var(--clr-text);
         font-size: 1.5rem;
         text-align: left;
-        padding-top: 10rem;
         gap: 1rem;
-        overflow-y: auto;
         word-wrap: break-word;
         margin: 0 auto;
         width: 40rem;
@@ -222,31 +237,15 @@
     .feedback-header {
         font-size: 1rem;
         font-weight: bold;
-        background-color: var(--clr-background);
         padding: 0.5rem;
         border-radius: 0.25rem;
         color: var(--clr-text);
     }
 
-    .send-button {
-        position: relative;
-        background-color: var(--clr-background);
-        border: 3px solid var(--clr-border);
-        color: var(--clr-text);
-        padding: 1rem;
-        width: 20rem;
-        align-self: center;
-        border-radius: 0.625rem;
-        transition: background-color var(--transition-delay) ease,
-        color var(--transition-delay) ease;
+    audio {
+        width: 50%;
         margin-left: auto;
         margin-right: auto;
-    }
-
-    .send-button:hover {
-        box-shadow: 0 0 0.3125rem 0.0625rem var(--clr-purple);
-        background: linear-gradient(90deg, var(--clr-cyan) 0%, var(--clr-purple) 35%, var(--clr-pink) 100%);
-        color: var(--clr-text);
     }
 
 
