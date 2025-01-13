@@ -1,7 +1,6 @@
 <script>
     import AudioRecorder from "../components/AudioRecorder.svelte";
     import VideoRecorder from "../components/VideoRecorder.svelte";
-    import { onMount } from "svelte";
     import List from "../components/List.svelte";
     import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
@@ -74,6 +73,12 @@
         };
     }
 
+    // This is triggered from TranscriptionDisplay after saving
+    // We simply re-fetch so the new text feedback is displayed in the list
+    async function handleTranscriptionSaved(newFeedback) {
+        await fetchFeedback();
+    }
+
     /**
      * Helper function for determining if an audio is selected.
      * @param recording
@@ -119,19 +124,24 @@
     <section class="selected-feedback-display">
         {#if selectedFeedback}
             <div class="feedback-header">{selectedFeedback.name}</div>
+
             {#if selectedFeedback.type === 'audio'}
-                {#key selectedFeedback.id}
-                    <audio controls autoplay>
-                        <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
-                        Your browser does not support the audio element.
-                    </audio>
-                    <button on:click={handleTranscriptionClick} class="send-button">Transcribe</button>
-                    {#if showTranscription}
-                        <TranscriptionDisplay id={selectedFeedback.id}/>
-                    {/if}
-                {/key}
+                <audio controls autoplay>
+                    <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav" />
+                    Your browser does not support the audio element.
+                </audio>
+                <button onclick={handleTranscriptionClick} class="feedback-button">
+                    Transcribe
+                </button>
+                {#if showTranscription}
+                    <TranscriptionDisplay
+                            id={selectedFeedback.id}
+                            audioName={selectedFeedback.name}
+                            onTranscriptionSaved={handleTranscriptionSaved}
+                    />
+                {/if}
+
             {:else if selectedFeedback.type === 'text'}
-                <!-- Directly display the content (no typewriter effect) -->
                 <p>{selectedFeedback.content}</p>
             {/if}
         {:else}
@@ -161,12 +171,6 @@
     .container h1 {
         font-size: 1.75rem;
         margin-top: 3vh;
-    }
-
-    header h2 {
-        color: var(--clr-text);
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
     }
 
     .feedback-sections {
@@ -223,7 +227,27 @@
         gap: 2rem;
     }
 
+    .feedback-button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: 3px solid var(--clr-border);
+        cursor: pointer;
+        background-color: var(--clr-background);
+        color: var(--clr-text);
+        font-size: 1rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
+    }
 
+    .feedback-button:hover {
+        box-shadow: 0 0 5px 1px #9400FF;
+        color: var(--background-color);
+    }
+
+    .feedback-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 
     audio {
         width: 100%;
