@@ -15,6 +15,10 @@
     let recordingDuration: number | null = null;
     let recordingStartTime: number | null = null;
 
+    let isCameraSectionVisible = $state(true);
+    let isOutputSectionVisible = $state(false);
+
+
     // Access webcam and initialize stream
     async function startVideoStream() {
         try {
@@ -49,6 +53,7 @@
                     if (recordedVideoElement) {
                         recordedVideoElement.src = videoURL;
                         recordedVideoElement.load();
+                        recordedVideoElement.play();
                     }
 
                     if (saveButton) saveButton.disabled = false; // Enable Save Video button
@@ -77,10 +82,6 @@
     }
 
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const videoURL = URL.createObjectURL(blob);
-
-    // Calculate video duration (if available)
-    // const duration = recordedVideoElement?.duration || 0;
 
     // Prepare form data
     const formData = new FormData();
@@ -112,7 +113,16 @@
 }
 
 
+    // Method to toggle between camera and output sections
+    function showCameraSection() {
+        isCameraSectionVisible = true;
+        isOutputSectionVisible = false;
+    }
 
+    function showOutputSection() {
+        isCameraSectionVisible = false;
+        isOutputSectionVisible = true;
+    }
 
 
 
@@ -137,7 +147,7 @@
             }
         });
 
-        // Stop recording
+        // Stop recording and toggle visibility
         stopButton?.addEventListener('click', () => {
             if (mediaRecorder) {
                 mediaRecorder.stop();
@@ -145,7 +155,14 @@
                     startButton.disabled = false;
                     stopButton.disabled = true;
                 }
+                showOutputSection(); // Show the output section
             }
+        });
+
+
+        // Redo video recording
+        document.getElementById('redo-btn')?.addEventListener('click', () => {
+            showCameraSection(); // Show the camera section
         });
 
         // Save video
@@ -154,16 +171,14 @@
         // Initialize the video stream
         startVideoStream();
     });
+
 </script>
 
 <div class="recorder-container gradient-border">
-    <h1>Video Recorder</h1>
-
     <div class="content">
-        <!-- Camera Section -->
-        <div class="camera-section">
+        <div class="camera-section" style="display: {isCameraSectionVisible ? 'block' : 'none'};">
+            <h2 class="title">Camera</h2>
             <div class="video-section">
-                <h2>Preview</h2>
                 <video id="video" autoplay muted playsinline></video>
             </div>
             <div class="controls">
@@ -172,12 +187,17 @@
             </div>
         </div>
 
-        <!-- Output Section -->
-        <div class="output-section">
-            <h2>Recorded Video</h2>
-            <video id="recorded-video" controls></video>
-            <button id="save-btn" class="gradient-border-button">Save Video</button>
+        <div class="output-section" style="display: {isOutputSectionVisible ? 'block' : 'none'};">
+            <h2 class="title">Preview</h2>
+            <div class="video-section">
+                <video id="recorded-video" controls></video>
+            </div>
+            <div class="controls">
+                <button id="redo-btn" class="gradient-border-button">Redo Video</button>
+                <button id="save-btn" class="gradient-border-button">Save Video</button>
+            </div>
         </div>
+
     </div>
 </div>
 
@@ -225,9 +245,15 @@
         text-align: center;
     }
 
-    .video-section video {
+    .video-section {
         width: 100%;
-        max-width: 400px;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .video-section video {
+        width: 50%;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
@@ -240,41 +266,25 @@
     }
 
     .output-section {
-        flex: 1;
+        width: 100%;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        justify-content: center;
+        margin-bottom: 1rem;
     }
 
     .output-section video {
-        width: 100%;
-        max-width: 420px;
+        width: 50%;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
 
-    .download-btn {
-        display: none;
-        margin-top: 1rem;
-        text-decoration: none;
-        color: var(--clr-cyan);
-        font-weight: bold;
+
+
+    .title {
+        font-size: 1.8rem;
+        padding: 0.5rem;
+        font-weight: 600;
     }
-
-    .download-btn:hover {
-        color: var(--clr-pink);
-    }
-
-
-
-
-    h1, h2 {
-        margin-bottom: 1rem;
-        color: var(--crl-text);
-    }
-
-
 
 
 
