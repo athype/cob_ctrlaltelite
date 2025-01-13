@@ -22,13 +22,14 @@
     }
 
     button:hover {
-        box-shadow: 0 0 5px 1px #9400FF;
+        box-shadow: 0 0 5px 1px var(--clr-text);
         color: var(--background-color);
     }
 
     button.selected {
-        background-color: var(--clr-border);
+        background-color: var(--clr-inverse);
         color: var(--background-color);
-        border: 3px solid var(--clr-text);
+        border: 3px solid var(--clr-inverse);
+        box-shadow: none;
     }
 </style>

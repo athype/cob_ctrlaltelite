@@ -30,7 +30,7 @@
         padding: 1rem;
         border-radius: 0.5rem;
         overflow-y: auto;
-        max-height: 18.75rem;
+        max-height: 27.75rem;
         min-width: auto;
         display: flex;
         flex-direction: column;
@@ -59,7 +59,7 @@
     }
     .list::-webkit-scrollbar-thumb,
     textarea::-webkit-scrollbar-thumb {
-        background: white;
+        background: var(--clr-text);
         border-radius: 0.25rem;
     }
 

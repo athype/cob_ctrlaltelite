@@ -1,8 +1,11 @@
 <script>
-    import AudioRecorder from "../components/AudioRecorder.svelte";
     import TitleInputField from "../components/TitleInputField.svelte";
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import FeedbackTabs from "../components/FeedbackTabs.svelte";
+    import TextRecorder from "../components/TextRecorder.svelte";
+    import AudioRecorder from "../components/AudioRecorder.svelte";
+    import VideoRecorder from "../components/VideoRecorder.svelte";
+
 
     // Declare reactive variables
     let feedbackText = $state('');
@@ -130,32 +133,13 @@
 <main class="container">
 
     <button class="addnew-button gradient-border-button">Create New Feedback</button>
-    <FeedbackTabs {recordings} {texts} />
+    <FeedbackTabs/>
 
     <section class="feedback-input">
         <h1>Add Feedback</h1>
+        <TextRecorder onTextFeedbackSaved={fetchFeedback}/>
         <AudioRecorder onRecordingSaved={fetchFeedback} />
-        <TitleInputField bind:title={textFeedbackTitle}/>
-        {#if titleError}
-            <p class="error">Title is required</p>
-        {/if}
-
-        <textarea
-                bind:value={feedbackText}
-                placeholder="Type your feedback here..."
-                rows="3"
-        ></textarea>
-        {#if feedbackError}
-            <p class="error">Feedback text is required</p>
-        {/if}
-
-        <!-- Change button style based on feedbackSaved state -->
-        <button
-                on:click={handleSend}
-                class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
-        >
-            {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
-        </button>
+        <VideoRecorder/>
     </section>
 </main>
 
@@ -197,13 +181,15 @@
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
-        color var(--transition-delay) ease;
+        color var(--transition-delay) ease,
+        transform 0.2s ease; /* Added transition for scaling */
         margin-left: auto;
         margin-right: auto;
     }
 
     .addnew-button:hover {
         color: var(--clr-text);
+        transform: scale(1.03); /* Button will grow by 5% */
     }
 
     .send-button {

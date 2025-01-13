@@ -3,10 +3,11 @@
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
     let recordings = $state([]);
     let texts = $state([]);
+    let videos = $state([]);
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
 
-    let activeTab = $state([]);
+    let activeTab = $state("text");
 
 
     // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
@@ -37,6 +38,14 @@
             } else {
                 console.error('Failed to fetch text feedback:', await textsResponse.text());
             }
+
+
+            const videosResponse = await fetch('http://localhost:3000/video-feedback');
+            if (videosResponse.ok) {
+                videos = await videosResponse.json();
+            } else {
+                console.error('Failed to fetch video feedback:', await videosResponse.text());
+            }
         } catch (error) {
             console.error('Error fetching feedback:', error);
         }
@@ -48,10 +57,9 @@
      * When tab is pressed we change the content.
      * @param text
      */
-    function handleTabChange(tab) {
+    const handleTabChange = (tab) => {
         activeTab = tab;
-    }
-
+    };
     /**
      * When text feedback is clicked, selected feedback is updated with its data.
      * @param text
@@ -140,19 +148,34 @@
         <section class="feedback-container">
             <div class="tabs-container">
                 <div class="tabs">
-                    {#each ["text", "audio", "video"] as tab}
-                        <button
-                                key={tab}
-                                on:click={() => handleTabChange(tab)}
-                                class:active={activeTab === tab} >
-                            <span>{tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
-                        </button>
-                    {/each}
+                    <button
+                            id="text-tab"
+                            class:active={activeTab === "text"}
+                            class="text-tab"
+                            on:click={() => handleTabChange("text")}>
+                        <span>Text</span>
+                    </button>
+
+                    <button
+                            id="audio-tab"
+                            class:active={activeTab === "audio"}
+                            class="audio-tab"
+                            on:click={() => handleTabChange("audio")}>
+                        <span>Audio</span>
+                    </button>
+
+                    <button
+                            id="video-tab"
+                            class:active={activeTab === "video"}
+                            class="video-tab"
+                            on:click={() => handleTabChange("video")}>
+                        <span>Video</span>
+                    </button>
                 </div>
 
                 <div class="content">
                     {#if activeTab === "text"}
-                        <section id="content-text" class="tab-content">
+                        <section id="content-text" class="tab-content text-tab-content">
                             <List
                                     items={texts}
                                     labelPrefix="Text"
@@ -162,7 +185,7 @@
                     {/if}
 
                     {#if activeTab === "audio"}
-                        <section id="content-audio" class="tab-content">
+                        <section id="content-audio" class="tab-content audio-tab-content">
                             <List
                                     items={recordings}
                                     labelPrefix="Audio"
@@ -172,7 +195,7 @@
                     {/if}
 
                     {#if activeTab === "video"}
-                        <section id="content-video" class="tab-content">
+                        <section id="content-video" class="tab-content video-tab-content">
                             <List
                                     items={videos}
                                     labelPrefix="Video"
@@ -181,13 +204,14 @@
                         </section>
                     {/if}
                 </div>
+
             </div>
         </section>
     </section>
     <!--    This is the container on the right which contains the feedback previews-->
     <section class="right-container">
         <h1 class="title">Preview</h1>
-        <div class="selected-feedback-display">
+        <div class="selected-feedback-display" class:selected-audio={selectedFeedback?.type === 'audio'} class:selected-video={selectedFeedback?.type === 'video'} class:selected-text={selectedFeedback?.type === 'text'}>
             {#if selectedFeedback}
                 <div class="feedback-header">{selectedFeedback.name}</div>
                 {#if selectedFeedback.type === 'audio'}
@@ -204,6 +228,13 @@
                 {:else if selectedFeedback.type === 'text'}
                     <!-- Directly display the content (no typewriter effect) -->
                     <p style="font-size: 1.3rem; padding: 0.5rem;">{selectedFeedback.content}</p>
+                {:else if selectedFeedback.type === 'video'}
+                    {#key selectedFeedback.id}
+                        <video controls autoplay>
+                            <source src="http://localhost:3000/{selectedFeedback.filePath}" type="video/webp" />
+                            Your browser does not support the video element.
+                        </video>
+                    {/key}
                 {/if}
             {:else}
                 <p style="text-align: center; padding-bottom: 5vh">
@@ -243,6 +274,7 @@
         box-sizing: border-box;
         flex: 1;
         max-width: 100%;
+
     }
 
 
@@ -252,7 +284,9 @@
     .tabs-container {
         display: flex;
         flex-direction: column;
+        flex: 1;
         width: 100%;
+        height: 100%;
     }
 
     .tabs {
@@ -297,7 +331,6 @@
     .tabs button.active {
         background-color: var(--clr-highlight);
         color: var(--clr-text-active);
-        border-color: var(--clr-border);
         border: 0.225rem solid var(--clr-border);
         transform: translateY(-8px); /* Move the button up more when active */
         font-size: 17px;
@@ -305,18 +338,38 @@
     }
 
 
-
-    .content {
-        width: 100%;
+    .tabs .text-tab.active {
+        border-color: var(--clr-pink);
     }
+    .tabs .audio-tab.active {
+        border-color: var(--clr-purple);
+    }
+    .tabs .video-tab.active {
+        border-color: var(--clr-indigo);
+    }
+
 
     .tab-content {
-        display: block;
+        background-color: var(--clr-background);
         border: 0.3rem solid var(--clr-border);
         border-radius: 0.6rem;
-        border-top: 3px solid var(--clr-border);
-        background-color: var(--clr-background);
+        border-top: 4px solid var(--clr-border);
+        box-sizing: border-box;
+        height: 30rem;
     }
+
+    .text-tab-content {
+        border-color: var(--clr-pink);
+    }
+
+    .audio-tab-content {
+        border-color: var(--clr-purple);
+    }
+
+    .video-tab-content {
+        border-color: var(--clr-indigo);
+    }
+
 
 
 
@@ -363,16 +416,37 @@
         gap: 1rem;
         word-wrap: break-word;
         width: 100%;
+        max-height: 30rem;
         box-sizing: border-box;
+        overflow-y: auto
     }
+
+    /* Audio selected: purple border */
+    .selected-feedback-display.selected-audio {
+        border-color: var(--clr-purple);
+    }
+
+    /* Video selected: blue border */
+    .selected-feedback-display.selected-video {
+        border-color: var(--clr-indigo);
+    }
+
+    /* Text selected: pink border */
+    .selected-feedback-display.selected-text {
+        border-color: var(--clr-pink);
+    }
+
+
+
+
 
     .feedback-header {
         font-size: 1.3rem;
         font-weight: bold;
-        padding-top: 0.5rem;
-        padding-left: 0.5rem;
-        border-radius: 0.25rem;
+        padding: 0.7rem;
+        border-radius: 0.5rem;
         color: var(--clr-text);
+        background-color: var(--clr-inverse);
     }
 
     audio {
@@ -394,9 +468,19 @@
     }
 
     .title {
-        font-size: 2rem;
+        font-size: 1.8rem;
         padding: 0.5rem;
         font-weight: 600;
+    }
+
+    .selected-feedback-display::-webkit-scrollbar,
+    textarea::-webkit-scrollbar {
+        width: 4px;
+    }
+    .selected-feedback-display::-webkit-scrollbar-thumb,
+    textarea::-webkit-scrollbar-thumb {
+        background: var(--clr-text);
+        border-radius: 0.25rem;
     }
 
 
