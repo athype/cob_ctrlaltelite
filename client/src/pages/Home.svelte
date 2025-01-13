@@ -7,6 +7,9 @@
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import TextRecorder from "../components/TextRecorder.svelte";
 
+    import Modal from 'svelte-simple-modal';
+    import FeedbackModalContent from "../components/FeedbackModalContent.svelte";
+
     // Declare reactive variables
     let recordings = $state([]);
     let texts = $state([]);
@@ -99,6 +102,12 @@
 </script>
 
 <ThemeSwitch/>
+<Modal
+        styleWindow={{backgroundColor: 'var(--clr-background)',
+                      color: 'var(--clr-text)',
+                      border:'3px solid var(--clr-border)'}}
+> <FeedbackModalContent onRecordingSaved={fetchFeedback}/> </Modal>
+
 <main class="container">
     <h1>Feedbacks</h1>
     <section class="feedback-sections">
