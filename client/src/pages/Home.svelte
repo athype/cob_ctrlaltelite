@@ -129,11 +129,11 @@
 
 <main class="container">
 
-    <button class="addnew-button gradient-border-button">Add new feedback</button>
-    <FeedbackTabs/>
+    <button class="addnew-button gradient-border-button">Create New Feedback</button>
+    <FeedbackTabs {recordings} {texts} />
 
-    <h1>Add Feedback</h1>
     <section class="feedback-input">
+        <h1>Add Feedback</h1>
         <AudioRecorder onRecordingSaved={fetchFeedback} />
         <TitleInputField bind:title={textFeedbackTitle}/>
         {#if titleError}
@@ -183,15 +183,17 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        margin-top: 15rem;
         gap: 2rem;
     }
 
     .addnew-button {
         position: relative;
-        border: 3px;
+        font-size: 1.4rem;
+        font-weight: 600;
         color: var(--clr-text);
         padding: 1rem;
-        width: 20rem;
+        width: 40%;  /* Button width is 40% of the screen width */
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
@@ -201,7 +203,6 @@
     }
 
     .addnew-button:hover {
-        background: linear-gradient(90deg, var(--clr-cyan) 0%, var(--clr-purple) 35%, var(--clr-pink) 100%);
         color: var(--clr-text);
     }
 
