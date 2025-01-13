@@ -1,57 +1,11 @@
 <script>
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
-    let recordings = $state([]);
-    let texts = $state([]);
-    let videos = $state([]);
+
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
-
     let activeTab = $state("text");
-
-
-    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
-    $effect(() => {
-        fetchFeedback();
-    });
-
-    /**
-     * Fetches both audio and text feedback from backend api via await.
-     */
-    async function fetchFeedback() {
-        try {
-            // Fetch audio feedback
-            const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
-            if (recordingsResponse.ok) {
-                recordings = await recordingsResponse.json();
-            } else if (recordingsResponse.status === 404) {
-                console.warn('No audio feedback found.');
-                recordings = [];
-            } else {
-                console.error('Failed to fetch audio feedback:', await recordingsResponse.text());
-            }
-
-            // Fetch text feedback
-            const textsResponse = await fetch('http://localhost:3000/text-feedback');
-            if (textsResponse.ok) {
-                texts = await textsResponse.json();
-            } else {
-                console.error('Failed to fetch text feedback:', await textsResponse.text());
-            }
-
-
-            const videosResponse = await fetch('http://localhost:3000/video-feedback');
-            if (videosResponse.ok) {
-                videos = await videosResponse.json();
-            } else {
-                console.error('Failed to fetch video feedback:', await videosResponse.text());
-            }
-        } catch (error) {
-            console.error('Error fetching feedback:', error);
-        }
-    }
-
-
+    let {texts, recordings, videos} = $props();
 
     /**
      * When tab is pressed we change the content.

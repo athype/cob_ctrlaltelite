@@ -10,6 +10,7 @@
     // Declare reactive variables
     let feedbackText = $state('');
     let recordings = $state([]);
+    let videos = $state([]);
     let texts = $state([]);
     let selectedFeedback = $state(null);
     let textFeedbackTitle = $state('');
@@ -31,6 +32,7 @@
     async function fetchFeedback() {
         try {
             // Fetch audio feedback
+
             const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
             if (recordingsResponse.ok) {
                 recordings = await recordingsResponse.json();
@@ -133,7 +135,7 @@
 <main class="container">
 
     <button class="addnew-button gradient-border-button">Create New Feedback</button>
-    <FeedbackTabs/>
+    <FeedbackTabs {texts} {recordings} {videos}/>
 
     <section class="feedback-input">
         <h1>Add Feedback</h1>
