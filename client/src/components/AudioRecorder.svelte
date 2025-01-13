@@ -3,6 +3,11 @@
 
     const {onRecordingSaved} = $props();
 
+    let isBeforeRecording = $state(true);
+    let isAfterRecording = $state(false);
+
+
+
     // Reactive state
 
     /**
@@ -144,6 +149,7 @@
         messageVisible = false;
     }
 
+
     /**
      * Requests access to the user's microphone.
      * If successful, it initializes the audio stream. Otherwise, shows an error message.
@@ -201,6 +207,21 @@
             chunks = [];
         };
     }
+
+
+    /**
+     * Methods to toggle between button visibility
+     */
+    function showBeforeButtons() {
+        isBeforeRecording = true;
+        isAfterRecording = false;
+    }
+
+    function showAfterButtons() {
+        isBeforeRecording = false;
+        isAfterRecording = true;
+    }
+
 
     /**
      * Uploads the audio file to the server along with its duration and name.
@@ -313,6 +334,7 @@
     function toggleRecording() {
         if (isRecording) {
             stopRecording();
+            showAfterButtons()
             justStopped = true;
             justCleared = false;
             justSaved = false;
@@ -459,7 +481,9 @@
         justStopped = false;
         // Reset the timer after clearing
         recordingTime = 0;
+        stop();
         resetIndicatorStateLater();
+        showBeforeButtons();
     }
 
     /**
@@ -581,7 +605,17 @@
                 recordingInterval = undefined;
             }
         }
+
     });
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('animated-btn').addEventListener('click', function () {
+            this.classList.toggle('active');
+        });
+    });
+
 
 </script>
 
@@ -597,14 +631,11 @@
         {:else if indicatorSymbol.type === 'playing'}
             <!-- Green play triangle -->
             <div class="icon play">&#9658;</div>
-        {:else if indicatorSymbol.type === 'cleared'}
-            <!-- Red cross -->
-            <div class="icon cleared">&#10006;</div>
         {:else if indicatorSymbol.type === 'saved'}
             <!-- Green checkmark -->
             <div class="icon saved">&#10004;</div>
         {:else if indicatorSymbol.type === 'stopped'}
-            <!-- White square -->
+            <!-- Red square -->
             <div class="icon stopped"></div>
         {:else if indicatorSymbol.type === 'stoppedPlaying'}
             <!-- Green square -->
@@ -616,7 +647,7 @@
         <div class="recording-time">
             {formatTime(recordingTime)}
         </div>
-        <div class="waveform">
+        <div class="waveform" id="waveform">
             <canvas
                     bind:this={canvas}
                     class="js-canvas waveform__canvas"
@@ -624,45 +655,54 @@
         </div>
 
         <div class="controls">
+            <!-- Animated button -->
             <button
-                    class="control-button gradient-border-button record-button"
+                    id="animated-btn"
                     class:active={isRecording}
                     onclick={toggleRecording}
-            >
-                Record
-            </button>
+                    style="display: {isBeforeRecording ? 'block' : 'none'};"
+            ></button>
 
-            <button
-                    class="control-button gradient-border-button pause-button"
-                    onclick={pauseRecording}
-            >
-                {isPaused ? 'Resume' : 'Pause'}
-            </button>
+            <!-- Play and Pause buttons -->
+            <div class="centered-buttons">
+                <button
+                        class="control-button gradient-border-button pause-button"
+                        onclick={pauseRecording}
+                        style="display: {isRecording ? 'block' : 'none'};"
+                >
+                    {isPaused ? 'Resume' : 'Pause'}
+                </button>
+            </div>
 
-            <button
-                    class="control-button gradient-border-button play-button"
-                    class:disabled={!recording}
-                    class:active={isPlaying}
-                    onclick={togglePlay}
-            >
-                Play
-            </button>
-
-            <button
-                    class="control-button gradient-border-button clear-button"
-                    onclick={clearRecording}
-            >
-                Clear
-            </button>
-
-            <button
-                    class="control-button gradient-border-button save-button"
-                    onclick={saveRecording}
-                    disabled={!recording}
-            >
-                Save
-            </button>
+            <!-- After Recording buttons -->
+            <div class="centered-buttons after-recording">
+                <button
+                        class="control-button gradient-border-button play-button"
+                        class:disabled={!recording}
+                        class:active={isPlaying}
+                        onclick={togglePlay}
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                >
+                    {isPlaying ? 'Stop' : 'Play'}
+                </button>
+                <button
+                        class="control-button gradient-border-button clear-button"
+                        onclick={clearRecording}
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                >
+                    Redo
+                </button>
+                <button
+                        class="control-button gradient-border-button save-button"
+                        onclick={saveRecording}
+                        disabled={!recording}
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                >
+                    Save
+                </button>
+            </div>
         </div>
+
 
         <audio
                 bind:this={audioPlayer}
@@ -693,10 +733,12 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        max-width: 1600px;
+        max-width: 700px;
+        height: 500px;
         margin: 2rem auto 0;
         border-radius: 10px;
         position: relative; /* Needed for status-indicator positioning */
+        transition: all 2.5s ease-in-out; /* Smooth transition for all properties */
     }
 
     .status-indicator {
@@ -711,7 +753,7 @@
     }
 
     .status-indicator .icon {
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -719,8 +761,8 @@
 
     /* For recording: red blinking circle */
     .status-indicator.recording .icon.circle {
-        width: 15px;
-        height: 15px;
+        width: 25px;
+        height: 25px;
         background-color: red;
         border-radius: 50%;
         animation: blink 1s infinite alternate;
@@ -754,25 +796,28 @@
 
     /* White square for stopped state */
     .status-indicator.stopped .icon.stopped {
-        width: 15px;
-        height: 15px;
-        background-color: white;
+        width: 25px;
+        height: 25px;
+        background-color: red;
     }
 
     /* Green square for stoppedPlayback state */
     .status-indicator.stoppedPlaying .icon.stoppedPlaying {
-        width: 15px;
-        height: 15px;
+        width: 25px;
+        height: 25px;
         background-color: green;
     }
 
-    /* Display time on top */
+    /* Timer */
     .recording-time {
-        text-align: center;
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.7rem;
         color: var(--crl-text);
     }
+
 
     .recorder-container :global(.gradient-border-button) {
         position: relative;
@@ -806,30 +851,85 @@
         padding: 2rem;
     }
 
+    /* Waveform */
     .waveform {
-        position: relative;
-        padding: 2rem 0;
-        width: 100%;
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        height: 100px;
     }
-
     .waveform__canvas {
         width: 100%;
-        height: 10rem;
-        display: block;
+        height: 100%;
     }
 
+    /* Controls */
     .controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        top: 75%;
+        transform: translateX(-50%);
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Centered buttons */
+    .centered-buttons {
         display: flex;
         justify-content: center;
-        align-items: center;
         gap: 1rem;
-        padding: 1rem 0;
     }
 
+    #animated-btn {
+        margin: auto;
+    }
+
+    .centered-buttons.after-recording {
+        display: flex;
+        justify-content: center;
+        gap: 1rem; /* Space between 'Play', 'Redo', and 'Save' */
+    }
+
+    /* Buttons */
+    .control-button {
+        padding: 1rem 2rem;
+        font-size: 1.6rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+    .control-button:hover {
+        transform: scale(1.1);
+        background-color: rgba(0, 0, 0, 0.1);
+    }
     .control-button.disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
+
+    /* Example gradient border button styling */
+    .gradient-border-button {
+        border: 2px solid transparent;
+        background-image: linear-gradient(white, white),
+        linear-gradient(to right, #ff7e5f, #feb47b);
+        background-origin: border-box;
+        background-clip: content-box, border-box;
+    }
+
+    /* Button spacing and visibility tweaks for responsive design */
+    @media screen and (max-width: 768px) {
+        .controls {
+            flex-direction: column;
+        }
+        .centered-buttons {
+            flex-wrap: wrap;
+        }
+    }
+
+
 
     .disabled {
         opacity: 0.2;
@@ -857,4 +957,69 @@
     .message--visible {
         opacity: 1;
     }
+
+
+
+
+    /* Animated button */
+    #animated-btn {
+        position: absolute;
+        left: 50%;
+        bottom: 120px;
+        transform: translateX(-50%);
+        width: 130px;
+        height: 130px;
+        border: none;
+        background: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    #animated-btn:before {
+        position: absolute;
+        content: '';
+        width: 130px;
+        height: 130px;
+        background: none;
+        border-radius: 50%;
+        top: 0;
+        left: 0;
+    }
+
+    #animated-btn:after {
+        position: absolute;
+        content: '';
+        width: 100px;
+        height: 100px;
+        background: var(--clr-purple);
+        border-radius: 50%;
+        top: 15px;
+        left: 15px;
+        transition: all 0.3s ease;
+    }
+
+    #animated-btn.active:after {
+        animation: stop 0.5s cubic-bezier(0.4, -0.9, 0.9, 1) 1 forwards;
+    }
+
+
+    @keyframes stop {
+        70% {
+            border-radius: 6px;
+            width: 60px;
+            height: 60px;
+            top: 35px;
+            left: 35px;
+        }
+        100% {
+            border-radius: 6px;
+            width: 64px;
+            height: 64px;
+            top: 33px;
+            left: 33px;
+        }
+    }
+
+
+
 </style>
