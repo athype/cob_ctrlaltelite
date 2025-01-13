@@ -50,6 +50,15 @@
             } else {
                 console.error('Failed to fetch text feedback:', await textsResponse.text());
             }
+
+            // Fetch video feedback
+            const videosResponse = await fetch('http://localhost:3000/video-feedback');
+            if (videosResponse.ok) {
+                videos = await videosResponse.json();
+            } else {
+                console.error('Failed to fetch video feedback:', await videosResponse.text());
+            }
+
         } catch (error) {
             console.error('Error fetching feedback:', error);
         }
@@ -141,7 +150,7 @@
         <h1>Add Feedback</h1>
         <TextRecorder onTextFeedbackSaved={fetchFeedback}/>
         <AudioRecorder onRecordingSaved={fetchFeedback} />
-        <VideoRecorder/>
+        <VideoRecorder onVideoSaved={fetchFeedback}/>
     </section>
 </main>
 

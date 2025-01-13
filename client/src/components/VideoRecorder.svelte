@@ -7,6 +7,8 @@
     let saveButton: HTMLButtonElement | null = null;
     let recordedVideoElement: HTMLVideoElement | null = null;
 
+    const {onVideoSaved} = $props();
+
     let mediaRecorder: MediaRecorder;
     let recordedChunks: BlobPart[] = [];
 
@@ -86,6 +88,7 @@
 
         if (response.ok) {
             console.log(await response.json());
+            onVideoSaved?.();
             alert('Video saved successfully!');
         } else {
             console.error(await response.text());
