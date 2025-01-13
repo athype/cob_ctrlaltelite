@@ -12,6 +12,9 @@
     let mediaRecorder: MediaRecorder;
     let recordedChunks: BlobPart[] = [];
 
+    let recordingDuration: number | null = null;
+    let recordingStartTime: number | null = null;
+
     // Access webcam and initialize stream
     async function startVideoStream() {
         try {
@@ -23,6 +26,12 @@
             // Set up MediaRecorder
             mediaRecorder = new MediaRecorder(stream);
 
+            mediaRecorder.onstart = () => {
+                recordingStartTime = Date.now(); // Record the start time in milliseconds
+                recordedChunks = []; // Clear previous recordings
+                console.log("Recording started at:", recordingStartTime);
+            };
+
             mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0) {
                     recordedChunks.push(event.data);
@@ -30,7 +39,9 @@
             };
 
             mediaRecorder.onstop = () => {
+                const recordingEndTime = Date.now();
                 console.log("Recorded chunks:", recordedChunks);
+                recordingDuration = (recordingEndTime - (recordingStartTime || recordingEndTime)) / 1000;
                 if (recordedChunks.length > 0) {
                     const blob = new Blob(recordedChunks, { type: 'video/webm' });
                     const videoURL = URL.createObjectURL(blob);
@@ -69,13 +80,13 @@
     const videoURL = URL.createObjectURL(blob);
 
     // Calculate video duration (if available)
-    const duration = recordedVideoElement?.duration || 0;
+    // const duration = recordedVideoElement?.duration || 0;
 
     // Prepare form data
     const formData = new FormData();
     formData.append('video', blob, `${videoName}.webm`); // Use the video name
     formData.append('name', videoName); // Add video name to the form data
-    formData.append('duration', duration.toString()); // Add duration to the form data
+    formData.append('duration', recordingDuration.toString()); // Add duration to the form data
 
     console.log('Saving video...', formData);
 
