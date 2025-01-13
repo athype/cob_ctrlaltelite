@@ -231,7 +231,7 @@
                 {:else if selectedFeedback.type === 'video'}
                     {#key selectedFeedback.id}
                         <video controls autoplay>
-                            <source src="http://localhost:3000/{selectedFeedback.filePath}" type="video/webp" />
+                            <source src="http://localhost:3000/{selectedFeedback.filePath}" type="video/webm" />
                             Your browser does not support the video element.
                         </video>
                     {/key}
