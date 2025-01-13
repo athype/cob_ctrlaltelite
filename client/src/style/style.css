@@ -3,6 +3,7 @@
 
     --clr-dark: #222222;
     --clr-light: #f1f5f9;
+    --clr-inverse: #b0b0b0;
     --clr-purple: #9400FF;
     --clr-pink: #F461E4;
     --clr-cyan: #31DEF7;
@@ -44,6 +45,7 @@
     --clr-text: var(--clr-light);
     --clr-border: var(--clr-purple);
     --clr-filler: var(--clr-purple);
+    --clr-inverse: #0f0f0f;
 }
 
 [data-theme="contrast"] {
@@ -51,6 +53,7 @@
     --clr-text: var(--clr-yellow);
     --clr-border: var(--clr-yellow);
     --clr-filler: var(--clr-yellow);
+    --clr-inverse: #1c1c1c;
 }
 
 * {

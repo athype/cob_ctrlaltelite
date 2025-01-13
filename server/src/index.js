@@ -22,6 +22,12 @@ if (!fs.existsSync(uploadsDir)) {
     console.log(`Created uploads directory at: ${uploadsDir}`);
 }
 
+const videosDir = path.join(__dirname, 'videos');
+if (!fs.existsSync(videosDir)) {
+    fs.mkdirSync(videosDir, { recursive: true });
+    console.log(`Created uploads directory at: ${videosDir}`);
+}
+
 
 app.use(cors({
     origin: '*',
@@ -29,6 +35,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
+app.use('/videos', express.static(videosDir));
 
 // Initialize and insert mock data
 initDatabase();
