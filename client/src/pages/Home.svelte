@@ -1,14 +1,17 @@
 <script>
+
     import AudioRecorder from "../components/AudioRecorder.svelte";
     import VideoRecorder from "../components/VideoRecorder.svelte";
-    import { onMount } from "svelte";
     import List from "../components/List.svelte";
     import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import TextRecorder from "../components/TextRecorder.svelte";
 
-    import Modal from 'svelte-simple-modal';
+    import Modal, { bind } from 'svelte-simple-modal';
     import FeedbackModalContent from "../components/FeedbackModalContent.svelte";
+    import {writable} from "svelte/store";
+    import AlertModal from "../components/AlertModal.svelte";
+
 
     // Declare reactive variables
     let recordings = $state([]);
@@ -16,6 +19,17 @@
     let selectedFeedback = $state(null);
 
     let showTranscription = $state(false);
+
+    const modal = writable(null);
+
+    // For some reason it throws an IDE error, even though it works fine
+    const showModal = (message) => modal.set(bind(AlertModal, { message: message }));
+    /*Place the following line to any code you want to display the modal
+    * showModal("You selected something!");
+    * this activates the modal that only has show modal in it
+    * it also for some reason throws a reactivity warning in browser console, but it works fine
+    * */
+
 
     // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
     $effect(() => {
@@ -103,10 +117,15 @@
 
 <ThemeSwitch/>
 <Modal
+        show={$modal}
+>
+</Modal>
+
+<Modal
         styleWindow={{backgroundColor: 'var(--clr-background)',
                       color: 'var(--clr-text)',
                       border:'3px solid var(--clr-border)'}}
-> <FeedbackModalContent onRecordingSaved={fetchFeedback}/> </Modal>
+> <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback}/> </Modal>
 
 <main class="container">
     <h1>Feedbacks</h1>
