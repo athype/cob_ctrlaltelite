@@ -68,49 +68,54 @@
     }
 
     async function saveVideo() {
-    if (!recordedChunks.length) {
-        alert('No video to save.');
-        return;
-    }
-
-    // Ask the user for a video name
-    const videoName = prompt("Enter a name for the video:", "recorded-video");
-
-    if (!videoName) {
-        alert("Video name is required!");
-        return;
-    }
-
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-
-    // Prepare form data
-    const formData = new FormData();
-    formData.append('video', blob, `${videoName}.webm`); // Use the video name
-    formData.append('name', videoName); // Add video name to the form data
-    formData.append('duration', recordingDuration.toString()); // Add duration to the form data
-
-    console.log('Saving video...', formData);
-
-    try {
-
-        const response = await fetch(`http://localhost:3000/upload-video`, {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (response.ok) {
-            console.log(await response.json());
-            onVideoSaved?.();
-            alert('Video saved successfully!');
-        } else {
-            console.error(await response.text());
-            alert('Failed to save the video.');
+        if (!recordedChunks.length) {
+            alert('No video to save.');
+            return;
         }
-    } catch (error) {
-        console.error('Save video error:', error);
-        alert('An error occurred.');
+
+        if (recordingDuration !== null && recordingDuration < 1) {
+            alert('Video is too short. Please record a video longer than 1 second.');
+            return;
+        }
+
+        // Ask the user for a video name
+        const videoName = prompt("Enter a name for the video:", "recorded-video");
+
+        if (!videoName) {
+            alert("Video name is required!");
+            return;
+        }
+
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('video', blob, `${videoName}.webm`); // Use the video name
+        formData.append('name', videoName); // Add video name to the form data
+        formData.append('duration', recordingDuration.toString()); // Add duration to the form data
+
+        console.log('Saving video...', formData);
+
+        try {
+
+            const response = await fetch(`http://localhost:3000/upload-video`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log(await response.json());
+                onVideoSaved?.();
+                alert('Video saved successfully!');
+            } else {
+                console.error(await response.text());
+                alert('Failed to save the video.');
+            }
+        } catch (error) {
+            console.error('Save video error:', error);
+            alert('An error occurred.');
+        }
     }
-}
 
 
     // Method to toggle between camera and output sections
