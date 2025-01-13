@@ -277,5 +277,39 @@
 - **Krisztián:** implement themes
 ---
 
-- **Next meeting on & at:** 9/1/2024
+- **Next meeting on & at:** 13/1/2025
 - **Closing time:** 14:45---
+
+# `13/1/2025`
+- **Present:** Anastasiia, Krisztián, Anh, Din, David, Andre
+- **Not Present:** Kryztof (sick)
+- **Scrum-master this meeting:** Anastasiia
+- **Minutes taken by:** Din
+---
+- **Opening time:** 14:29
+- **Announcements:**
+- **Approval of mergings:**
+---
+### last session's action points
+- _`General:`_
+- **Anastasiia:** Added text input as a separate component.
+- **Andre:** Making separate svelte components dor preview and make things resemble the wireframes more.
+- **Anh:** working on Video feedback backend.
+- **Kryztof:** was on vacation. Ana took over his tasks.
+- **David:** Improving the mobile responsiveness and working on blueprints, implement the video feedbacks into the list.
+- **Din:** Sprint 3 view and retrospective sprint 2.
+- **Krisztián:** figuring out how to work out pop up modals for better UX(found a good library for it).
+---
+### Current action points
+- _`General:`_
+- **Anastasiia:** Next task will be chosen.
+- **Andre:** switching between text and audio and video feedback.
+- **Anh:** writing tests for the backend but also ready to take on a higher priority task.
+- **Kryztof:** open to obtain another task.
+- **David:** Bug fixing for the end of this sprint.
+- **Din:** Next task will be chosen
+- **Krisztián:** 
+---
+
+- **Next meeting on & at:** 16/1/2025
+- **Closing time:** 14:36---
