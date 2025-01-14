@@ -2,10 +2,13 @@
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
 
+    // We receive the data and a "fetchFeedback" function as props
+    let { texts, recordings, videos, fetchFeedback = null } = $props();
+
+    // Local states
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
     let activeTab = $state("text");
-    let {texts, recordings, videos} = $props();
 
     /**
      * When tab is pressed we change the content.
@@ -20,11 +23,12 @@
      */
 
     function handleTextFeedbackClick(text) {
+        showTranscription = false;
         selectedFeedback = {
-            type: 'text',
+            type: "text",
             id: text.id,
             content: text.feedback_text,
-            name: `Text Feedback: ${text.name}`
+            name: `Text Feedback: ${text.name}`,
         };
     }
 
@@ -34,21 +38,20 @@
      */
 
     function isTextFeedbackSelected(text) {
-        return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
+        return selectedFeedback?.type === "text" && selectedFeedback?.id === text.id;
     }
 
     /**
      * When an audio feedback is clicked, selected feedback is updated with its data.
      * @param recording
      */
-
     function handleAudioFeedbackClick(recording) {
         showTranscription = false;
         selectedFeedback = {
             id: recording.id,
-            type: 'audio',
+            type: "audio",
             filePath: recording.file_path,
-            name: `Audio Feedback: ${recording.name}`
+            name: `Audio Feedback: ${recording.name}`,
         };
     }
 
@@ -56,19 +59,16 @@
      * Helper function for determining if an audio is selected.
      * @param recording
      */
-
     function isAudioFeedbackSelected(recording) {
-        return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
+        return selectedFeedback?.type === "audio" && selectedFeedback?.id === recording.id;
     }
 
-
-    async function handleTranscriptionClick() {
+    /*
+     * Called when user presses "Transcribe" button on an audio feedback
+     */
+    function handleTranscriptionClick() {
         showTranscription = true;
     }
-
-
-
-
 
     /**
      * When an video feedback is clicked, selected feedback is updated with its data.
@@ -91,9 +91,21 @@
      */
 
     function isVideoFeedbackSelected(video) {
-        return selectedFeedback?.type === 'video' && selectedFeedback?.id === video.id;
+        return selectedFeedback?.type === "video" && selectedFeedback?.id === video.id;
     }
 
+    /*
+ * Called by <TranscriptionDisplay> after successfully saving the transcription
+ * so we can refresh our feedback lists if needed.
+ */
+    async function handleTranscriptionSaved(newFeedback) {
+        // If you have a function to refresh the data, call it here:
+        if (typeof fetchFeedback === "function") {
+            await fetchFeedback();
+        }
+        // We do NOT automatically highlight the new text feedback
+        // That was previously done in Home.svelte; now omitted per your request
+    }
 
 
 </script>
@@ -106,7 +118,8 @@
                             id="text-tab"
                             class:active={activeTab === "text"}
                             class="text-tab"
-                            on:click={() => handleTabChange("text")}>
+                            onclick={() => handleTabChange("text")}
+                    >
                         <span>Text</span>
                     </button>
 
@@ -114,7 +127,8 @@
                             id="audio-tab"
                             class:active={activeTab === "audio"}
                             class="audio-tab"
-                            on:click={() => handleTabChange("audio")}>
+                            onclick={() => handleTabChange("audio")}
+                    >
                         <span>Audio</span>
                     </button>
 
@@ -122,7 +136,8 @@
                             id="video-tab"
                             class:active={activeTab === "video"}
                             class="video-tab"
-                            on:click={() => handleTabChange("video")}>
+                            onclick={() => handleTabChange("video")}
+                    >
                         <span>Video</span>
                     </button>
                 </div>
@@ -134,7 +149,8 @@
                                     items={texts}
                                     labelPrefix="Text"
                                     handleClick={handleTextFeedbackClick}
-                                    isSelected={isTextFeedbackSelected} />
+                                    isSelected={isTextFeedbackSelected}
+                            />
                         </section>
                     {/if}
 
@@ -144,7 +160,8 @@
                                     items={recordings}
                                     labelPrefix="Audio"
                                     handleClick={handleAudioFeedbackClick}
-                                    isSelected={isAudioFeedbackSelected} />
+                                    isSelected={isAudioFeedbackSelected}
+                            />
                         </section>
                     {/if}
 
@@ -154,7 +171,8 @@
                                     items={videos}
                                     labelPrefix="Video"
                                     handleClick={handleVideoFeedbackClick}
-                                    isSelected={isVideoFeedbackSelected} />
+                                    isSelected={isVideoFeedbackSelected}
+                            />
                         </section>
                     {/if}
                 </div>
@@ -165,27 +183,50 @@
     <!--    This is the container on the right which contains the feedback previews-->
     <section class="right-container">
         <h1 class="title">Preview</h1>
-        <div class="selected-feedback-display" class:selected-audio={selectedFeedback?.type === 'audio'} class:selected-video={selectedFeedback?.type === 'video'} class:selected-text={selectedFeedback?.type === 'text'}>
+        <div
+                class="selected-feedback-display"
+                class:selected-audio={selectedFeedback?.type === "audio"}
+                class:selected-video={selectedFeedback?.type === "video"}
+                class:selected-text={selectedFeedback?.type === "text"}
+        >
             {#if selectedFeedback}
                 <div class="feedback-header">{selectedFeedback.name}</div>
-                {#if selectedFeedback.type === 'audio'}
+                <!-- AUDIO FEEDBACK PREVIEW -->
+                {#if selectedFeedback.type === "audio"}
                     {#key selectedFeedback.id}
                         <audio controls autoplay>
-                            <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
+                            <source
+                                    src="http://localhost:3000/{selectedFeedback.filePath}"
+                                    type="audio/wav"
+                            />
                             Your browser does not support the audio element.
                         </audio>
-                        <button on:click={handleTranscriptionClick} class="send-button gradient-border">Transcribe</button>
+                        <!-- Transcribe Button -->
+                        <button onclick={handleTranscriptionClick} class="send-button gradient-border">
+                            Transcribe
+                        </button>
                         {#if showTranscription}
-                            <TranscriptionDisplay id={selectedFeedback.id}/>
+                            <!-- TranscriptionDisplay: pass an onTranscriptionSaved callback -->
+                            <TranscriptionDisplay
+                                    id={selectedFeedback.id}
+                                    audioName={selectedFeedback.name}
+                                    onTranscriptionSaved={handleTranscriptionSaved}
+                            />
                         {/if}
                     {/key}
-                {:else if selectedFeedback.type === 'text'}
-                    <!-- Directly display the content (no typewriter effect) -->
-                    <p style="font-size: 1.3rem; padding: 0.5rem;">{selectedFeedback.content}</p>
-                {:else if selectedFeedback.type === 'video'}
+                    <!-- TEXT FEEDBACK PREVIEW -->
+                {:else if selectedFeedback.type === "text"}
+                    <p style="font-size: 1.3rem; padding: 0.5rem;">
+                        {selectedFeedback.content}
+                    </p>
+                    <!-- VIDEO FEEDBACK PREVIEW -->
+                {:else if selectedFeedback.type === "video"}
                     {#key selectedFeedback.id}
                         <video controls autoplay>
-                            <source src="http://localhost:3000/{selectedFeedback.filePath}" type="video/webm" />
+                            <source
+                                    src="http://localhost:3000/{selectedFeedback.filePath}"
+                                    type="video/webm"
+                            />
                             Your browser does not support the video element.
                         </video>
                     {/key}
@@ -197,7 +238,6 @@
             {/if}
         </div>
     </section>
-
 </section>
 
 <style>
@@ -230,10 +270,6 @@
         max-width: 100%;
 
     }
-
-
-
-
 
     .tabs-container {
         display: flex;
@@ -291,7 +327,6 @@
         z-index: 1;
     }
 
-
     .tabs .text-tab.active {
         border-color: var(--clr-pink);
     }
@@ -301,7 +336,6 @@
     .tabs .video-tab.active {
         border-color: var(--clr-indigo);
     }
-
 
     .tab-content {
         background-color: var(--clr-background);
@@ -324,17 +358,9 @@
         border-color: var(--clr-indigo);
     }
 
-
-
-
-
-
-
     input {
         display: none;
     }
-
-
 
     label {
         display: block;
@@ -353,8 +379,6 @@
         border-color: var(--clr-pink);
         border-bottom: none;
     }
-
-
 
     .selected-feedback-display {
         flex: 1;
@@ -389,10 +413,6 @@
     .selected-feedback-display.selected-text {
         border-color: var(--clr-pink);
     }
-
-
-
-
 
     .feedback-header {
         font-size: 1.3rem;
@@ -435,6 +455,16 @@
     textarea::-webkit-scrollbar-thumb {
         background: var(--clr-text);
         border-radius: 0.25rem;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        gap: 2.5rem;
     }
 
 
