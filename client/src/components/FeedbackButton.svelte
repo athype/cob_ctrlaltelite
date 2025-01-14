@@ -23,7 +23,8 @@
         color: var(--text-color);
         font-size: 1.3rem;
         width: 100%;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
     }
 
     .label {
@@ -35,20 +36,20 @@
 
     .date-time {
         font-size: 0.9rem;
-        color: var(--text-color);
+        color: var(--clr-dimmed);
         margin-left: auto;
         white-space: nowrap;
     }
 
     button:hover {
-        box-shadow: 0 0 0.3rem 0.1rem var(--clr-text);
+        box-shadow: 0 0 5px 1px var(--clr-text);
         color: var(--background-color);
     }
 
     button.selected {
         background-color: var(--clr-inverse);
         color: var(--background-color);
-        border: 0.2rem solid var(--clr-inverse);
+        border: 3px solid var(--clr-inverse);
         box-shadow: none;
     }
 
