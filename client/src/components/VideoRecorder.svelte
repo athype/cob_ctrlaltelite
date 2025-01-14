@@ -236,7 +236,7 @@
 
     .content {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: flex-start;
         gap: 2rem;
         width: 100%;
@@ -283,15 +283,11 @@
         margin-bottom: 1rem;
     }
 
-
-
     .title {
         font-size: 1.8rem;
         padding: 0.5rem;
         font-weight: 600;
     }
-
-
 
     .gradient-border-button {
         position: relative;
@@ -309,6 +305,7 @@
     }
 
     .gradient-border-button::before {
+        max-width: auto;
         content: '';
         position: absolute;
         inset: -2px;

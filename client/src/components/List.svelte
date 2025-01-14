@@ -57,12 +57,11 @@
     textarea::-webkit-scrollbar {
         width: 4px;
     }
+
     .list::-webkit-scrollbar-thumb,
     textarea::-webkit-scrollbar-thumb {
         background: var(--clr-text);
         border-radius: 0.25rem;
     }
-
-
 
 </style>

@@ -140,10 +140,13 @@
         /*border-top-width: 1px;*/
     }
 
-
     .error {
         color: red;
         font-size: 0.9rem;
         margin-top: -1rem; /* Adjust if needed */
+    }
+
+    @media screen and (max-width: 300px) {
+
     }
 </style>

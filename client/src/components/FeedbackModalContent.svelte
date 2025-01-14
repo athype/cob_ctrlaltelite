@@ -16,7 +16,6 @@
 
     .addnew-button {
         position: relative;
-        font-size: 1.4rem;
         font-weight: 600;
         color: var(--clr-text);
         padding: 1rem;
@@ -28,11 +27,18 @@
         transform 0.2s ease; /* Added transition for scaling */
         margin-left: auto;
         margin-right: auto;
+        font-size: calc(var(--container-width) / var(--factor));
     }
 
     .addnew-button:hover {
         color: var(--clr-text);
         transform: scale(1.03); /* Button will grow by 5% */
+    }
+
+    @media screen and (max-width: 300px){
+        .addnew-button{
+            font-size: 0px;
+        }
     }
 
 </style>

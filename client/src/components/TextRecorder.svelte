@@ -145,7 +145,7 @@
         border: 3px solid var(--clr-border);
         color: var(--clr-text);
         padding: 1rem;
-        width: 20rem;
+        max-width: 20rem;
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
