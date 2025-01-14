@@ -295,23 +295,18 @@
         color: var(--crl-text);
         z-index: 0;
         border: none;
-        padding: 10px 20px;
         cursor: pointer;
-        font-size: 1rem;
         font-weight: bold;
         border-radius: 10px;
         margin: 0 5px;
         transition: background 0.3s ease;
+        padding: 1rem;
     }
 
     .gradient-border-button::before {
-        max-width: auto;
         content: '';
         position: absolute;
-        inset: -2px;
         background: linear-gradient(90deg, var(--clr-pink), var(--clr-dark-blue), var(--clr-cyan), var(--clr-pink));
-        background-size: 200% 100%;
-        z-index: -1;
         border-radius: inherit;
         transition: background-position 0.5s ease;
     }

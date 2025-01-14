@@ -37,7 +37,7 @@
 
     @media screen and (max-width: 300px){
         .addnew-button{
-            font-size: 0px;
+            font-size: 0.75rem;
         }
     }
 
