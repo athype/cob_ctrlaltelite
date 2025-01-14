@@ -146,7 +146,4 @@
         margin-top: -1rem; /* Adjust if needed */
     }
 
-    @media screen and (max-width: 300px) {
-
-    }
 </style>
