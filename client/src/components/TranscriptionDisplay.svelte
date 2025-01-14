@@ -4,7 +4,6 @@
     export let audioName;
     export let onTranscriptionSaved;
 
-
     // 1. Declare variables first
     let transcriptionData = null;
     let isLoading = true;
