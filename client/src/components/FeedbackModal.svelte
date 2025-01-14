@@ -6,7 +6,7 @@
 
     const {onRecordingSaved, onTextFeedbackSaved, onVideoSaved} = $props();
 
-    let modalDisplay = $state(true);
+    let modalDisplay = $state(false);
     let modalMessage = "";
 
     export function closeModal() {
@@ -28,11 +28,11 @@
 {/if}
 
 <div class="modal-container">
-    <AudioRecorder {onRecordingSaved}/>
+    <AudioRecorder {onRecordingSaved} {showModal}/>
     <div class="divider"></div>
     <TextRecorder {onTextFeedbackSaved} {showModal}/>
     <div class="divider"></div>
-    <VideoRecorder {onVideoSaved}/>
+    <VideoRecorder {onVideoSaved} {showModal}/>
 </div>
 
 <style>

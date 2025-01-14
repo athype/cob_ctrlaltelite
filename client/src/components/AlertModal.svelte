@@ -57,7 +57,7 @@
 
     .pop-up p {
         margin: 0;
-        font-size: 1.2rem;
+        font-size: 2.5rem;
         color: #333;
         line-height: 1.4;
         word-wrap: break-word;

@@ -34,7 +34,7 @@
                 feedbackText = '';
                 textFeedbackTitle = '';
                 feedbackSaved = true;
-                showModal?.("Text feedback saved successfully!");
+                showModal?.("Success!");
                 onTextFeedbackSaved?.();
             } else {
                 showModal?.("Text feedback failed to save");

@@ -4,21 +4,11 @@
 
     import Modal, { bind } from 'svelte-simple-modal';
     import FeedbackModalContent from "../components/FeedbackModalContent.svelte";
-    import {writable} from "svelte/store";
-    import AlertModal from "../components/AlertModal.svelte";
-
 
     // Declare reactive variables
     let recordings = $state([]);
     let videos = $state([]);
     let texts = $state([]);
-
-    /*Place the following line to any code you want to display the modal
-    * showModal("You selected something!");
-    * this activates the modal that only has show modal in it
-    * it also for some reason throws a reactivity warning in browser console, but it works fine
-    * */
-
 
     // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
     $effect(() => {
