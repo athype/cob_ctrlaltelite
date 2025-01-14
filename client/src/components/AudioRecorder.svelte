@@ -666,7 +666,7 @@
             <!-- Play and Pause buttons -->
             <div class="centered-buttons">
                 <button
-                        class="control-button gradient-border-button pause-button"
+                        class="control-button pause-button"
                         onclick={pauseRecording}
                         style="display: {isRecording ? 'block' : 'none'};"
                 >
@@ -677,7 +677,7 @@
             <!-- After Recording buttons -->
             <div class="centered-buttons after-recording">
                 <button
-                        class="control-button gradient-border-button play-button"
+                        class="control-button play-button"
                         class:disabled={!recording}
                         class:active={isPlaying}
                         onclick={togglePlay}
@@ -686,17 +686,17 @@
                     {isPlaying ? 'Stop' : 'Play'}
                 </button>
                 <button
-                        class="control-button gradient-border-button clear-button"
+                        class="control-button clear-button"
                         onclick={clearRecording}
                         style="display: {isAfterRecording ? 'block' : 'none'};"
                 >
                     Redo
                 </button>
                 <button
-                        class="control-button gradient-border-button save-button"
+                        class="control-button save-button"
                         onclick={saveRecording}
                         disabled={!recording}
-                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                        style="background-color: var(--clr-pink); display: {isAfterRecording ? 'block' : 'none'};"
                 >
                     Save
                 </button>
@@ -895,29 +895,27 @@
 
     /* Buttons */
     .control-button {
-        padding: 1rem 2rem;
-        font-size: 1.6rem;
-        border-radius: 5px;
+        padding: 1rem;
+        border-radius: 10px;
+        border: 3px solid var(--clr-text);
         cursor: pointer;
-        transition: transform 0.2s ease, background-color 0.3s ease;
+        background-color: var(--clr-background);
+        color: var(--text-color);
+        font-size: 1.6rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
     }
     .control-button:hover {
         transform: scale(1.1);
-        background-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 5px 1px var(--clr-text);
+        background-color: var(--clr-inverse);
+        border: 3px solid var(--clr-inverse);
     }
     .control-button.disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
 
-    /* Example gradient border button styling */
-    .gradient-border-button {
-        border: 2px solid transparent;
-        background-image: linear-gradient(white, white),
-        linear-gradient(to right, #ff7e5f, #feb47b);
-        background-origin: border-box;
-        background-clip: content-box, border-box;
-    }
 
     /* Button spacing and visibility tweaks for responsive design */
     @media screen and (max-width: 768px) {
@@ -991,7 +989,7 @@
         content: '';
         width: 100px;
         height: 100px;
-        background: var(--clr-purple);
+        background: red;
         border-radius: 50%;
         top: 15px;
         left: 15px;
