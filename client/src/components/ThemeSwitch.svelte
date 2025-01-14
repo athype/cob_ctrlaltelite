@@ -2,6 +2,10 @@
 
     import { theme, THEMES, setTheme } from '../stores/theme';
 
+    /**
+     * Handle the change event of the select element
+     * @param  e
+     */
     function handleChange(e) {
         const newTheme = e.currentTarget.value;
         setTheme(newTheme);
