@@ -1,12 +1,21 @@
 <script>
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
+    import Modal, {bind} from "svelte-simple-modal";
+    import {writable} from "svelte/store";
+    import AlertModal from "./AlertModal.svelte";
 
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
     let activeTab = $state("text");
     let {texts, recordings, videos} = $props();
+    let modalDisplay = $state(true);
+    let modalMessage = "";
 
+    const modal = writable(null);
+
+    const showModal = (message) => modal.set(bind(AlertModal, { message: message }));
+    showModal("You selected something!");
     /**
      * When tab is pressed we change the content.
      * @param text
@@ -97,6 +106,12 @@
 
 
 </script>
+
+{#if modalDisplay}
+    <AlertModal message={modalMessage}/>
+
+
+    {/if}
 <section class="container">
     <section class="left-container">
         <section class="feedback-container">

@@ -13,11 +13,6 @@
     let videos = $state([]);
     let texts = $state([]);
 
-
-    const modal = writable(null);
-
-    // For some reason it throws an IDE error, even though it works fine
-    const showModal = (message) => modal.set(bind(AlertModal, { message: message }));
     /*Place the following line to any code you want to display the modal
     * showModal("You selected something!");
     * this activates the modal that only has show modal in it
@@ -70,13 +65,8 @@
 </script>
 
 <ThemeSwitch/>
-<Modal
-        show={$modal}
->
-</Modal>
 
 <main class="container">
-
     <Modal
             styleWindow={{backgroundColor: 'var(--clr-background)',
                       color: 'var(--clr-text)',
