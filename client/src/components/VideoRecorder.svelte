@@ -213,8 +213,8 @@
     body {
         margin: 0;
         padding: 0;
-        background: #121212;
-        color: #fff;
+        background: var(--clr-background);
+        color: var(--clr-text);
         display: flex;
         justify-content: center;
         align-items: center;
