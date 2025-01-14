@@ -3,7 +3,8 @@
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
 
     // We receive the data and a "fetchFeedback" function as props
-    let { texts, recordings, videos, fetchFeedback = null } = $props();
+    let { texts, recordings, videos, onTextFeedbackSaved} = $props();
+
 
     // Local states
     let selectedFeedback = $state(null);
@@ -98,14 +99,24 @@
  * Called by <TranscriptionDisplay> after successfully saving the transcription
  * so we can refresh our feedback lists if needed.
  */
-    async function handleTranscriptionSaved(newFeedback) {
-        // If you have a function to refresh the data, call it here:
-        if (typeof fetchFeedback === "function") {
-            await fetchFeedback();
-        }
-        // We do NOT automatically highlight the new text feedback
-        // That was previously done in Home.svelte; now omitted per your request
-    }
+    // async function handleTranscriptionSaved(newFeedback) {
+    //     // If you have a function to refresh the data, call it here:
+    //     if (typeof fetchFeedback === "function") {
+    //         await fetchFeedback();
+    //     }
+    //     // We do NOT automatically highlight the new text feedback
+    //     // That was previously done in Home.svelte; now omitted per your request
+    // }
+
+//     function handleTextFeedbackSaved(feedback) {
+//     // Assuming feedback contains the updated transcription
+//     console.log('Text feedback saved:', feedback);
+
+//     // Update the selectedFeedback object with the saved transcription
+//     if (selectedFeedback && selectedFeedback.id === feedback.id) {
+//         selectedFeedback = { ...selectedFeedback, content: feedback.feedback_text }; // Create a new object
+//     }
+// }
 
 </script>
 <section class="container">
@@ -209,7 +220,7 @@
                             <TranscriptionDisplay
                                     id={selectedFeedback.id}
                                     audioName={selectedFeedback.name}
-                                    onTranscriptionSaved={handleTranscriptionSaved()}
+                                    {onTextFeedbackSaved}
                             />
                         {/if}
                     {/key}

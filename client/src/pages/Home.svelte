@@ -1,6 +1,7 @@
 <script>
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import FeedbackTabs from "../components/FeedbackTabs.svelte";
+    
 
     import Modal, { bind } from 'svelte-simple-modal';
     import FeedbackModalContent from "../components/FeedbackModalContent.svelte";
@@ -9,9 +10,15 @@
 
 
     // Declare reactive variables
-    let recordings = $state([]);
-    let videos = $state([]);
-    let texts = $state([]);
+    // let recordings = $state([]);
+    // let videos = $state([]);
+    // let texts = $state([]);
+
+    let recordings = $state(writable([]));
+    let videos = $state(writable([]));
+    let texts = $state(writable([]));
+
+    let {onTextFeedbackSaved} = $props();
 
 
     const modal = writable(null);
@@ -30,6 +37,7 @@
         fetchFeedback();
     });
 
+
     /**
      * Fetches both audio and text feedback from backend api via await.
      */
@@ -41,7 +49,7 @@
                 recordings = await recordingsResponse.json();
             } else if (recordingsResponse.status === 404) {
                 console.warn('No audio feedback found.');
-                recordings = [];
+                // recordings = [];
             } else {
                 console.error('Failed to fetch audio feedback:', await recordingsResponse.text());
             }
@@ -83,7 +91,7 @@
                       border:'3px solid var(--clr-border)'}}
     > <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback} onVideoSaved={fetchFeedback}/> </Modal>
 
-    <FeedbackTabs {texts} {recordings} {videos}/>
+    <FeedbackTabs {texts} {recordings} {videos} onTextFeedbackSaved={fetchFeedback}/>
 </main>
 
 <style>

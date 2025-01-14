@@ -1,21 +1,21 @@
 <script>
     import { fade } from 'svelte/transition';
-    export let id;
-    export let audioName;
-    export let onTranscriptionSaved;
+
+    
+    const {onTextFeedbackSaved, id , audioName} = $props();
 
     // 1. Declare variables first
-    let transcriptionData = null;
-    let isLoading = true;
-    let error = null;
-    let isSaveButtonDisabled = true;
-    let saved = false;
+    let transcriptionData = $state(null);
+    let isLoading = $state(true);
+    let error = $state(null);
+    let isSaveButtonDisabled = $state(true);
+    let saved = $state(false);
 
     // If there's no transcription or it's empty, we disable the button.
-    $: hasTranscription = !!(transcriptionData?.transcription?.trim());
+    // $: hasTranscription = !!(transcriptionData?.transcription?.trim());
     // Then we can decide:
     //   - isSaveButtonDisabled = true if hasTranscription is false
-    $: isSaveButtonDisabled = !hasTranscription;
+    // $: isSaveButtonDisabled = !hasTranscription;
 
     // Loading text cycle
     let loadingIndex = 0;
@@ -27,9 +27,27 @@
         'Loading Transcription...',
         'Loading Transcription....'
     ];
+    let currentLoadingText = $state(loadingTexts[loadingIndex]);
 
     // Expose the current loading text based on loadingIndex
-    $: currentLoadingText = loadingTexts[loadingIndex];
+    // $: currentLoadingText = loadingTexts[loadingIndex];
+
+    // Function to update the current loading text based on the index
+    function updateLoadingText() {
+        currentLoadingText = loadingTexts[loadingIndex];
+    }
+
+    // Function to handle button disable logic
+    function updateSaveButtonState() {
+        const hasTranscription = !!(transcriptionData?.transcription?.trim());
+        isSaveButtonDisabled = !hasTranscription;
+    }
+
+    // Whenever transcriptionData or loadingIndex changes, call these functions
+    function update() {
+        updateLoadingText();
+        updateSaveButtonState();
+    }
 
     /**
      * Fetch the transcription data from the backend.
@@ -44,6 +62,8 @@
             const response = await fetch(`http://localhost:3000/transcription/${id}`);
             if (!response.ok) throw new Error('Failed to fetch transcription');
             transcriptionData = await response.json();
+            
+            update();
 
             // If transcription is non-empty, enable the button
             if (transcriptionData.transcription?.trim().length > 0) {
@@ -73,7 +93,8 @@
                 },
                 body: JSON.stringify({
                     feedback_text: transcriptionData.transcription,
-                    name: finalTitle
+                    name: finalTitle,
+                    id: 1
                 })
             });
 
@@ -81,17 +102,24 @@
                 console.error('Failed to save transcription:', await response.text());
                 return;
             }
-
+            onTextFeedbackSaved?.();
             // The backend should return the newly created text feedback record
             // For example: { id: 42, feedback_text: "...", name: "Transcription - Some Audio" }
             const newFeedback = await response.json();
             console.log('Transcription saved successfully!', newFeedback);
 
+              // Update local state with the new transcription (for immediate reflection)
+            transcriptionData = {
+                ...transcriptionData,
+                transcription: newFeedback.feedback_text,
+            };
+
+
             // Turn the button green & change text
             saved = true;
 
             // Notify parent so it can refresh and highlight this new feedback
-            onTranscriptionSaved?.(newFeedback);
+            // onTranscriptionSaved?.();
         } catch (err) {
             console.error('Error saving transcription:', err);
         }
@@ -105,7 +133,7 @@
         loadingInterval = setInterval(() => {
             // If we're no longer loading, no need to rotate text
             if (!isLoading) return;
-
+            update(); 
             loadingIndex = (loadingIndex + 1) % loadingTexts.length;
         }, 500);
     });
@@ -117,14 +145,14 @@
 
     // We decide if the button should be disabled
     // e.g., if there's no transcription text or we're still loading
-    $: isSaveButtonDisabled = isLoading || !transcriptionData?.transcription?.trim() || error;
+    // $: isSaveButtonDisabled = isLoading || !transcriptionData?.transcription?.trim() || error;
 </script>
 
 <!-- UI -->
 <div class="transcription-display">
     <!-- 2) Always show the Save button, but disable if no transcription -->
     <button
-            on:click={saveTranscription}
+            onclick={saveTranscription}
             class="feedback-button"
             disabled={isSaveButtonDisabled}
             class:saved={saved}
