@@ -10,24 +10,26 @@
     button {
         padding: 0.5rem 1rem;
         border-radius: 5px;
-        border: 3px solid var(--clr-border);
+        border: 3px solid var(--clr-text);
         cursor: pointer;
         background-color: var(--clr-background);
         color: var(--text-color);
-        font-size: 1rem;
+        font-size: 1.3rem;
         width: 100%;
         transition: background-color var(--transition-delay) ease,
         color var(--transition-delay) ease;
+
     }
 
     button:hover {
-        box-shadow: 0 0 5px 1px #9400FF;
+        box-shadow: 0 0 5px 1px var(--clr-text);
         color: var(--background-color);
     }
 
     button.selected {
-        background-color: #7302c4;
+        background-color: var(--clr-inverse);
         color: var(--background-color);
-        border: 3px solid white;
+        border: 3px solid var(--clr-inverse);
+        box-shadow: none;
     }
 </style>

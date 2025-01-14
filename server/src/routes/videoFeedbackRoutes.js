@@ -65,17 +65,17 @@ const handleMulterError = (err, req, res, next) => {
 router.use(handleMulterError);
 
 /**
- * Route to handle file uploads for audio feedback.
+ * Route to handle file uploads for video feedback.
  */
 router.post('/upload-video', upload.single('video'), uploadVideoFeedback);
 
 /**
- * Route to retrieve all audio feedback.
+ * Route to retrieve all video feedback.
  */
 router.get('/video-feedback', getVideoFeedbackList);
 
 /**
- * Route to retrieve a single audio feedback record by ID.
+ * Route to retrieve a single video feedback record by ID.
  */
 router.get('/video-feedback/:id', getSingleVideoFeedback);
 

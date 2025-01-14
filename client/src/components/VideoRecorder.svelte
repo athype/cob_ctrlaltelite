@@ -7,8 +7,17 @@
     let saveButton: HTMLButtonElement | null = null;
     let recordedVideoElement: HTMLVideoElement | null = null;
 
+    const {onVideoSaved} = $props();
+
     let mediaRecorder: MediaRecorder;
     let recordedChunks: BlobPart[] = [];
+
+    let recordingDuration: number | null = null;
+    let recordingStartTime: number | null = null;
+
+    let isCameraSectionVisible = $state(true);
+    let isOutputSectionVisible = $state(false);
+
 
     // Access webcam and initialize stream
     async function startVideoStream() {
@@ -21,6 +30,12 @@
             // Set up MediaRecorder
             mediaRecorder = new MediaRecorder(stream);
 
+            mediaRecorder.onstart = () => {
+                recordingStartTime = Date.now(); // Record the start time in milliseconds
+                recordedChunks = []; // Clear previous recordings
+                console.log("Recording started at:", recordingStartTime);
+            };
+
             mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0) {
                     recordedChunks.push(event.data);
@@ -28,7 +43,9 @@
             };
 
             mediaRecorder.onstop = () => {
+                const recordingEndTime = Date.now();
                 console.log("Recorded chunks:", recordedChunks);
+                recordingDuration = (recordingEndTime - (recordingStartTime || recordingEndTime)) / 1000;
                 if (recordedChunks.length > 0) {
                     const blob = new Blob(recordedChunks, { type: 'video/webm' });
                     const videoURL = URL.createObjectURL(blob);
@@ -36,6 +53,7 @@
                     if (recordedVideoElement) {
                         recordedVideoElement.src = videoURL;
                         recordedVideoElement.load();
+                        recordedVideoElement.play();
                     }
 
                     if (saveButton) saveButton.disabled = false; // Enable Save Video button
@@ -50,55 +68,66 @@
     }
 
     async function saveVideo() {
-    if (!recordedChunks.length) {
-        alert('No video to save.');
-        return;
-    }
-
-    // Ask the user for a video name
-    const videoName = prompt("Enter a name for the video:", "recorded-video");
-
-    if (!videoName) {
-        alert("Video name is required!");
-        return;
-    }
-
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const videoURL = URL.createObjectURL(blob);
-
-    // Calculate video duration (if available)
-    const duration = recordedVideoElement?.duration || 0;
-
-    // Prepare form data
-    const formData = new FormData();
-    formData.append('video', blob, `${videoName}.webm`); // Use the video name
-    formData.append('name', videoName); // Add video name to the form data
-    formData.append('duration', duration.toString()); // Add duration to the form data
-
-    console.log('Saving video...', formData);
-
-    try {
-
-        const response = await fetch(`http://localhost:3000/upload-video`, {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (response.ok) {
-            console.log(await response.json());
-            alert('Video saved successfully!');
-        } else {
-            console.error(await response.text());
-            alert('Failed to save the video.');
+        if (!recordedChunks.length) {
+            alert('No video to save.');
+            return;
         }
-    } catch (error) {
-        console.error('Save video error:', error);
-        alert('An error occurred.');
+
+        if (recordingDuration !== null && recordingDuration < 1) {
+            alert('Video is too short. Please record a video longer than 1 second.');
+            return;
+        }
+
+        // Ask the user for a video name
+        const videoName = prompt("Enter a name for the video:", "recorded-video");
+
+        if (!videoName) {
+            alert("Video name is required!");
+            return;
+        }
+
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('video', blob, `${videoName}.webm`); // Use the video name
+        formData.append('name', videoName); // Add video name to the form data
+        formData.append('duration', recordingDuration.toString()); // Add duration to the form data
+
+        console.log('Saving video...', formData);
+
+        try {
+
+            const response = await fetch(`http://localhost:3000/upload-video`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log(await response.json());
+                onVideoSaved?.();
+                alert('Video saved successfully!');
+            } else {
+                console.error(await response.text());
+                alert('Failed to save the video.');
+            }
+        } catch (error) {
+            console.error('Save video error:', error);
+            alert('An error occurred.');
+        }
     }
-}
 
 
+    // Method to toggle between camera and output sections
+    function showCameraSection() {
+        isCameraSectionVisible = true;
+        isOutputSectionVisible = false;
+    }
 
+    function showOutputSection() {
+        isCameraSectionVisible = false;
+        isOutputSectionVisible = true;
+    }
 
 
 
@@ -123,7 +152,7 @@
             }
         });
 
-        // Stop recording
+        // Stop recording and toggle visibility
         stopButton?.addEventListener('click', () => {
             if (mediaRecorder) {
                 mediaRecorder.stop();
@@ -131,7 +160,14 @@
                     startButton.disabled = false;
                     stopButton.disabled = true;
                 }
+                showOutputSection(); // Show the output section
             }
+        });
+
+
+        // Redo video recording
+        document.getElementById('redo-btn')?.addEventListener('click', () => {
+            showCameraSection(); // Show the camera section
         });
 
         // Save video
@@ -140,16 +176,14 @@
         // Initialize the video stream
         startVideoStream();
     });
+
 </script>
 
 <div class="recorder-container gradient-border">
-    <h1>Video Recorder</h1>
-
     <div class="content">
-        <!-- Camera Section -->
-        <div class="camera-section">
+        <div class="camera-section" style="display: {isCameraSectionVisible ? 'block' : 'none'};">
+            <h2 class="title">Camera</h2>
             <div class="video-section">
-                <h2>Preview</h2>
                 <video id="video" autoplay muted playsinline></video>
             </div>
             <div class="controls">
@@ -158,12 +192,17 @@
             </div>
         </div>
 
-        <!-- Output Section -->
-        <div class="output-section">
-            <h2>Recorded Video</h2>
-            <video id="recorded-video" controls></video>
-            <button id="save-btn" class="gradient-border-button">Save Video</button>
+        <div class="output-section" style="display: {isOutputSectionVisible ? 'block' : 'none'};">
+            <h2 class="title">Preview</h2>
+            <div class="video-section">
+                <video id="recorded-video" controls></video>
+            </div>
+            <div class="controls">
+                <button id="redo-btn" class="gradient-border-button">Redo Video</button>
+                <button id="save-btn" class="gradient-border-button">Save Video</button>
+            </div>
         </div>
+
     </div>
 </div>
 
@@ -211,9 +250,15 @@
         text-align: center;
     }
 
-    .video-section video {
+    .video-section {
         width: 100%;
-        max-width: 400px;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .video-section video {
+        width: 50%;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
@@ -226,41 +271,25 @@
     }
 
     .output-section {
-        flex: 1;
+        width: 100%;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        justify-content: center;
+        margin-bottom: 1rem;
     }
 
     .output-section video {
-        width: 100%;
-        max-width: 420px;
+        width: 50%;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
 
-    .download-btn {
-        display: none;
-        margin-top: 1rem;
-        text-decoration: none;
-        color: var(--clr-cyan);
-        font-weight: bold;
+
+
+    .title {
+        font-size: 1.8rem;
+        padding: 0.5rem;
+        font-weight: 600;
     }
-
-    .download-btn:hover {
-        color: var(--clr-pink);
-    }
-
-
-
-
-    h1, h2 {
-        margin-bottom: 1rem;
-        color: var(--crl-text);
-    }
-
-
 
 
 

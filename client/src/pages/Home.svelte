@@ -1,10 +1,7 @@
 <script>
-
-    import AudioRecorder from "../components/AudioRecorder.svelte";
-    import VideoRecorder from "../components/VideoRecorder.svelte";
-    import List from "../components/List.svelte";
-    import TranscriptionDisplay from "../components/TranscriptionDisplay.svelte";
+    import TitleInputField from "../components/TitleInputField.svelte";
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
+    import FeedbackTabs from "../components/FeedbackTabs.svelte";
     import TextRecorder from "../components/TextRecorder.svelte";
 
     import Modal, { bind } from 'svelte-simple-modal';
@@ -14,11 +11,18 @@
 
 
     // Declare reactive variables
+    let feedbackText = $state('');
     let recordings = $state([]);
+    let videos = $state([]);
     let texts = $state([]);
     let selectedFeedback = $state(null);
-
+    let textFeedbackTitle = $state('');
     let showTranscription = $state(false);
+
+    // New state variables for validation and feedback
+    let titleError = $state(false);
+    let feedbackError = $state(false);
+    let feedbackSaved = $state(false); // To track if feedback was successfully saved
 
     const modal = writable(null);
 
@@ -59,60 +63,93 @@
             } else {
                 console.error('Failed to fetch text feedback:', await textsResponse.text());
             }
+
+            // Fetch video feedback
+            const videosResponse = await fetch('http://localhost:3000/video-feedback');
+            if (videosResponse.ok) {
+                videos = await videosResponse.json();
+            } else {
+                console.error('Failed to fetch video feedback:', await videosResponse.text());
+            }
+
         } catch (error) {
             console.error('Error fetching feedback:', error);
         }
     }
 
     /**
-     * When an audio feedback is clicked, selected feedback is updated with its data.
-     * @param recording
+     * Sends text feedback to the db.
+     * @param text_feedback
      */
-    function handleAudioFeedbackClick(recording) {
-        showTranscription = false;
-        selectedFeedback = {
-            id: recording.id,
-            type: 'audio',
-            filePath: recording.file_path,
-            name: `Audio Feedback ${recording.name}`
-        };
+    async function saveTextFeedback(text_feedback) {
+        try {
+            const response = await fetch('http://localhost:3000/text_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    feedback_text: text_feedback,
+                    name: textFeedbackTitle
+                }),
+            });
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Text feedback saved successfully:', result);
+                feedbackText = '';
+                textFeedbackTitle = '';
+                feedbackSaved = true;
+                await fetchFeedback();
+            } else {
+                console.error('Failed to save text:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error saving text:', error);
+        }
     }
 
     /**
-     * When text feedback is clicked, selected feedback is updated with its data.
-     * @param text
+     * Handler function that calls save function.
      */
-    function handleTextFeedbackClick(text) {
-        selectedFeedback = {
-            type: 'text',
-            id: text.id,
-            content: text.feedback_text,
-            name: `Text Feedback ${text.name}`
-        };
+    function handleSend() {
+        // Reset errors first
+        titleError = false;
+        feedbackError = false;
+
+        // Check if title or feedback text are empty
+        if (!textFeedbackTitle.trim()) {
+            titleError = true;
+        }
+        if (!feedbackText.trim()) {
+            feedbackError = true;
+        }
+
+        // If either error is true, don't save
+        if (titleError || feedbackError) {
+            return;
+        }
+
+        // Proceed to save if no errors
+        saveTextFeedback(feedbackText);
     }
-
-    /**
-     * Helper function for determining if an audio is selected.
-     * @param recording
-     */
-    function isAudioFeedbackSelected(recording) {
-        return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
-    }
-
-    /**
-     * Helper function for determining if a text is selected.
-     * @param text
-     */
-    function isTextFeedbackSelected(text) {
-        return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
-    }
-
-
 
     async function handleTranscriptionClick() {
         showTranscription = true;
     }
 
+    // Effect that resets the "Feedback Saved" state when the user starts typing again
+    $effect(() => {
+        if (textFeedbackTitle || feedbackText) {
+            feedbackSaved = false;
+            // Reset errors if user typed something non-empty
+            if (textFeedbackTitle.trim()) {
+                titleError = false;
+            }
+            if (feedbackText.trim()) {
+                feedbackError = false;
+            }
+        }
+    });
 </script>
 
 <ThemeSwitch/>
@@ -121,65 +158,21 @@
 >
 </Modal>
 
-<Modal
-        styleWindow={{backgroundColor: 'var(--clr-background)',
+<main class="container">
+
+    <Modal
+            styleWindow={{backgroundColor: 'var(--clr-background)',
                       color: 'var(--clr-text)',
                       border:'3px solid var(--clr-border)'}}
-> <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback}/> </Modal>
+    > <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback}/> </Modal>
 
-<main class="container">
-    <h1>Feedbacks</h1>
-    <section class="feedback-sections">
-        <List
-                items={texts}
-                labelPrefix="Text"
-                handleClick={handleTextFeedbackClick}
-                isSelected={isTextFeedbackSelected}
-        />
-        <List
-                items={recordings}
-                labelPrefix="Audio"
-                handleClick={handleAudioFeedbackClick}
-                isSelected={isAudioFeedbackSelected}
-        />
-    </section>
-
-    <section class="selected-feedback-display">
-        {#if selectedFeedback}
-            <div class="feedback-header">{selectedFeedback.name}</div>
-            {#if selectedFeedback.type === 'audio'}
-                {#key selectedFeedback.id}
-                    <audio controls autoplay>
-                        <source src="http://localhost:3000/{selectedFeedback.filePath}" type="audio/wav"/>
-                        Your browser does not support the audio element.
-                    </audio>
-                    <button on:click={handleTranscriptionClick} class="send-button">Transcribe</button>
-                    {#if showTranscription}
-                        <TranscriptionDisplay id={selectedFeedback.id}/>
-                    {/if}
-                {/key}
-            {:else if selectedFeedback.type === 'text'}
-                <!-- Directly display the content (no typewriter effect) -->
-                <p>{selectedFeedback.content}</p>
-            {/if}
-        {:else}
-            <p style="text-align: center; padding-bottom: 5vh">
-                Select a feedback to view it here.
-            </p>
-        {/if}
-    </section>
-
-    <h1>Add Feedback</h1>
-    <section class="feedback-input">
-        <TextRecorder onTextFeedbackSaved={fetchFeedback}/>
-        <AudioRecorder onRecordingSaved={fetchFeedback} />
-        <VideoRecorder/>
-    </section>
+    <button class="addnew-button gradient-border-button">Create New Feedback</button>
+    <FeedbackTabs {texts} {recordings} {videos}/>
 </main>
 
 <style>
 
-    .container {
+    .container{
         display: flex;
         flex-direction: column;
         gap: 2rem;
@@ -197,63 +190,65 @@
         margin-bottom: 1rem;
     }
 
-    .feedback-sections {
-        display: flex;
-        gap: 2rem;
-    }
-
-    .selected-feedback-display {
+    .addnew-button {
         position: relative;
-        background-color: var(--clr-background);
-        padding: 4rem 1rem 1rem;
-        border-radius: 0.5rem;
-        border: 0.225rem solid var(--clr-border);
-        /*border-top: 0.1rem solid var(--clr-pink);*/
+        font-size: 1.4rem;
+        font-weight: 600;
         color: var(--clr-text);
-        font-size: 1.5rem;
-        text-align: left;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        max-height: 50vh;
-        overflow-y: auto;
-        word-wrap: break-word;
+        padding: 1rem;
+        width: 40%;  /* Button width is 40% of the screen width */
+        align-self: center;
+        border-radius: 0.625rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease,
+        transform 0.2s ease; /* Added transition for scaling */
+        margin-left: auto;
+        margin-right: auto;
     }
 
-    /* scroll bar css to be deleted later after list component maybe */
-    .selected-feedback-display::-webkit-scrollbar,
-    textarea::-webkit-scrollbar {
-        width: 0.1rem;
+    .addnew-button:hover {
+        color: var(--clr-text);
+        transform: scale(1.03); /* Button will grow by 5% */
     }
 
-    .selected-feedback-display::-webkit-scrollbar-thumb,
-    textarea::-webkit-scrollbar-thumb {
-        background: var(--clr-purple);
-        border-radius: 0.5rem;
+    .send-button {
+        background-color: var(--clr-background);
+        border: 3px solid var(--clr-border);
+        color: var(--clr-text);
+        padding: 1rem;
+        width: 20rem;
+        align-self: center;
+        border-radius: 0.625rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
     }
 
-    .feedback-header {
-        position: absolute;
-        top: 0.625rem;
-        left: 0.625rem;
-        font-size: 1rem;
-        font-weight: bold;
+    .send-button:hover {
+        box-shadow: 0 0 0.3125rem 0.0625rem var(--clr-purple);
+        color: var(--clr-background);
+    }
+
+    .saved-button {
+        background-color: green !important;
+        color: white !important;
+    }
+
+    textarea {
+        padding: 1rem;
+        min-height: 10vh;
+        border-radius: 4px;
         background-color: var(--clr-background);
         padding: 0.5rem;
         border-radius: 0.25rem;
         color: var(--clr-text);
-    }
-
-    .feedback-input {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 2rem;
+        border: 3px solid var(--clr-border);
+        /*border-top-width: 1px;*/
     }
 
 
-
-    audio {
-        width: 100%;
+    .error {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: -1rem; /* Adjust if needed */
     }
 </style>
