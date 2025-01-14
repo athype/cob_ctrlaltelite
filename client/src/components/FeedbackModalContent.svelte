@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
     import FeedbackModal from "./FeedbackModal.svelte";
     const { open } = getContext('simple-modal');
-    const {onRecordingSaved, onTextFeedbackSaved, onVideoSaved} = $props();
+    const {onRecordingSaved, onTextFeedbackSaved, onVideoSaved } = $props();
 
 
     const showModal = () => {

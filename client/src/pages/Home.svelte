@@ -81,7 +81,7 @@
             styleWindow={{backgroundColor: 'var(--clr-background)',
                       color: 'var(--clr-text)',
                       border:'3px solid var(--clr-border)'}}
-    > <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback} onVideoSaved={fetchFeedback()}/> </Modal>
+    > <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback} onVideoSaved={fetchFeedback}/> </Modal>
 
     <FeedbackTabs {texts} {recordings} {videos}/>
 </main>
