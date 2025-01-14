@@ -209,7 +209,7 @@
                             <TranscriptionDisplay
                                     id={selectedFeedback.id}
                                     audioName={selectedFeedback.name}
-                                    onTranscriptionSaved={handleTranscriptionSaved}
+                                    onTranscriptionSaved={handleTranscriptionSaved()}
                             />
                         {/if}
                     {/key}
