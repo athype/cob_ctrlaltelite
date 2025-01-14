@@ -1,6 +1,5 @@
 <script>
     import {fade} from 'svelte/transition';
-
     const {onRecordingSaved} = $props();
 
     let isBeforeRecording = $state(true);
@@ -117,9 +116,14 @@
 
     // Canvas variables
     let canvasContext;
+    let waveformWidth = 0;
     let width = 0;
     let height = 0;
     let halfHeight = 0;
+
+    let playbackTime = 0; // Current playback time
+    const playbackBarColor = "#ffffff";
+    let canvasPositionX = 0;
 
     /**
      * @type {number} The current recording time in hundredths of a second.
@@ -361,8 +365,14 @@
         input.connect(analyser);
         analyser.connect(scriptProcessor);
         scriptProcessor.connect(audioContext.destination);
+
+        // Add a flag to check if setup is complete before calling processInput
         scriptProcessor.onaudioprocess = processInput;
+
+        // Initial empty render to ensure the canvas is ready
+        renderBars(bars);
     }
+
 
     /**
      * Processes the audio input to be used in rendering the waveform.
@@ -377,11 +387,14 @@
             const average = getAverageVolume(array);
             bars = [...bars, average];
 
+            // If the waveform exceeds the width, slice it
             if (bars.length <= Math.floor(width / (barWidth + barGutter))) {
                 renderBars(bars);
             } else {
                 renderBars(bars.slice(bars.length - Math.floor(width / (barWidth + barGutter))));
             }
+
+            waveformWidth = bars.length * (barWidth + barGutter);
         } else if (isPaused) {
             renderBars(bars);
         }
@@ -392,6 +405,7 @@
      * @param {Uint8Array} array The audio input array.
      * @returns {number} The average volume.
      */
+
     function getAverageVolume(array) {
         return array.reduce((sum, value) => sum + value, 0) / array.length;
     }
@@ -407,14 +421,25 @@
             requestAnimationFrame(() => {
                 canvasContext.clearRect(0, 0, width, height);
 
+                // Fixed center position for the waveform rendering
+                const centerX = width / 2;
+
+                // Render all bars from the start based on the current bars array
                 currentBars.forEach((bar, index) => {
                     canvasContext.fillStyle = barColor;
-                    const x = index * (barWidth + barGutter);
+                    const x = (index * (barWidth + barGutter)) - canvasPositionX;
                     const barHeight = halfHeight * (bar / 100);
 
                     canvasContext.fillRect(x, halfHeight - barHeight, barWidth, barHeight);
                     canvasContext.fillRect(x, halfHeight, barWidth, barHeight);
                 });
+
+                // Render the static white line in the middle (playback bar)
+                if (isPlaying) {
+                    canvasContext.fillStyle = '#fff'; // White line color
+                    const centerLineX = width / 2; // Center of the canvas
+                    canvasContext.fillRect(centerLineX - 1, 0, 2, height); // Fixed white line in the center
+                }
 
                 drawing = false;
             });
@@ -427,20 +452,35 @@
     function play() {
         isPlaying = true;
         isPaused = false;
-        justCleared = false;
-        justSaved = false;
-        justStopped = false;
         audioPlayer.play();
+
+        renderBars(bars); // Ensure the bars are drawn before playback starts
+
+        // Synchronize playback time immediately after play starts
+        const updatePlaybackIndicator = () => {
+            if (isPlaying) {
+                playbackTime = audioPlayer.currentTime;
+                canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
+
+                // Move the waveform itself based on playback position
+                // Adjusting the canvas position directly without transforming the canvas
+                renderBars(bars);
+
+                requestAnimationFrame(updatePlaybackIndicator);
+            }
+        };
+
+        updatePlaybackIndicator();
     }
 
-    /**
-     * Stops the audio recording playback.
-     */
     function stop() {
         isPlaying = false;
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
+        canvasPositionX = 0; // Reset to center
+        renderBars(bars); // Ensure the waveform is reset to the start
     }
+
 
     /**
      * Toggles playing the audio recording.
@@ -618,7 +658,6 @@
 
 
 </script>
-
 <div class="recorder-container gradient-border">
     <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">
@@ -658,10 +697,11 @@
             <!-- Animated button -->
             <button
                     id="animated-btn"
-                    class:active={isRecording}
+                    class="{isRecording ? 'active' : ''}"
                     onclick={toggleRecording}
-                    style="display: {isBeforeRecording ? 'block' : 'none'};"
-            ></button>
+                    style="display: {isBeforeRecording ? 'block' : 'none'};">
+                    <i id="microphone-icon" class="fas fa-microphone"></i>
+            </button>
 
             <!-- Play and Pause buttons -->
             <div class="centered-buttons">
@@ -670,7 +710,7 @@
                         onclick={pauseRecording}
                         style="display: {isRecording ? 'block' : 'none'};"
                 >
-                    {isPaused ? 'Resume' : 'Pause'}
+                    <i class={isPaused ? 'fas fa-play' : 'fas fa-pause'}></i> {isPaused ? 'Resume' : 'Pause'}
                 </button>
             </div>
 
@@ -683,14 +723,7 @@
                         onclick={togglePlay}
                         style="display: {isAfterRecording ? 'block' : 'none'};"
                 >
-                    {isPlaying ? 'Stop' : 'Play'}
-                </button>
-                <button
-                        class="control-button clear-button"
-                        onclick={clearRecording}
-                        style="display: {isAfterRecording ? 'block' : 'none'};"
-                >
-                    Redo
+                    <i class={isPlaying ? 'fas fa-stop' : 'fas fa-play'}></i> {isPlaying ? 'Stop' : 'Play'}
                 </button>
                 <button
                         class="control-button save-button"
@@ -698,7 +731,14 @@
                         disabled={!recording}
                         style="background-color: var(--clr-pink); display: {isAfterRecording ? 'block' : 'none'};"
                 >
-                    Save
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button
+                        class="control-button clear-button"
+                        onclick={clearRecording}
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                >
+                    <i class="fas fa-redo"></i> Redo
                 </button>
             </div>
         </div>
@@ -719,6 +759,7 @@
 </div>
 
 <style>
+
     @keyframes spin {
         from {
             transform: rotate(0deg);
@@ -814,7 +855,7 @@
         top: 10%;
         left: 50%;
         transform: translateX(-50%);
-        font-size: 1.7rem;
+        font-size: 2rem;
         color: var(--crl-text);
     }
 
@@ -958,7 +999,6 @@
 
 
 
-
     /* Animated button */
     #animated-btn {
         position: absolute;
@@ -971,6 +1011,10 @@
         background: none;
         border-radius: 50%;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
     }
 
     #animated-btn:before {
@@ -989,7 +1033,7 @@
         content: '';
         width: 100px;
         height: 100px;
-        background: red;
+        background: var(--clr-border);
         border-radius: 50%;
         top: 15px;
         left: 15px;
@@ -1000,7 +1044,20 @@
         animation: stop 0.5s cubic-bezier(0.4, -0.9, 0.9, 1) 1 forwards;
     }
 
+    #microphone-icon {
+        font-size: 2.5rem; /* Adjust the size as needed */
+        color: var(--clr-text); /* Use your theme's text color */
+        z-index: 1; /* Ensure the icon appears above the animations */
+        position: relative; /* To prevent it from inheriting absolute positioning from the parent */
+    }
 
+
+    #animated-btn.active #microphone-icon {
+        opacity: 0;
+        transform: scale(0.5); /* Shrink the icon as it disappears */
+    }
+
+    /* Keyframes for button animation */
     @keyframes stop {
         70% {
             border-radius: 6px;
@@ -1017,7 +1074,6 @@
             left: 33px;
         }
     }
-
 
 
 </style>
