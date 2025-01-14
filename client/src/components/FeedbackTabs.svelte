@@ -25,11 +25,9 @@
             id: text.id,
             content: text.feedback_text,
             name: `${text.name}`,
-            created_at: new Date(text.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            })
+            created_at: new Date(text.created_at)
+                .toISOString()
+                .split('T')[0]
         };
     }
 
@@ -52,11 +50,9 @@
             type: 'audio',
             filePath: recording.file_path,
             name: `${recording.name}`,
-            created_at: new Date(recording.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            })
+            created_at: new Date(recording.created_at)
+                .toISOString()
+                .split('T')[0]
         };
     }
 
@@ -83,11 +79,9 @@
             type: 'video',
             filePath: video.file_path,
             name: `${video.name}`,
-            created_at: new Date(video.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            })
+            created_at: new Date(video.created_at)
+                .toISOString()
+                .split('T')[0]
         };
     }
 

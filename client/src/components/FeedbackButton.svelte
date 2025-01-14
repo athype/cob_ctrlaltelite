@@ -15,7 +15,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem 2%;
+        padding: 0.5rem 2%;
         border-radius: 0.5rem;
         border: 0.2rem solid var(--clr-text);
         cursor: pointer;
