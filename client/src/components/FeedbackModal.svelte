@@ -1,14 +1,17 @@
 <script>
     import AudioRecorder from "./AudioRecorder.svelte";
     import TextRecorder from "./TextRecorder.svelte";
+    import VideoRecorder from "./VideoRecorder.svelte";
 
-    const {onRecordingSaved, onTextFeedbackSaved} = $props();
+    const {onRecordingSaved, onTextFeedbackSaved, onVideoSaved} = $props();
 </script>
 
 <div class="modal-container">
     <AudioRecorder {onRecordingSaved}/>
     <div class="divider"></div>
     <TextRecorder {onTextFeedbackSaved}/>
+    <div class="divider"></div>
+    <VideoRecorder {onVideoSaved}/>
 </div>
 
 <style>
