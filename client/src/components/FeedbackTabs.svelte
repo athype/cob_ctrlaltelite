@@ -12,10 +12,6 @@
     let modalDisplay = $state(true);
     let modalMessage = "";
 
-    const modal = writable(null);
-
-    const showModal = (message) => modal.set(bind(AlertModal, { message: message }));
-    showModal("You selected something!");
     /**
      * When tab is pressed we change the content.
      * @param text
@@ -70,14 +66,9 @@
         return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
     }
 
-
     async function handleTranscriptionClick() {
         showTranscription = true;
     }
-
-
-
-
 
     /**
      * When an video feedback is clicked, selected feedback is updated with its data.
@@ -107,11 +98,6 @@
 
 </script>
 
-{#if modalDisplay}
-    <AlertModal message={modalMessage}/>
-
-
-    {/if}
 <section class="container">
     <section class="left-container">
         <section class="feedback-container">
