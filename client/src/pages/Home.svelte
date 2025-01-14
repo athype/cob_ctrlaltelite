@@ -60,7 +60,8 @@
     <Modal
             styleWindow={{backgroundColor: 'var(--clr-background)',
                       color: 'var(--clr-text)',
-                      border:'3px solid var(--clr-border)'}}
+                      border:'3px solid var(--clr-border)',
+                      transition: 'all var(--transition-delay) ease-in-out'}}
     > <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback} onVideoSaved={fetchFeedback}/> </Modal>
 
     <FeedbackTabs {texts} {recordings} {videos}/>

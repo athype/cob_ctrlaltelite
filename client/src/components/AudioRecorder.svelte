@@ -621,7 +621,7 @@
         align-items: center;
         width: 100%;
         max-width: 1600px;
-        margin: 2rem auto 0;
+        margin: 0 auto 0;
         border-radius: 10px;
         position: relative; /* Needed for status-indicator positioning */
     }
