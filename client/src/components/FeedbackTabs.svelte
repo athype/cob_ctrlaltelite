@@ -24,7 +24,12 @@
             type: 'text',
             id: text.id,
             content: text.feedback_text,
-            name: `Text Feedback: ${text.name}`
+            name: `${text.name}`,
+            created_at: new Date(text.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            })
         };
     }
 
@@ -46,7 +51,12 @@
             id: recording.id,
             type: 'audio',
             filePath: recording.file_path,
-            name: `Audio Feedback: ${recording.name}`
+            name: `${recording.name}`,
+            created_at: new Date(recording.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            })
         };
     }
 
@@ -72,7 +82,12 @@
             id: video.id,
             type: 'video',
             filePath: video.file_path,
-            name: `Video Feedback: ${video.name}`
+            name: `${video.name}`,
+            created_at: new Date(video.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            })
         };
     }
 
@@ -155,7 +170,7 @@
         <h1 class="title">Preview</h1>
         <div class="selected-feedback-display" class:selected-audio={selectedFeedback?.type === 'audio'} class:selected-video={selectedFeedback?.type === 'video'} class:selected-text={selectedFeedback?.type === 'text'}>
             {#if selectedFeedback}
-                <div class="feedback-header">{selectedFeedback.name}</div>
+                <div class="feedback-header">{selectedFeedback.name + " " + selectedFeedback.created_at}</div>
                 {#if selectedFeedback.type === 'audio'}
                     {#key selectedFeedback.id}
                         <audio controls autoplay>
@@ -169,7 +184,7 @@
                     {/key}
                 {:else if selectedFeedback.type === 'text'}
                     <!-- Directly display the content (no typewriter effect) -->
-                    <p style="font-size: 1.3rem; padding: 0.5rem;">{selectedFeedback.content}</p>
+                    <p style="font-size: 1.5rem; padding: 0.5rem; align-self: center;">{selectedFeedback.content}</p>
                 {:else if selectedFeedback.type === 'video'}
                     {#key selectedFeedback.id}
                         <video controls autoplay>
@@ -362,6 +377,7 @@
     }
 
     .feedback-header {
+        align-self: center;
         font-size: 1.3rem;
         font-weight: bold;
         padding: 0.7rem;
