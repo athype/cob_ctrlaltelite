@@ -63,7 +63,6 @@
             return;
         }
 
-        // We have the local audioName from Home.svelte
         const finalTitle = `Transcription - ${audioName || 'Unknown Audio'}`;
 
         try {

@@ -107,7 +107,6 @@
         // That was previously done in Home.svelte; now omitted per your request
     }
 
-
 </script>
 <section class="container">
     <section class="left-container">
