@@ -56,6 +56,7 @@
         }
     }
 
+
     async function saveTranscription() {
         if (!transcriptionData?.transcription) {
             console.error('No transcription to save');
