@@ -1,16 +1,23 @@
 <script>
     export let label;
+    export let dateAndTime;
     export let onClick;
     export let selected = false;
 </script>
 
-<button class="feedback-button" class:selected={selected} on:click={onClick}> {label} </button>
+<button class="feedback-button" class:selected={selected} on:click={onClick}>
+    <span class="label">{label}</span>
+    <span class="date-time">{dateAndTime}</span>
+</button>
 
 <style>
     button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        border: 3px solid var(--clr-text);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 2%;
+        border-radius: 0.5rem;
+        border: 0.2rem solid var(--clr-text);
         cursor: pointer;
         background-color: var(--clr-background);
         color: var(--text-color);
@@ -18,7 +25,20 @@
         width: 100%;
         transition: background-color var(--transition-delay) ease,
         color var(--transition-delay) ease;
+    }
 
+    .label {
+        font-size: 1.3rem;
+        text-align: center;
+        margin-left: 20%;
+        flex: 1;
+    }
+
+    .date-time {
+        font-size: 0.9rem;
+        color: var(--clr-dimmed);
+        margin-left: auto;
+        white-space: nowrap;
     }
 
     button:hover {
@@ -32,4 +52,5 @@
         border: 3px solid var(--clr-inverse);
         box-shadow: none;
     }
+
 </style>

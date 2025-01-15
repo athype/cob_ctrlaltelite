@@ -3,6 +3,7 @@
 
     export let items = [];
     export let labelPrefix = '';
+    export let dateAndTime;
     export let handleClick;
     export let isSelected = (item) => false;
 </script>
@@ -14,6 +15,7 @@
         {#each items as item}
             <FeedbackButton
                     label={`${item.name}`}
+                    dateAndTime={`${item.created_at}`}
                     onClick={() => handleClick(item)}
                     selected={isSelected(item)}
             />
