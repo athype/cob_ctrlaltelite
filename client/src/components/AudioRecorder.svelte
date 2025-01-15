@@ -474,12 +474,9 @@
                 if (isPlaying) {
                     playbackTime = audioPlayer.currentTime;
 
-                    // Dynamically update the duration if it's still Infinity
                     if (audioPlayer.duration === Infinity) {
-                        // Update the canvas position based on the estimated or actual duration
                         canvasPositionX = (playbackTime / temporaryDuration) * waveformWidth - width / 2;
                     } else {
-                        // Update the canvas position based on the estimated or actual duration
                         canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
                     }
 
@@ -499,7 +496,9 @@
     }
 
 
-
+    /**
+     * Stops the audio recording.
+     */
 
 
     function stop() {
