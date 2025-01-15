@@ -23,7 +23,7 @@
         }, 1500);
     }
 
-    let activeRecorder = $state('');
+    let activeRecorder = $state('text');
 
     const [send, receive] = crossfade({
         duration: 150
@@ -39,6 +39,7 @@
 {/if}
 
 <div class="modal-container">
+    <h2 class="title">Create Feedback</h2>
     <div class="feedback-toolbar">
         <button
                 class="text-tab"
@@ -64,6 +65,8 @@
     </div>
 
     <div class="content-container">
+
+
         {#if activeRecorder === 'audio'}
             <div
                     class="recorder-wrapper"
@@ -115,7 +118,7 @@
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        min-height: 300px;
+        min-height: 450px;
         margin-bottom: 7rem;
     }
 
@@ -181,6 +184,12 @@
 
     .feedback-toolbar .video-tab.active {
         border-color: var(--clr-indigo);
+    }
+
+    .title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        text-align: center;
     }
 
 </style>
