@@ -58,11 +58,21 @@
 
 <main class="container">
     <Modal
-            styleWindow={{backgroundColor: 'var(--clr-background)',
-                      color: 'var(--clr-text)',
-                      border:'3px solid var(--clr-border)',
-                      transition: 'all var(--transition-delay) ease-in-out'}}
-    > <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback} onVideoSaved={fetchFeedback}/> </Modal>
+            styleWindow={{
+            backgroundColor: 'var(--clr-background)',
+            color: 'var(--clr-text)',
+            border: '3px solid var(--clr-border)',
+            transition: 'all var(--transition-delay) ease-in-out',
+            padding: '20px',
+            height: '47rem',
+            width: '50rem',
+            maxWidth: '80vw',
+            maxHeight: '80vh',
+            borderRadius: '10px'
+        }}
+    >
+        <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback} onVideoSaved={fetchFeedback}/>
+    </Modal>
 
     <FeedbackTabs {texts} {recordings} {videos}/>
 </main>
@@ -127,4 +137,6 @@
         font-size: 0.9rem;
         margin-top: -1rem; /* Adjust if needed */
     }
+
+
 </style>

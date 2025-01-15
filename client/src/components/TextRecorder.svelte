@@ -85,7 +85,7 @@
     });
 </script>
 
-<section class="text-recorder gradient-border">
+<section class="text-recorder " style="border: 0.3rem solid var(--clr-pink);">
     <TitleInputField bind:title={textFeedbackTitle}/>
     {#if titleError}
         <p class="error">Title is required</p>
@@ -105,7 +105,7 @@
             on:click={handleSend}
             class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
     >
-        {feedbackSaved ? 'Feedback Saved' : 'Save Text Feedback'}
+        {feedbackSaved ? 'Feedback Saved' : 'Save'}
     </button>
 </section>
 
@@ -137,22 +137,25 @@
         min-height: 10vh;
         border-radius: 4px;
         width: 100%;
+        height: 19rem;
         background-color: var(--clr-background);
         color: var(--clr-text);
-        border: 3px solid var(--clr-border);
+        border: 3px solid var(--clr-text);
         /*border-top-width: 1px;*/
     }
 
     .send-button {
         background-color: var(--clr-background);
-        border: 3px solid var(--clr-border);
+        border: 3px solid var(--clr-pink);
         color: var(--clr-text);
         padding: 1rem;
-        width: 20rem;
+        width: auto; /* Makes the width adjust based on content */
+        max-width: 20rem; /* Maximum width */
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
         color var(--transition-delay) ease;
+        font-size: 20px;
     }
 
     .send-button:hover {
