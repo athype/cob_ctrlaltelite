@@ -4,12 +4,13 @@
     let feedbackText = $state('');
     let textFeedbackTitle = $state('');
 
+
     // New state variables for validation and feedback
     let titleError = $state(false);
     let feedbackError = $state(false);
     let feedbackSaved = $state(false); // To track if feedback was successfully
 
-    const {onTextFeedbackSaved} = $props();
+    const {onTextFeedbackSaved, showModal} = $props();
 
     /**
      * Sends text feedback to the db.
@@ -33,8 +34,10 @@
                 feedbackText = '';
                 textFeedbackTitle = '';
                 feedbackSaved = true;
+                showModal?.("Success!");
                 onTextFeedbackSaved?.();
             } else {
+                showModal?.("Text feedback failed to save");
                 console.error('Failed to save text:', await response.text());
             }
         } catch (error) {

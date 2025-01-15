@@ -14,11 +14,11 @@
     const handleTabChange = (tab) => {
         activeTab = tab;
     };
+
     /**
      * When text feedback is clicked, selected feedback is updated with its data.
      * @param text
      */
-
     function handleTextFeedbackClick(text) {
         selectedFeedback = {
             type: 'text',
@@ -32,7 +32,6 @@
      * Helper function for determining if a text is selected.
      * @param text
      */
-
     function isTextFeedbackSelected(text) {
         return selectedFeedback?.type === 'text' && selectedFeedback?.id === text.id;
     }
@@ -41,7 +40,6 @@
      * When an audio feedback is clicked, selected feedback is updated with its data.
      * @param recording
      */
-
     function handleAudioFeedbackClick(recording) {
         showTranscription = false;
         selectedFeedback = {
@@ -56,25 +54,18 @@
      * Helper function for determining if an audio is selected.
      * @param recording
      */
-
     function isAudioFeedbackSelected(recording) {
         return selectedFeedback?.type === 'audio' && selectedFeedback?.id === recording.id;
     }
-
 
     async function handleTranscriptionClick() {
         showTranscription = true;
     }
 
-
-
-
-
     /**
      * When an video feedback is clicked, selected feedback is updated with its data.
      * @param video
      */
-
     function handleVideoFeedbackClick(video) {
         showTranscription = false;
         selectedFeedback = {
@@ -89,14 +80,11 @@
      * Helper function for determining if an video is selected.
      * @param video
      */
-
     function isVideoFeedbackSelected(video) {
         return selectedFeedback?.type === 'video' && selectedFeedback?.id === video.id;
     }
-
-
-
 </script>
+
 <section class="container">
     <section class="left-container">
         <section class="feedback-container">
@@ -197,7 +185,6 @@
             {/if}
         </div>
     </section>
-
 </section>
 
 <style>
@@ -230,10 +217,6 @@
         max-width: 100%;
 
     }
-
-
-
-
 
     .tabs-container {
         display: flex;
@@ -291,7 +274,6 @@
         z-index: 1;
     }
 
-
     .tabs .text-tab.active {
         border-color: var(--clr-pink);
     }
@@ -301,7 +283,6 @@
     .tabs .video-tab.active {
         border-color: var(--clr-indigo);
     }
-
 
     .tab-content {
         background-color: var(--clr-background);
@@ -324,17 +305,9 @@
         border-color: var(--clr-indigo);
     }
 
-
-
-
-
-
-
     input {
         display: none;
     }
-
-
 
     label {
         display: block;
@@ -353,8 +326,6 @@
         border-color: var(--clr-pink);
         border-bottom: none;
     }
-
-
 
     .selected-feedback-display {
         flex: 1;
@@ -389,10 +360,6 @@
     .selected-feedback-display.selected-text {
         border-color: var(--clr-pink);
     }
-
-
-
-
 
     .feedback-header {
         font-size: 1.3rem;
@@ -436,6 +403,4 @@
         background: var(--clr-text);
         border-radius: 0.25rem;
     }
-
-
 </style>

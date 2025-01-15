@@ -7,7 +7,7 @@
     let saveButton: HTMLButtonElement | null = null;
     let recordedVideoElement: HTMLVideoElement | null = null;
 
-    const {onVideoSaved} = $props();
+    const {onVideoSaved, showModal} = $props();
 
     let mediaRecorder: MediaRecorder;
     let recordedChunks: BlobPart[] = [];
@@ -106,10 +106,10 @@
             if (response.ok) {
                 console.log(await response.json());
                 onVideoSaved?.();
-                alert('Video saved successfully!');
+                showModal?.("Success!");
             } else {
                 console.error(await response.text());
-                alert('Failed to save the video.');
+                showModal?.("Failure :(");
             }
         } catch (error) {
             console.error('Save video error:', error);
@@ -213,8 +213,8 @@
     body {
         margin: 0;
         padding: 0;
-        background: #121212;
-        color: #fff;
+        background: var(--clr-background);
+        color: var(--clr-text);
         display: flex;
         justify-content: center;
         align-items: center;

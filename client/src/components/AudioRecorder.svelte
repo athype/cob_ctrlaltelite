@@ -9,98 +9,31 @@
 
     // Reactive state
 
-    /**
-     * @type {MediaStream|null} The stream obtained from the user's microphone.
-     */
     let stream = $state(null);
-
-    /**
-     * @type {MediaStreamAudioSourceNode|null} The audio source node created from the stream.
-     */
     let input = $state(null);
-
-    /**
-     * @type {MediaRecorder|null} The MediaRecorder instance used to record the audio stream.
-     */
     let recorder = $state(null);
-
-    /**
-     * @type {string|null} The URL of the recorded audio blob.
-     */
     let recording = $state(null);
 
-    /**
-     * @type {boolean} Whether audio is currently being recorded.
-     */
     let isRecording = $state(false);
-
-    /**
-     * @type {boolean} Whether a recorded audio is currently being played.
-     */
     let isPlaying = $state(false);
 
-    /**
-     * @type {BlobPart[]} Chunks of recorded audio data.
-     */
     let chunks = $state([]);
-
-    /**
-     * @type {number[]} Array representing the volume bars for waveform visualization.
-     */
     let bars = $state([]);
-
-    /**
-     * @type {boolean} Whether the waveform is currently being drawn.
-     */
     let drawing = $state(false);
 
-    /**
-     * @type {boolean} Whether the recording is currently paused.
-     */
     let isPaused = $state(false);
 
-    /**
-     * @type {string} Message text displayed to the user, e.g., for errors.
-     */
     let message = $state('');
-
-    /**
-     * @type {boolean} Whether the message is visible.
-     */
     let messageVisible = $state(false);
 
     // Additional states for indicator logic
-
-    /**
-     * @type {boolean} Whether the user has just cleared the recording.
-     */
     let justCleared = $state(false);
-
-    /**
-     * @type {boolean} Whether the user has just saved the recording.
-     */
     let justSaved = $state(false);
-
-    /**
-     * @type {boolean} Whether the user has just stopped the recording by pressing the Record button again.
-     */
     let justStopped = $state(false);
-
-    /**
-     * @type {boolean} Whether the user has just stopped playback by pressing the Play button again.
-     */
     let justStoppedPlaying = $state(false);
 
     // DOM references
-
-    /**
-     * @type {HTMLCanvasElement} The canvas element used to draw the waveform.
-     */
     let canvas;
-
-    /**
-     * @type {HTMLAudioElement} The audio element used for playback of the recorded audio.
-     */
     let audioPlayer;
 
     // Constants for waveform visualization
@@ -132,10 +65,6 @@
      */
     let recordingTime = $state(0);
 
-    /**
-     * Interval ID for the high-resolution timer (every 10ms).
-     * @type {number|undefined}
-     */
     let recordingInterval;
 
     /**
@@ -255,6 +184,7 @@
                 const result = await response.json();
                 console.log('Audio uploaded successfully:', result);
                 onRecordingSaved?.();
+                showModal?.("Success!");
                 // Indicate that we have just saved
                 justSaved = true;
                 justCleared = false;
@@ -263,6 +193,7 @@
                 recordingTime = 0;
                 resetIndicatorStateLater();
             } else {
+                showModal?.("Failure :(");
                 console.error('Failed to upload audio:', await response.text());
             }
         } catch (error) {
