@@ -18,18 +18,21 @@
     const handleTabChange = (tab) => {
         activeTab = tab;
     };
+
     /**
      * When text feedback is clicked, selected feedback is updated with its data.
      * @param text
      */
-
     function handleTextFeedbackClick(text) {
         showTranscription = false;
         selectedFeedback = {
             type: "text",
             id: text.id,
             content: text.feedback_text,
-            name: `Text Feedback: ${text.name}`,
+            name: `${text.name}`,
+            created_at: new Date(text.created_at)
+                .toISOString()
+                .split('T')[0]
         };
     }
 
@@ -37,7 +40,6 @@
      * Helper function for determining if a text is selected.
      * @param text
      */
-
     function isTextFeedbackSelected(text) {
         return selectedFeedback?.type === "text" && selectedFeedback?.id === text.id;
     }
@@ -52,7 +54,10 @@
             id: recording.id,
             type: "audio",
             filePath: recording.file_path,
-            name: `Audio Feedback: ${recording.name}`,
+            name: `${recording.name}`,
+            created_at: new Date(recording.created_at)
+                .toISOString()
+                .split('T')[0]
         };
     }
 
@@ -64,10 +69,7 @@
         return selectedFeedback?.type === "audio" && selectedFeedback?.id === recording.id;
     }
 
-    /*
-     * Called when user presses "Transcribe" button on an audio feedback
-     */
-    function handleTranscriptionClick() {
+    async function handleTranscriptionClick() {
         showTranscription = true;
     }
 
@@ -75,14 +77,16 @@
      * When an video feedback is clicked, selected feedback is updated with its data.
      * @param video
      */
-
     function handleVideoFeedbackClick(video) {
         showTranscription = false;
         selectedFeedback = {
             id: video.id,
             type: 'video',
             filePath: video.file_path,
-            name: `Video Feedback: ${video.name}`
+            name: `${video.name}`,
+            created_at: new Date(video.created_at)
+                .toISOString()
+                .split('T')[0]
         };
     }
 
@@ -90,35 +94,11 @@
      * Helper function for determining if an video is selected.
      * @param video
      */
-
     function isVideoFeedbackSelected(video) {
         return selectedFeedback?.type === "video" && selectedFeedback?.id === video.id;
     }
-
-    /*
- * Called by <TranscriptionDisplay> after successfully saving the transcription
- * so we can refresh our feedback lists if needed.
- */
-    // async function handleTranscriptionSaved(newFeedback) {
-    //     // If you have a function to refresh the data, call it here:
-    //     if (typeof fetchFeedback === "function") {
-    //         await fetchFeedback();
-    //     }
-    //     // We do NOT automatically highlight the new text feedback
-    //     // That was previously done in Home.svelte; now omitted per your request
-    // }
-
-//     function handleTextFeedbackSaved(feedback) {
-//     // Assuming feedback contains the updated transcription
-//     console.log('Text feedback saved:', feedback);
-
-//     // Update the selectedFeedback object with the saved transcription
-//     if (selectedFeedback && selectedFeedback.id === feedback.id) {
-//         selectedFeedback = { ...selectedFeedback, content: feedback.feedback_text }; // Create a new object
-//     }
-// }
-
 </script>
+
 <section class="container">
     <section class="left-container">
         <section class="feedback-container">
@@ -200,9 +180,8 @@
                 class:selected-text={selectedFeedback?.type === "text"}
         >
             {#if selectedFeedback}
-                <div class="feedback-header">{selectedFeedback.name}</div>
-                <!-- AUDIO FEEDBACK PREVIEW -->
-                {#if selectedFeedback.type === "audio"}
+                <div class="feedback-header">{selectedFeedback.name + " " + selectedFeedback.created_at}</div>
+                {#if selectedFeedback.type === 'audio'}
                     {#key selectedFeedback.id}
                         <audio controls autoplay>
                             <source
@@ -224,13 +203,10 @@
                             />
                         {/if}
                     {/key}
-                    <!-- TEXT FEEDBACK PREVIEW -->
-                {:else if selectedFeedback.type === "text"}
-                    <p style="font-size: 1.3rem; padding: 0.5rem;">
-                        {selectedFeedback.content}
-                    </p>
-                    <!-- VIDEO FEEDBACK PREVIEW -->
-                {:else if selectedFeedback.type === "video"}
+                {:else if selectedFeedback.type === 'text'}
+                    <!-- Directly display the content (no typewriter effect) -->
+                    <p style="font-size: 1.5rem; padding: 0.5rem; align-self: center;">{selectedFeedback.content}</p>
+                {:else if selectedFeedback.type === 'video'}
                     {#key selectedFeedback.id}
                         <video controls autoplay>
                             <source
@@ -353,7 +329,7 @@
         border-radius: 0.6rem;
         border-top: 4px solid var(--clr-border);
         box-sizing: border-box;
-        height: 30rem;
+        height: 28.2rem;
     }
 
     .text-tab-content {
@@ -404,10 +380,17 @@
         gap: 1rem;
         word-wrap: break-word;
         width: 100%;
-        max-height: 30rem;
+        max-height: 28.2rem;
         box-sizing: border-box;
         overflow-y: auto
     }
+
+    video {
+        width: 100%;
+        max-height: 21.9rem;
+        border-radius: 0.5rem;
+    }
+
 
     /* Audio selected: purple border */
     .selected-feedback-display.selected-audio {
@@ -425,6 +408,7 @@
     }
 
     .feedback-header {
+        align-self: center;
         font-size: 1.3rem;
         font-weight: bold;
         padding: 0.7rem;
