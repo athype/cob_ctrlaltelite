@@ -124,6 +124,7 @@
     let playbackTime = 0; // Current playback time
     const playbackBarColor = "#7d7d7d";
     let canvasPositionX = 0;
+    let temporaryDuration = 0;
 
     /**
      * @type {number} The current recording time in hundredths of a second.
@@ -314,9 +315,12 @@
      * Stops recording audio.
      */
     function stopRecording() {
+        // Capture the current time just before stopping
+        temporaryDuration = recordingTime/100;
         isRecording = false;
         recorder.stop();
     }
+
 
     /**
      * Pauses or resumes recording audio.
@@ -425,9 +429,6 @@
             requestAnimationFrame(() => {
                 canvasContext.clearRect(0, 0, width, height);
 
-                // Fixed center position for the waveform rendering
-                const centerX = width / 2;
-
                 // Render all bars from the start based on the current bars array
                 currentBars.forEach((bar, index) => {
                     canvasContext.fillStyle = barColor;
@@ -436,6 +437,7 @@
 
                     canvasContext.fillRect(x, halfHeight - barHeight, barWidth, barHeight);
                     canvasContext.fillRect(x, halfHeight, barWidth, barHeight);
+
                 });
 
                 // Render the static white line in the middle (playback bar)
@@ -453,29 +455,51 @@
     /**
      * Plays the audio recording.
      */
+
     function play() {
         console.log('Play button pressed');
         isPlaying = true;
         isPaused = false;
         audioPlayer.currentTime = 0;
-        audioPlayer.play();
+
+        // Ensure waveform is rendered before playback starts
         renderBars(bars);
+        canvasPositionX = 0; // Reset canvas position for first playback
 
-        const updatePlaybackIndicator = () => {
-            if (isPlaying) {
-                playbackTime = audioPlayer.currentTime;
-                canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
-                renderBars(bars);
+        // Start playback only after rendering the waveform
+        requestAnimationFrame(() => {
+            audioPlayer.play();
 
-                // Update the recording time display
-                recordingTime = playbackTime * 100;
+            const updatePlaybackIndicator = () => {
+                if (isPlaying) {
+                    playbackTime = audioPlayer.currentTime;
 
-                requestAnimationFrame(updatePlaybackIndicator);
-            }
-        };
+                    // Dynamically update the duration if it's still Infinity
+                    if (audioPlayer.duration === Infinity) {
+                        // Update the canvas position based on the estimated or actual duration
+                        canvasPositionX = (playbackTime / temporaryDuration) * waveformWidth - width / 2;
+                    } else {
+                        // Update the canvas position based on the estimated or actual duration
+                        canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
+                    }
 
-        updatePlaybackIndicator();
+                    console.log(temporaryDuration);
+
+                    renderBars(bars);
+
+                    // Update the recording time display
+                    recordingTime = playbackTime * 100;
+
+                    requestAnimationFrame(updatePlaybackIndicator);
+                }
+            };
+
+            updatePlaybackIndicator();
+        });
     }
+
+
+
 
 
     function stop() {
