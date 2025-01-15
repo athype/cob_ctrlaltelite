@@ -23,7 +23,7 @@
         }, 1500);
     }
 
-    let activeRecorder = $state('');
+    let activeRecorder = $state('text');
 
     const [send, receive] = crossfade({
         duration: 150
