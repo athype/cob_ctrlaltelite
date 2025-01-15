@@ -1,6 +1,6 @@
 <script>
     import {fade} from 'svelte/transition';
-    const {onRecordingSaved} = $props();
+    const {onRecordingSaved, showModal} = $props();
 
     let isBeforeRecording = $state(true);
     let isAfterRecording = $state(false);
