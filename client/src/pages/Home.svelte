@@ -1,7 +1,7 @@
 <script>
     import ThemeSwitch from "../components/ThemeSwitch.svelte";
     import FeedbackTabs from "../components/FeedbackTabs.svelte";
-    
+    import { writable } from 'svelte/store';
 
     import Modal, { bind } from 'svelte-simple-modal';
     import FeedbackModalContent from "../components/FeedbackModalContent.svelte";
