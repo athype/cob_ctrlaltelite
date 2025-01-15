@@ -1,7 +1,11 @@
 <script>
     import {fade} from 'svelte/transition';
+    const {onRecordingSaved} = $props();
 
-    const {onRecordingSaved, showModal} = $props();
+    let isBeforeRecording = $state(true);
+    let isAfterRecording = $state(false);
+
+
 
     // Reactive state
 
@@ -45,10 +49,20 @@
 
     // Canvas variables
     let canvasContext;
+    let waveformWidth = 0;
     let width = 0;
     let height = 0;
     let halfHeight = 0;
 
+    let playbackTime = 0; // Current playback time
+    const playbackBarColor = "#7d7d7d";
+    let canvasPositionX = 0;
+    let temporaryDuration = 0;
+
+    /**
+     * @type {number} The current recording time in hundredths of a second.
+     * For example, 125 represents 1.25 seconds.
+     */
     let recordingTime = $state(0);
 
     let recordingInterval;
@@ -68,6 +82,7 @@
     function hideMessage() {
         messageVisible = false;
     }
+
 
     /**
      * Requests access to the user's microphone.
@@ -126,6 +141,21 @@
             chunks = [];
         };
     }
+
+
+    /**
+     * Methods to toggle between button visibility
+     */
+    function showBeforeButtons() {
+        isBeforeRecording = true;
+        isAfterRecording = false;
+    }
+
+    function showAfterButtons() {
+        isBeforeRecording = false;
+        isAfterRecording = true;
+    }
+
 
     /**
      * Uploads the audio file to the server along with its duration and name.
@@ -216,9 +246,12 @@
      * Stops recording audio.
      */
     function stopRecording() {
+        // Capture the current time just before stopping
+        temporaryDuration = recordingTime/100;
         isRecording = false;
         recorder.stop();
     }
+
 
     /**
      * Pauses or resumes recording audio.
@@ -240,6 +273,7 @@
     function toggleRecording() {
         if (isRecording) {
             stopRecording();
+            showAfterButtons()
             justStopped = true;
             justCleared = false;
             justSaved = false;
@@ -266,8 +300,14 @@
         input.connect(analyser);
         analyser.connect(scriptProcessor);
         scriptProcessor.connect(audioContext.destination);
+
+        // Add a flag to check if setup is complete before calling processInput
         scriptProcessor.onaudioprocess = processInput;
+
+        // Initial empty render to ensure the canvas is ready
+        renderBars(bars);
     }
+
 
     /**
      * Processes the audio input to be used in rendering the waveform.
@@ -282,11 +322,14 @@
             const average = getAverageVolume(array);
             bars = [...bars, average];
 
+            // If the waveform exceeds the width, slice it
             if (bars.length <= Math.floor(width / (barWidth + barGutter))) {
                 renderBars(bars);
             } else {
                 renderBars(bars.slice(bars.length - Math.floor(width / (barWidth + barGutter))));
             }
+
+            waveformWidth = bars.length * (barWidth + barGutter);
         } else if (isPaused) {
             renderBars(bars);
         }
@@ -297,8 +340,13 @@
      * @param {Uint8Array} array The audio input array.
      * @returns {number} The average volume.
      */
+
     function getAverageVolume(array) {
-        return array.reduce((sum, value) => sum + value, 0) / array.length;
+        // Get the average volume from the frequency data array
+        const average = array.reduce((sum, value) => sum + value, 0) / array.length;
+
+        // Ensure the average volume is never below 1
+        return Math.max(1, average);
     }
 
     /**
@@ -312,14 +360,23 @@
             requestAnimationFrame(() => {
                 canvasContext.clearRect(0, 0, width, height);
 
+                // Render all bars from the start based on the current bars array
                 currentBars.forEach((bar, index) => {
                     canvasContext.fillStyle = barColor;
-                    const x = index * (barWidth + barGutter);
+                    const x = (index * (barWidth + barGutter)) - canvasPositionX;
                     const barHeight = halfHeight * (bar / 100);
 
                     canvasContext.fillRect(x, halfHeight - barHeight, barWidth, barHeight);
                     canvasContext.fillRect(x, halfHeight, barWidth, barHeight);
+
                 });
+
+                // Render the static white line in the middle (playback bar)
+                if (isPlaying) {
+                    canvasContext.fillStyle = playbackBarColor; // White line color
+                    const centerLineX = width / 2; // Center of the canvas
+                    canvasContext.fillRect(centerLineX - 1, 0, 2, height); // Fixed white line in the center
+                }
 
                 drawing = false;
             });
@@ -329,23 +386,63 @@
     /**
      * Plays the audio recording.
      */
+
     function play() {
+        console.log('Play button pressed');
         isPlaying = true;
         isPaused = false;
-        justCleared = false;
-        justSaved = false;
-        justStopped = false;
-        audioPlayer.play();
+        audioPlayer.currentTime = 0;
+
+        // Ensure waveform is rendered before playback starts
+        renderBars(bars);
+        canvasPositionX = 0; // Reset canvas position for first playback
+
+        // Start playback only after rendering the waveform
+        requestAnimationFrame(() => {
+            audioPlayer.play();
+
+            const updatePlaybackIndicator = () => {
+                if (isPlaying) {
+                    playbackTime = audioPlayer.currentTime;
+
+                    if (audioPlayer.duration === Infinity) {
+                        canvasPositionX = (playbackTime / temporaryDuration) * waveformWidth - width / 2;
+                    } else {
+                        canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
+                    }
+
+                    console.log(temporaryDuration);
+
+                    renderBars(bars);
+
+                    // Update the recording time display
+                    recordingTime = playbackTime * 100;
+
+                    requestAnimationFrame(updatePlaybackIndicator);
+                }
+            };
+
+            updatePlaybackIndicator();
+        });
     }
 
+
     /**
-     * Stops the audio recording playback.
+     * Stops the audio recording.
      */
+
+
     function stop() {
+        console.log('Stopping playback');
         isPlaying = false;
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
+        renderBars(bars);
     }
+
+
+
+
 
     /**
      * Toggles playing the audio recording.
@@ -371,6 +468,7 @@
      * Resets all related states and shows the 'cleared' indicator.
      */
     function clearRecording() {
+        canvasPositionX = 0;
         if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) {
             recorder.stop();
         }
@@ -386,7 +484,9 @@
         justStopped = false;
         // Reset the timer after clearing
         recordingTime = 0;
+        stop();
         resetIndicatorStateLater();
+        showBeforeButtons();
     }
 
     /**
@@ -477,15 +577,21 @@
      * @returns {string} Formatted time as "MM:SS.hh"
      */
     function formatTime(hundredths) {
+        // Round the hundredths to avoid floating-point precision issues
+        hundredths = Math.round(hundredths);
+
+        // Convert hundredths to seconds and minutes
         const totalSeconds = Math.floor(hundredths / 100);
         const h = hundredths % 100; // hundredths of a second
         const m = Math.floor(totalSeconds / 60);
         const s = totalSeconds % 60;
 
+        // Format time values to always be two digits
         const mm = m < 10 ? '0' + m : m;
         const ss = s < 10 ? '0' + s : s;
         const hh = h < 10 ? '0' + h : h;
 
+        // Return the formatted time in MM:SS.hh format
         return `${mm}:${ss}.${hh}`;
     }
 
@@ -508,10 +614,19 @@
                 recordingInterval = undefined;
             }
         }
+
     });
 
-</script>
 
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('animated-btn').addEventListener('click', function () {
+            this.classList.toggle('active');
+        });
+    });
+
+
+</script>
 <div class="recorder-container gradient-border">
     <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">
@@ -524,14 +639,11 @@
         {:else if indicatorSymbol.type === 'playing'}
             <!-- Green play triangle -->
             <div class="icon play">&#9658;</div>
-        {:else if indicatorSymbol.type === 'cleared'}
-            <!-- Red cross -->
-            <div class="icon cleared">&#10006;</div>
         {:else if indicatorSymbol.type === 'saved'}
             <!-- Green checkmark -->
             <div class="icon saved">&#10004;</div>
         {:else if indicatorSymbol.type === 'stopped'}
-            <!-- White square -->
+            <!-- Red square -->
             <div class="icon stopped"></div>
         {:else if indicatorSymbol.type === 'stoppedPlaying'}
             <!-- Green square -->
@@ -543,7 +655,7 @@
         <div class="recording-time">
             {formatTime(recordingTime)}
         </div>
-        <div class="waveform">
+        <div class="waveform" id="waveform">
             <canvas
                     bind:this={canvas}
                     class="js-canvas waveform__canvas"
@@ -551,45 +663,63 @@
         </div>
 
         <div class="controls">
+
+            <div
+                    class="pulse-background"
+                    style="display: {isRecording ? 'block' : 'none'}"
+            ></div>
+
+            <!-- Animated button -->
             <button
-                    class="control-button gradient-border-button record-button"
-                    class:active={isRecording}
+                    id="animated-btn"
+                    class="{isRecording ? 'active' : ''}"
                     onclick={toggleRecording}
-            >
-                Record
+                    style="display: {isBeforeRecording ? 'block' : 'none'};">
+                    <i id="microphone-icon" class="fas fa-microphone"></i>
             </button>
 
-            <button
-                    class="control-button gradient-border-button pause-button"
-                    onclick={pauseRecording}
-            >
-                {isPaused ? 'Resume' : 'Pause'}
-            </button>
+            <!-- Play and Pause buttons -->
+            <div class="centered-buttons">
+                <button
+                        class="control-button pause-button"
+                        onclick={pauseRecording}
+                        style="display: {isRecording ? 'block' : 'none'};"
+                >
+                    <i class={isPaused ? 'fas fa-play' : 'fas fa-pause'}></i> {isPaused ? 'Resume' : 'Pause'}
+                </button>
+            </div>
 
-            <button
-                    class="control-button gradient-border-button play-button"
-                    class:disabled={!recording}
-                    class:active={isPlaying}
-                    onclick={togglePlay}
-            >
-                Play
-            </button>
-
-            <button
-                    class="control-button gradient-border-button clear-button"
-                    onclick={clearRecording}
-            >
-                Clear
-            </button>
-
-            <button
-                    class="control-button gradient-border-button save-button"
-                    onclick={saveRecording}
-                    disabled={!recording}
-            >
-                Save
-            </button>
+            <!-- After Recording buttons -->
+            <div class="centered-buttons after-recording">
+                <button
+                        class="control-button play-button"
+                        class:disabled={!recording}
+                        class:active={isPlaying}
+                        onclick={togglePlay}
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                >
+                    <i class={isPlaying ? 'fas fa-stop' : 'fas fa-play'}></i> {isPlaying ? 'Stop' : 'Play'}
+                </button>
+                <button
+                        class="control-button save-button gradient-border-button"
+                        onclick={saveRecording}
+                        disabled={!recording}
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                >
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button
+                        class="control-button clear-button"
+                        id="redo-button"
+                        onclick={clearRecording}
+                        disabled={isPlaying}
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
+                >
+                <i class="fas fa-redo"></i> Redo
+                </button>
+            </div>
         </div>
+
 
         <audio
                 bind:this={audioPlayer}
@@ -606,6 +736,7 @@
 </div>
 
 <style>
+
     @keyframes spin {
         from {
             transform: rotate(0deg);
@@ -620,10 +751,12 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        max-width: 1600px;
-        margin: 0 auto 0;
+        max-width: 700px;
+        height: 500px;
+        margin: 2rem auto 0;
         border-radius: 10px;
         position: relative; /* Needed for status-indicator positioning */
+        transition: all 2.5s ease-in-out; /* Smooth transition for all properties */
     }
 
     .status-indicator {
@@ -638,7 +771,7 @@
     }
 
     .status-indicator .icon {
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -646,8 +779,8 @@
 
     /* For recording: red blinking circle */
     .status-indicator.recording .icon.circle {
-        width: 15px;
-        height: 15px;
+        width: 25px;
+        height: 25px;
         background-color: red;
         border-radius: 50%;
         animation: blink 1s infinite alternate;
@@ -681,25 +814,28 @@
 
     /* White square for stopped state */
     .status-indicator.stopped .icon.stopped {
-        width: 15px;
-        height: 15px;
-        background-color: white;
+        width: 25px;
+        height: 25px;
+        background-color: red;
     }
 
     /* Green square for stoppedPlayback state */
     .status-indicator.stoppedPlaying .icon.stoppedPlaying {
-        width: 15px;
-        height: 15px;
+        width: 25px;
+        height: 25px;
         background-color: green;
     }
 
-    /* Display time on top */
+    /* Timer */
     .recording-time {
-        text-align: center;
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2rem;
         color: var(--crl-text);
     }
+
 
     .recorder-container :global(.gradient-border-button) {
         position: relative;
@@ -724,7 +860,7 @@
     }
 
     .control-button.disabled {
-        opacity: 0.5;
+        opacity: 0.1;
         cursor: not-allowed;
     }
 
@@ -733,30 +869,84 @@
         padding: 2rem;
     }
 
+    /* Waveform */
     .waveform {
-        position: relative;
-        padding: 2rem 0;
-        width: 100%;
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        height: 100px;
     }
-
     .waveform__canvas {
         width: 100%;
-        height: 10rem;
-        display: block;
+        height: 100%;
     }
 
+    /* Controls */
     .controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        top: 75%;
+        transform: translateX(-50%);
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Centered buttons */
+    .centered-buttons {
         display: flex;
         justify-content: center;
-        align-items: center;
         gap: 1rem;
-        padding: 1rem 0;
     }
 
-    .control-button.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+    #animated-btn {
+        margin: auto;
     }
+
+    .centered-buttons.after-recording {
+        display: flex;
+        justify-content: center;
+        gap: 1rem; /* Space between 'Play', 'Redo', and 'Save' */
+    }
+
+    /* Buttons */
+    .control-button {
+        padding: 1rem;
+        border-radius: 10px;
+        border: 3px solid var(--clr-text);
+        cursor: pointer;
+        background-color: var(--clr-background);
+        color: var(--text-color);
+        font-size: 1.6rem;
+        transition: background-color var(--transition-delay) ease,
+        color var(--transition-delay) ease;
+    }
+    .control-button:not(:disabled):hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 5px 1px var(--clr-text);
+        background-color: var(--clr-inverse);
+        border: 3px solid var(--clr-inverse);
+    }
+    #redo-button:disabled {
+        color: #666666;
+        cursor: not-allowed;
+        opacity: 0.3;
+    }
+
+
+    /* Button spacing and visibility tweaks for responsive design */
+    @media screen and (max-width: 768px) {
+        .controls {
+            flex-direction: column;
+        }
+        .centered-buttons {
+            flex-wrap: wrap;
+        }
+    }
+
+
 
     .disabled {
         opacity: 0.2;
@@ -784,4 +974,122 @@
     .message--visible {
         opacity: 1;
     }
+
+    .pulse-background {
+        position: absolute;
+        left: 50%;
+        bottom: 120px;
+        transform: translateX(-50%);
+        width: 130px;
+        height: 130px;
+        background: rgba(150, 0, 255, 0.1); /* Pulse color */
+        border-radius: 50%;
+        animation: pulse 1.5s infinite ease-in-out;
+        z-index: -1; /* Behind the button */
+    }
+
+    /* Animated button */
+    #animated-btn {
+        position: absolute;
+        left: 50%;
+        bottom: 120px;
+        transform: translateX(-50%);
+        width: 130px;
+        height: 130px;
+        border: none;
+        background: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    /* Hover effect for button */
+    #animated-btn:hover {
+        transform: translateX(-50%) scale(1.1); /* Grow the button on hover without changing position */
+    }
+
+    #animated-btn:before {
+        position: absolute;
+        content: '';
+        width: 130px;
+        height: 130px;
+        background: none;
+        border-radius: 50%;
+        top: 0;
+        left: 0;
+    }
+
+    #animated-btn:after {
+        position: absolute;
+        content: '';
+        width: 100px;
+        height: 100px;
+        background: var(--clr-border);
+        border-radius: 50%;
+        top: 15px;
+        left: 15px;
+        transition: all 0.3s ease;
+    }
+
+    #animated-btn.active:after {
+        animation: stop 0.5s cubic-bezier(0.4, -0.9, 0.9, 1) 1 forwards;
+    }
+
+    #animated-btn.active #microphone-icon {
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.3s ease;
+    }
+
+    #microphone-icon {
+        font-size: 2.5rem; /* Adjust the size as needed */
+        color: var(--clr-ideal); /* Use your theme's text color */
+        z-index: 1; /* Ensure the icon appears above the animations */
+        position: relative; /* To prevent it from inheriting absolute positioning from the parent */
+    }
+
+
+    #animated-btn.active #microphone-icon {
+        opacity: 0;
+        transform: scale(0.5); /* Shrink the icon as it disappears */
+    }
+
+    /* Keyframes for button animation */
+    @keyframes stop {
+        70% {
+            border-radius: 6px;
+            width: 60px;
+            height: 60px;
+            top: 35px;
+            left: 35px;
+        }
+        100% {
+            border-radius: 6px;
+            width: 64px;
+            height: 64px;
+            top: 33px;
+            left: 33px;
+        }
+    }
+
+    /* Keyframes for pulse animation */
+    @keyframes pulse {
+        0% {
+            transform: translateX(-50%) scale(0.1);
+            opacity: 1;
+        }
+        50% {
+            transform: translateX(-50%) scale(0.9);
+            opacity: 0.9;
+        }
+        100% {
+            transform: translateX(-50%) scale(1.2);
+            opacity: 0;
+        }
+    }
+
+
 </style>
