@@ -341,10 +341,17 @@
         gap: 1rem;
         word-wrap: break-word;
         width: 100%;
-        max-height: 30rem;
+        max-height: 28.2rem;
         box-sizing: border-box;
         overflow-y: auto
     }
+
+    video {
+        width: 100%;
+        max-height: 21.9rem;
+        border-radius: 0.5rem;
+    }
+
 
     /* Audio selected: purple border */
     .selected-feedback-display.selected-audio {
