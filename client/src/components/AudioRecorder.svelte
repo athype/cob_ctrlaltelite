@@ -627,7 +627,7 @@
 
 
 </script>
-<div class="recorder-container gradient-border">
+<div class="recorder-container" style="border: 0.3rem solid var(--clr-purple);">
     <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">
         {#if indicatorSymbol.type === 'recording'}
@@ -752,8 +752,8 @@
         align-items: center;
         width: 100%;
         max-width: 700px;
-        height: 500px;
-        margin: 2rem auto 0;
+        height: 550px;
+        margin: 0 auto 0;
         border-radius: 10px;
         position: relative; /* Needed for status-indicator positioning */
         transition: all 2.5s ease-in-out; /* Smooth transition for all properties */

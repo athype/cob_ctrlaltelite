@@ -179,7 +179,7 @@
 
 </script>
 
-<div class="recorder-container gradient-border">
+<div class="recorder-container" style="border: 0.3rem solid var(--clr-indigo);">
     <div class="content">
         <div class="camera-section" style="display: {isCameraSectionVisible ? 'block' : 'none'};">
             <h2 class="title">Camera</h2>
@@ -223,10 +223,11 @@
 
     .recorder-container {
         width: 100%;
+        height: 120%;
         max-width: 600vw;
         padding: 1.5rem;
         border-radius: 10px;
-        background: #222;
+        background: var(--clr-background);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         display: flex;
         flex-direction: column;
@@ -258,10 +259,13 @@
     }
 
     .video-section video {
-        width: 50%;
+        width: 95%;
+        height: auto;
+        max-width: 100%;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
+
 
     .controls {
         display: flex;
@@ -278,7 +282,7 @@
     }
 
     .output-section video {
-        width: 50%;
+        width: 95%;
         border-radius: 10px;
         margin-bottom: 1rem;
     }
@@ -327,5 +331,22 @@
         cursor: not-allowed;
         opacity: 0.5;
     }
+
+
+    @media (max-width: 600px) {
+        .gradient-border-button {
+            padding: 4px 7px;  /* Make buttons smaller on smaller screens */
+            font-size: 0.9rem;   /* Adjust font size for better readability */
+        }
+
+        .video-section video {
+            width: 90%;  /* Adjust the video size for mobile */
+        }
+
+        .recorder-container {
+            padding: 0.5rem;  /* Adjust padding on smaller screens */
+        }
+    }
+
 
 </style>
