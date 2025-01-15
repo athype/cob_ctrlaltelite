@@ -121,10 +121,6 @@
         text-align: center;
     }
 
-    .saved-button {
-        background-color: green !important;
-        color: white !important;
-    }
 
     .error {
         color: red;
@@ -160,6 +156,5 @@
 
     .send-button:hover {
         box-shadow: 0 0 0.3125rem 0.0625rem var(--clr-purple);
-        color: var(--clr-background);
     }
 </style>
