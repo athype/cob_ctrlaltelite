@@ -299,7 +299,7 @@
         border-radius: 0.6rem;
         border-top: 4px solid var(--clr-border);
         box-sizing: border-box;
-        height: 30rem;
+        height: 28.2rem;
     }
 
     .text-tab-content {
