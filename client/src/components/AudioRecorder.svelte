@@ -122,7 +122,7 @@
     let halfHeight = 0;
 
     let playbackTime = 0; // Current playback time
-    const playbackBarColor = "#ffffff";
+    const playbackBarColor = "#7d7d7d";
     let canvasPositionX = 0;
 
     /**
@@ -407,7 +407,11 @@
      */
 
     function getAverageVolume(array) {
-        return array.reduce((sum, value) => sum + value, 0) / array.length;
+        // Get the average volume from the frequency data array
+        const average = array.reduce((sum, value) => sum + value, 0) / array.length;
+
+        // Ensure the average volume is never below 1
+        return Math.max(1, average);
     }
 
     /**
@@ -436,7 +440,7 @@
 
                 // Render the static white line in the middle (playback bar)
                 if (isPlaying) {
-                    canvasContext.fillStyle = '#fff'; // White line color
+                    canvasContext.fillStyle = playbackBarColor; // White line color
                     const centerLineX = width / 2; // Center of the canvas
                     canvasContext.fillRect(centerLineX - 1, 0, 2, height); // Fixed white line in the center
                 }
@@ -450,21 +454,21 @@
      * Plays the audio recording.
      */
     function play() {
+        console.log('Play button pressed');
         isPlaying = true;
         isPaused = false;
+        audioPlayer.currentTime = 0;
         audioPlayer.play();
+        renderBars(bars);
 
-        renderBars(bars); // Ensure the bars are drawn before playback starts
-
-        // Synchronize playback time immediately after play starts
         const updatePlaybackIndicator = () => {
             if (isPlaying) {
                 playbackTime = audioPlayer.currentTime;
                 canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
-
-                // Move the waveform itself based on playback position
-                // Adjusting the canvas position directly without transforming the canvas
                 renderBars(bars);
+
+                // Update the recording time display
+                recordingTime = playbackTime * 100;
 
                 requestAnimationFrame(updatePlaybackIndicator);
             }
@@ -473,13 +477,17 @@
         updatePlaybackIndicator();
     }
 
+
     function stop() {
+        console.log('Stopping playback');
         isPlaying = false;
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
-        canvasPositionX = 0; // Reset to center
-        renderBars(bars); // Ensure the waveform is reset to the start
+        renderBars(bars);
     }
+
+
+
 
 
     /**
@@ -506,6 +514,7 @@
      * Resets all related states and shows the 'cleared' indicator.
      */
     function clearRecording() {
+        canvasPositionX = 0;
         if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) {
             recorder.stop();
         }
@@ -614,15 +623,21 @@
      * @returns {string} Formatted time as "MM:SS.hh"
      */
     function formatTime(hundredths) {
+        // Round the hundredths to avoid floating-point precision issues
+        hundredths = Math.round(hundredths);
+
+        // Convert hundredths to seconds and minutes
         const totalSeconds = Math.floor(hundredths / 100);
         const h = hundredths % 100; // hundredths of a second
         const m = Math.floor(totalSeconds / 60);
         const s = totalSeconds % 60;
 
+        // Format time values to always be two digits
         const mm = m < 10 ? '0' + m : m;
         const ss = s < 10 ? '0' + s : s;
         const hh = h < 10 ? '0' + h : h;
 
+        // Return the formatted time in MM:SS.hh format
         return `${mm}:${ss}.${hh}`;
     }
 
@@ -694,6 +709,12 @@
         </div>
 
         <div class="controls">
+
+            <div
+                    class="pulse-background"
+                    style="display: {isRecording ? 'block' : 'none'}"
+            ></div>
+
             <!-- Animated button -->
             <button
                     id="animated-btn"
@@ -726,19 +747,21 @@
                     <i class={isPlaying ? 'fas fa-stop' : 'fas fa-play'}></i> {isPlaying ? 'Stop' : 'Play'}
                 </button>
                 <button
-                        class="control-button save-button"
+                        class="control-button save-button gradient-border-button"
                         onclick={saveRecording}
                         disabled={!recording}
-                        style="background-color: var(--clr-pink); display: {isAfterRecording ? 'block' : 'none'};"
+                        style="display: {isAfterRecording ? 'block' : 'none'};"
                 >
                     <i class="fas fa-save"></i> Save
                 </button>
                 <button
                         class="control-button clear-button"
+                        id="redo-button"
                         onclick={clearRecording}
+                        disabled={isPlaying}
                         style="display: {isAfterRecording ? 'block' : 'none'};"
                 >
-                    <i class="fas fa-redo"></i> Redo
+                <i class="fas fa-redo"></i> Redo
                 </button>
             </div>
         </div>
@@ -883,7 +906,7 @@
     }
 
     .control-button.disabled {
-        opacity: 0.5;
+        opacity: 0.1;
         cursor: not-allowed;
     }
 
@@ -946,15 +969,16 @@
         transition: background-color var(--transition-delay) ease,
         color var(--transition-delay) ease;
     }
-    .control-button:hover {
+    .control-button:not(:disabled):hover {
         transform: scale(1.1);
         box-shadow: 0 0 5px 1px var(--clr-text);
         background-color: var(--clr-inverse);
         border: 3px solid var(--clr-inverse);
     }
-    .control-button.disabled {
-        opacity: 0.5;
+    #redo-button:disabled {
+        color: #666666;
         cursor: not-allowed;
+        opacity: 0.3;
     }
 
 
@@ -997,7 +1021,18 @@
         opacity: 1;
     }
 
-
+    .pulse-background {
+        position: absolute;
+        left: 50%;
+        bottom: 120px;
+        transform: translateX(-50%);
+        width: 130px;
+        height: 130px;
+        background: rgba(150, 0, 255, 0.1); /* Pulse color */
+        border-radius: 50%;
+        animation: pulse 1.5s infinite ease-in-out;
+        z-index: -1; /* Behind the button */
+    }
 
     /* Animated button */
     #animated-btn {
@@ -1015,6 +1050,11 @@
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
+    }
+
+    /* Hover effect for button */
+    #animated-btn:hover {
+        transform: translateX(-50%) scale(1.1); /* Grow the button on hover without changing position */
     }
 
     #animated-btn:before {
@@ -1044,9 +1084,15 @@
         animation: stop 0.5s cubic-bezier(0.4, -0.9, 0.9, 1) 1 forwards;
     }
 
+    #animated-btn.active #microphone-icon {
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.3s ease;
+    }
+
     #microphone-icon {
         font-size: 2.5rem; /* Adjust the size as needed */
-        color: var(--clr-text); /* Use your theme's text color */
+        color: var(--clr-ideal); /* Use your theme's text color */
         z-index: 1; /* Ensure the icon appears above the animations */
         position: relative; /* To prevent it from inheriting absolute positioning from the parent */
     }
@@ -1072,6 +1118,22 @@
             height: 64px;
             top: 33px;
             left: 33px;
+        }
+    }
+
+    /* Keyframes for pulse animation */
+    @keyframes pulse {
+        0% {
+            transform: translateX(-50%) scale(0.1);
+            opacity: 1;
+        }
+        50% {
+            transform: translateX(-50%) scale(0.9);
+            opacity: 0.9;
+        }
+        100% {
+            transform: translateX(-50%) scale(1.2);
+            opacity: 0;
         }
     }
 
