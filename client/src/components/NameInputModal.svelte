@@ -4,12 +4,19 @@
     export let name;
     import { fade } from 'svelte/transition';
 
+    let localName = name;
+
     // Function to handle clicks outside the pop-up
     function handleOverlayClick(event) {
         const popup = event.target.closest('.pop-up');
         if (!popup) {
             closeModal();
         }
+    }
+
+    function saveAndClose() {
+        handleSaveButtonClick(localName); // Pass the updated name back to the parent
+        closeModal();
     }
 
     function closeButtonClick() {
@@ -22,8 +29,13 @@
     <section class="pop-up" transition:fade={{ duration: 500 }}>
         <button class="close-btn" on:click={closeButtonClick}>×</button>
         <div class="name-input-container">
-            <input class="name-input" type="text" placeholder="Enter name" bind:value={name}/>
-            <button class="gradient-border-button" on:click={handleSaveButtonClick}>Save</button>
+            <input 
+                class="name-input" 
+                type="text" 
+                placeholder="Enter name" 
+                bind:value={localName}
+            />
+            <button class="gradient-border-button" on:click={saveAndClose}>Save</button>
         </div>
     </section>
 </section>
@@ -90,6 +102,7 @@
         border: 1px solid #ccc;
         margin-bottom: 1rem;
         box-sizing: border-box;
+        color: var(--clr-dark);
     }
 
     .name-input:focus {
