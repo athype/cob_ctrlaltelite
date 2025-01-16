@@ -105,6 +105,7 @@
             on:click={handleSend}
             class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
     >
+        <i class="fas fa-save"></i>
         {feedbackSaved ? 'Feedback Saved' : 'Save'}
     </button>
 </section>

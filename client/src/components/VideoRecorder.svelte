@@ -198,8 +198,8 @@
                 <video id="recorded-video" controls></video>
             </div>
             <div class="controls">
-                <button id="redo-btn" class="gradient-border-button">Redo Video</button>
-                <button id="save-btn" class="gradient-border-button">Save Video</button>
+                <button id="redo-btn" class="gradient-border-button"> <i class="fas fa-redo"></i> Redo Video</button>
+                <button id="save-btn" class="gradient-border-button"> <i class="fas fa-save"></i> Save Video</button>
             </div>
         </div>
 
