@@ -72,12 +72,12 @@
             border: '3px solid var(--clr-border)',
             transition: 'all var(--transition-delay) ease-in-out',
             padding: '20px',
-            height: '47rem',
+            height: '40rem',
             width: '50rem',
-            maxWidth: '80vw',
-            maxHeight: '80vh',
-            borderRadius: '10px'
+            borderRadius: '10px',
+            overflow: 'hidden'
         }}
+            styleContent={{overflow: 'hidden'}}
     >
         <FeedbackModalContent onRecordingSaved={fetchFeedback} onTextFeedbackSaved={fetchFeedback} onVideoSaved={fetchFeedback}/>
     </Modal>

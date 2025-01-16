@@ -133,7 +133,7 @@
         min-height: 10vh;
         border-radius: 4px;
         width: 100%;
-        height: 19rem;
+        height: 15rem;
         background-color: var(--clr-background);
         color: var(--clr-text);
         border: 3px solid var(--clr-text);
@@ -150,7 +150,8 @@
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
-        color var(--transition-delay) ease;
+        color var(--transition-delay) ease,
+        box-shadow var(--transition-delay) ease;
         font-size: 20px;
     }
 

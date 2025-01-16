@@ -752,7 +752,7 @@
         align-items: center;
         width: 100%;
         max-width: 700px;
-        height: 550px;
+        height: 30rem;
         margin: 0 auto 0;
         border-radius: 10px;
         position: relative; /* Needed for status-indicator positioning */
@@ -920,8 +920,10 @@
         background-color: var(--clr-background);
         color: var(--text-color);
         font-size: 1.6rem;
-        transition: background-color var(--transition-delay) ease,
-        color var(--transition-delay) ease;
+        transition:
+                background-color var(--transition-delay) ease,
+                color var(--transition-delay) ease,
+                transform var(--transition-delay) ease;
     }
     .control-button:not(:disabled):hover {
         transform: scale(1.1);

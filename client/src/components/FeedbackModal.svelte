@@ -104,6 +104,8 @@
         min-height: 400px;
         display: flex;
         flex-direction: column;
+        overflow: revert;
+        max-height: 90vh;
     }
 
     .feedback-toolbar {

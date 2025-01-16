@@ -223,7 +223,7 @@
 
     .recorder-container {
         width: 100%;
-        height: 120%;
+        height: 30rem;
         max-width: 600vw;
         padding: 1.5rem;
         border-radius: 10px;
@@ -254,6 +254,7 @@
     .video-section {
         width: 100%;
         display: flex;
+        max-height: 20rem;
         justify-content: center;
         margin-bottom: 1rem;
     }
