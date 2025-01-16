@@ -52,7 +52,6 @@
                         currentLoadingText = `Unknown progress status: ${progress.status}`;
                         break;
                 }
-                return;
             }
         };
     }

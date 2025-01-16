@@ -52,7 +52,7 @@ function getPathToAudioFile(id) {
 /**
  * Helper function for transcribing an audio file.
  * @param {string} filePath - Path to the audio file.
- * @param {Function} - callback with progress
+ * @param {Function} onProgressCallback - callback with progress
  * @returns {Promise<string>} - Transcription of the audio file.
  */
 async function transcribe(filePath, onProgressCallback) {
