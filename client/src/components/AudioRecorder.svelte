@@ -79,9 +79,9 @@
         messageVisible = true;
     }
 
-    function onNameInputSaveClick(){
-        audioName = nameInputModalMessage;
-        console.log("Audio name " + nameInputModalMessage);
+    function onNameInputSaveClick(name){
+        audioName = name;
+        console.log("Audio name " + name);
         nameInputModalDisplay = false;
 
         if (!audioName) {
