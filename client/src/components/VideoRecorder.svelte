@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import NameInputModal from "./NameInputModal.svelte";
 
     let videoElement: HTMLVideoElement | null = null;
     let startButton: HTMLButtonElement | null = null;
@@ -18,8 +19,12 @@
     let isCameraSectionVisible = $state(true);
     let isOutputSectionVisible = $state(false);
 
+    let nameInputModalDisplay = $state(false);
+    let nameInputModalMessage = $state("");
 
-    // Access webcam and initialize stream
+    /**
+     * Access webcam and initialize stream
+     */
     async function startVideoStream() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -27,12 +32,11 @@
                 videoElement.srcObject = stream;
             }
 
-            // Set up MediaRecorder
             mediaRecorder = new MediaRecorder(stream);
 
             mediaRecorder.onstart = () => {
-                recordingStartTime = Date.now(); // Record the start time in milliseconds
-                recordedChunks = []; // Clear previous recordings
+                recordingStartTime = Date.now();
+                recordedChunks = [];
                 console.log("Recording started at:", recordingStartTime);
             };
 
@@ -56,7 +60,7 @@
                         recordedVideoElement.play();
                     }
 
-                    if (saveButton) saveButton.disabled = false; // Enable Save Video button
+                    if (saveButton) saveButton.disabled = false;
                 } else {
                     alert('No data recorded.');
                 }
@@ -67,7 +71,11 @@
         }
     }
 
-    async function saveVideo() {
+    /**
+     * Saves the recorded video to the server
+     * @param videoName
+     */
+    async function saveVideo(videoName) {
         if (!recordedChunks.length) {
             alert('No video to save.');
             return;
@@ -78,9 +86,6 @@
             return;
         }
 
-        // Ask the user for a video name
-        const videoName = prompt("Enter a name for the video:", "recorded-video");
-
         if (!videoName) {
             alert("Video name is required!");
             return;
@@ -88,16 +93,14 @@
 
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
 
-        // Prepare form data
         const formData = new FormData();
-        formData.append('video', blob, `${videoName}.webm`); // Use the video name
-        formData.append('name', videoName); // Add video name to the form data
-        formData.append('duration', recordingDuration.toString()); // Add duration to the form data
+        formData.append('video', blob, `${videoName}.webm`);
+        formData.append('name', videoName);
+        formData.append('duration', recordingDuration.toString());
 
         console.log('Saving video...', formData);
 
         try {
-
             const response = await fetch(`http://localhost:3000/upload-video`, {
                 method: 'POST',
                 body: formData,
@@ -117,19 +120,30 @@
         }
     }
 
+    /**
+     * Saves the video with the given name
+     * @param name
+     */
+    function onNameInputSaveClick(name) {
+        saveVideo(name);
+        nameInputModalDisplay = false;
+    }
 
-    // Method to toggle between camera and output sections
+    /**
+     * Method to toggle between camera and output sections
+     */
     function showCameraSection() {
         isCameraSectionVisible = true;
         isOutputSectionVisible = false;
     }
 
+    /**
+     * Method to toggle between camera and output sections
+     */
     function showOutputSection() {
         isCameraSectionVisible = false;
         isOutputSectionVisible = true;
     }
-
-
 
     onMount(() => {
         videoElement = document.getElementById('video') as HTMLVideoElement;
@@ -138,12 +152,12 @@
         saveButton = document.getElementById('save-btn') as HTMLButtonElement;
         recordedVideoElement = document.getElementById('recorded-video') as HTMLVideoElement;
 
-        if (saveButton) saveButton.disabled = true; // Disable Save button initially
+        if (saveButton) saveButton.disabled = true;
 
         // Start recording
         startButton?.addEventListener('click', () => {
             if (mediaRecorder) {
-                recordedChunks = []; // Clear previous recordings
+                recordedChunks = [];
                 mediaRecorder.start();
                 if (startButton && stopButton) {
                     startButton.disabled = true;
@@ -160,24 +174,38 @@
                     startButton.disabled = false;
                     stopButton.disabled = true;
                 }
-                showOutputSection(); // Show the output section
+                showOutputSection();
             }
         });
 
-
         // Redo video recording
         document.getElementById('redo-btn')?.addEventListener('click', () => {
-            showCameraSection(); // Show the camera section
+            showCameraSection();
         });
 
-        // Save video
-        saveButton?.addEventListener('click', saveVideo);
+        saveButton?.addEventListener('click', showNameInputModal);
 
-        // Initialize the video stream
         startVideoStream();
     });
 
+    /**
+     * Closes the name input modal
+     */
+    function closeNameInputModal() {
+        nameInputModalDisplay = false;
+    }
+
+    /**
+     * Shows the name input modal
+     */
+    function showNameInputModal() {
+        nameInputModalDisplay = true;
+    }
 </script>
+
+{#if nameInputModalDisplay}
+    <NameInputModal closeModal={closeNameInputModal} handleSaveButtonClick={onNameInputSaveClick} name={nameInputModalMessage}/>
+{/if}
 
 <div class="recorder-container" style="border: 0.3rem solid var(--clr-indigo);">
     <div class="content">
@@ -206,8 +234,6 @@
     </div>
 </div>
 
-
-
 <style>
 
     body {
@@ -226,9 +252,9 @@
         height: 120%;
         max-width: 600vw;
         padding: 1.5rem;
-        border-radius: 10px;
+        border-radius: 0.625rem;
         background: var(--clr-background);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.3);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -262,10 +288,9 @@
         width: 95%;
         height: auto;
         max-width: 100%;
-        border-radius: 10px;
+        border-radius: 0.625rem;
         margin-bottom: 1rem;
     }
-
 
     .controls {
         display: flex;
@@ -283,11 +308,9 @@
 
     .output-section video {
         width: 95%;
-        border-radius: 10px;
+        border-radius: 0.625rem;
         margin-bottom: 1rem;
     }
-
-
 
     .title {
         font-size: 1.8rem;
@@ -295,27 +318,25 @@
         font-weight: 600;
     }
 
-
-
     .gradient-border-button {
         position: relative;
         background: transparent;
         color: var(--crl-text);
         z-index: 0;
         border: none;
-        padding: 10px 20px;
+        padding: 0.625rem 1.25rem;
         cursor: pointer;
         font-size: 1rem;
         font-weight: bold;
-        border-radius: 10px;
-        margin: 0 5px;
+        border-radius: 0.625rem;
+        margin: 0 0.313rem;
         transition: background 0.3s ease;
     }
 
     .gradient-border-button::before {
         content: '';
         position: absolute;
-        inset: -2px;
+        inset: -0.125rem;
         background: linear-gradient(90deg, var(--clr-pink), var(--clr-dark-blue), var(--clr-cyan), var(--clr-pink));
         background-size: 200% 100%;
         z-index: -1;
@@ -332,21 +353,19 @@
         opacity: 0.5;
     }
 
-
-    @media (max-width: 600px) {
+    @media (max-width: 37.5rem) {
         .gradient-border-button {
-            padding: 4px 7px;  /* Make buttons smaller on smaller screens */
-            font-size: 0.9rem;   /* Adjust font size for better readability */
+            padding: 0.25rem 0.438rem;
+            font-size: 0.9rem;
         }
 
         .video-section video {
-            width: 90%;  /* Adjust the video size for mobile */
+            width: 90%;
         }
 
         .recorder-container {
-            padding: 0.5rem;  /* Adjust padding on smaller screens */
+            padding: 0.5rem;
         }
     }
-
 
 </style>
