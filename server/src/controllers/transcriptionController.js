@@ -1,8 +1,7 @@
-import {pipeline} from '@xenova/transformers';
+import {pipeline} from '@huggingface/transformers';
 import fs from 'fs';
-import wav from 'node-wav';
+import wavefile from 'wavefile';
 import {getAudioFeedbackById} from "../services/audioFeedbackService.js";
-import { execSync } from 'child_process';
 import path from "path";
 
 /**
@@ -12,19 +11,19 @@ import path from "path";
  */
 export async function getTranscription(req, res) {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
         const filePath = getPathToAudioFile(id);
 
         if (!filePath) {
-            return res.status(400).json({ error: 'No file path provided.' });
+            return res.status(400).json({error: 'No file path provided.'});
         }
 
         const transcription = await transcribe(filePath);
 
-        return res.status(200).json({ transcription: transcription });
+        return res.status(200).json({transcription: transcription});
     } catch (err) {
         console.error('Error sending transcription:', err);
-        return res.status(500).json({ error: 'Failed to send transcription.' });
+        return res.status(500).json({error: 'Failed to send transcription.'});
     }
 }
 
@@ -36,6 +35,7 @@ function getPathToAudioFile(id) {
 
     return path.join('src', 'uploads', path.basename(row.file_path));
 }
+
 /**
  * Helper function for transcribing an audio file.
  * @param {string} filePath - Path to the audio file.
@@ -43,15 +43,36 @@ function getPathToAudioFile(id) {
  */
 async function transcribe(filePath) {
     const buffer = fs.readFileSync(filePath);
-    const audioData = wav.decode(buffer);
+    const audio = new wavefile.WaveFile(buffer);
+    audio.toBitDepth('32f');
+    audio.toSampleRate(16000);
 
-    const rawAudio = audioData.channelData[0];
+    const audioData = convertToMono(audio.getSamples());
 
-    const asrPipeline = await pipeline('automatic-speech-recognition', 'distil-whisper/distil-large-v3');
+    const transcriber = await pipeline(
+        'automatic-speech-recognition', 'Xenova/whisper-tiny.en'
+    );
 
-    const result = await asrPipeline(rawAudio, {
-        sampling_rate: audioData.sampleRate,
-    });
-
+    const result = await transcriber(audioData);
     return result.text;
+}
+
+/**
+ * This function converts audio to mono
+ * @param {Array|TypedArray} audioData
+ * @returns {TypedArray}
+ */
+function convertToMono(audioData) {
+    if (!Array.isArray(audioData)) {
+        return audioData;
+    }
+    if (audioData.length > 1) {
+        const SCALING_FACTOR = Math.sqrt(2);
+
+        for (let i = 0; i < audioData[0].length; ++i) {
+            audioData[0][i] = SCALING_FACTOR * (audioData[0][i] + audioData[1][i]) / 2;
+        }
+    }
+
+    return audioData[0];
 }
