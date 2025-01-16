@@ -32,18 +32,20 @@ A standalone proof-of-concept feedback feature within Scorion that:
 
 ### 2.2 Scope
 - **In-Scope:**
-  - Audio recording, playback, and secure storage of audio files.
+  - Audio and Video recording, playback, and secure storage of audio files.
   - Text feedback input, storage, and retrieval.
-  - Displaying lists of recorded audio and text feedback for easy access.
+  - Displaying lists of recorded audio, video, and text feedback for easy access.
+  - Transcription of audio feedbacks into text, and saving it as s text feedback
   - Standalone proof-of-concept, not integrated into Scorion’s existing platform.
 
 - **Out-of-Scope:**
   - Integration with Scorion's existing system.
   - Audio editing or advanced playback controls.
-  - Multi-language support for speech-to-text transcription (optional for future work).
+  - Multi-language support for speech-to-text transcription
+  - Video fedback transcription.
 
 ### 2.3 Requirements (Non-Functional)
-- **Performance:** Low-latency audio recording and playback.
+- **Performance:** Low-latency audio and video recording and playback.
 - **Scalability:** Efficient storage and retrieval of feedback as the system scales.
 - **Security:** Fully local processing for audio recordings and transcription, with no data sent to third parties.
 - **Usability:** Intuitive user interface that aligns with Scorion's brand style.
@@ -52,9 +54,9 @@ A standalone proof-of-concept feedback feature within Scorion that:
 - **Risks:**
   - Complexity of integrating local speech-to-text libraries (e.g., Whisper, DeepSpeech).
   - Potential UI usability issues during development.
-  - Audio file storage could potentially become a bottleneck if not optimized for performance as the number of recordings increases.
+  - Audio and Video file storage could potentially become a bottleneck if not optimized for performance as the number of recordings increases.
 - **Assumptions:**
-  - SQLite database will be sufficient for storing metadata and audio/text feedback securely.
+  - SQLite database will be sufficient for storing metadata and audio/video/text feedback securely.
   - The client is primarily focused on core functionality and user experience for the proof-of-concept.
 
 ---
@@ -66,34 +68,57 @@ A standalone proof-of-concept feedback feature within Scorion that:
   - Educators: Record and store audio feedback; access and listen to feedback.
   - Students: Record and store audio feedback; access and listen to feedback.
 - **Rules:**
-  - Audio feedback is separate from assignment text for greater visibility.
+  - Audio and video feedback is shown separate from assignment text for greater visibility.
   - Only authorized users can access feedback stored in the system.
 - **Data:**
   - Audio files (e.g., `.mp3`, `.wav`).
-  - Text feedback entries (associated with audio feedback or standalone).
+  - Video files (e.g, `mp4`, `mkv`)
+  - Text feedback entries (associated with audio feedback transcription or standalone).
 
 ### 3.2 Epics and User Stories
-#### Epic 1: Audio Feedback Recording and Playback
+#### Sprint 1: 
 - **User Story 1:** As a user, I want to record audio feedback so that I can capture my message more naturally using tone of voice.
-  - **Tasks:**
-    - Develop audio recording functionality.
-    - Add Play, Pause, and Stop buttons for recordings.
-    - Securely store audio files in the database.
+  - **Includes the following:**
+    - Audio recording
+    - Play, pause, and stop buttons for it.
 - **User Story 2:** As a user, I want to listen to recorded audio feedback so that I can revisit it later.
-  - **Tasks:**
-    - Display a list of recorded audio files.
-    - Provide a Play button for each file.
-    - Ensure smooth playback functionality.
-
-#### Epic 2: Text Feedback Input and Retrieval
+  - **Includes the following:**
+    - List of recorded audios with a play button.
 - **User Story 3:** As a user, I want to type feedback so that I can express my thoughts directly and conveniently.
-  - **Tasks:**
-    - Implement a text input field for feedback.
-    - Add a Save button to store text feedback securely.
+  - **Includes the following:**
+    - Text input field
+    - Button for sending (to the list with saved texts)
 - **User Story 4:** As a user, I want to view saved text feedback so that I can revisit my previous inputs.
-  - **Tasks:**
-    - Create a list view for displaying saved text feedback.
-    - Include a preview box for selected feedback.
+  - **Includes the following:**
+    - List with the text field
+    - Box for view, where a selected text can be read
+#### Sprint 2:
+- **User Story 1:** As a user, I want to switch between Light, Dark, and High Contrast modes so that I can use the platform in different environments or based on my visual preferences.
+  - **Includes the following:**
+    - Integrating Whisper into the backend to process stored audio files.
+    - Converting recorded audio files to the required frequency (16,000 Hz).
+    - "Transcribe" button to audio feedback previews for initiating transcription.
+    - Connecting the transcription feature between the frontend and backend.
+- **User Story 2:** As a user, I want to transcribe my audio feedback to text so that I can have flexibility in how I provide feedback.
+  - **Includes the following:**
+    - A theme switcher to the frontend with options for Light, Dark, and High Contrast modes.
+    - Light theme, ensuring consistent styling and smooth transitions.
+    - Add High Contrast mode for better accessibility.
+#### Sprint 3:
+- **User Story 1:** As a user, I want the app to have a convenient and user-friendly interface with specific and relevant guidance so that I can record feedback easily and efficiently
+  - **Includes the following:**
+    - Feedback lists (audio, text, video) on a separate page.
+    - A slider to toggle between different feedback types.
+    - Improving the visual design of the interface, including consistent styling and clear labels.
+- **User Story 2:** As a user, I want to be able to record video feedback so that I can deliver feedback similar to an in-person experience
+  - **Includes the following:**
+    - A video recorder component with buttons for record, stop, and playback.
+    - Database functionality for video storage and retrieval.
+    - A list of recorded videos with options for playback.
+- **User Story 3:** As a user, I want real-time feedback during transcription so that I know the progress and status of my request.
+  - **Includes the following:**
+    - Real-time status updates for the transcription process.
+    - Progress stages like uploading, conversion, and transcription on the frontend.
 
 ### 3.3 Mockups and wireframes (Low-Fidelity)
 #### Mockups
