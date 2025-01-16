@@ -18,9 +18,22 @@ export async function getTranscription(req, res) {
             return res.status(400).json({error: 'No file path provided.'});
         }
 
-        const transcription = await transcribe(filePath);
+        res.on('close', () => res.end());
 
-        return res.status(200).json({transcription: transcription});
+        res.set({
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*'
+        });
+        res.flushHeaders();
+
+        const transcription = await transcribe(filePath, (progress) => {
+            res.write(`data: ${JSON.stringify({progress})}\n\n`);
+        });
+        res.write(`data: ${JSON.stringify({transcription})}\n\n`);
+
+        res.end();
     } catch (err) {
         console.error('Error sending transcription:', err);
         return res.status(500).json({error: 'Failed to send transcription.'});
@@ -39,9 +52,10 @@ function getPathToAudioFile(id) {
 /**
  * Helper function for transcribing an audio file.
  * @param {string} filePath - Path to the audio file.
+ * @param {Function} - callback with progress
  * @returns {Promise<string>} - Transcription of the audio file.
  */
-async function transcribe(filePath) {
+async function transcribe(filePath, onProgressCallback) {
     const buffer = fs.readFileSync(filePath);
     const audio = new wavefile.WaveFile(buffer);
     audio.toBitDepth('32f');
@@ -50,7 +64,8 @@ async function transcribe(filePath) {
     const audioData = convertToMono(audio.getSamples());
 
     const transcriber = await pipeline(
-        'automatic-speech-recognition', 'Xenova/whisper-tiny.en'
+        'automatic-speech-recognition', 'Xenova/whisper-tiny.en',
+        {progress_callback: onProgressCallback}
     );
 
     const result = await transcriber(audioData);

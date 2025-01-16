@@ -1,8 +1,5 @@
 <script>
-    import { fade } from 'svelte/transition';
-
-    
-    const {onTextFeedbackSaved, id , audioName} = $props();
+    const {onTextFeedbackSaved, id, audioName} = $props();
 
     let transcriptionData = $state(null);
     let isLoading = $state(true);
@@ -10,50 +7,55 @@
     let isSaveButtonDisabled = $state(true);
     let saved = $state(false);
 
-    let loadingIndex = 0;
-    let loadingInterval;
-    const loadingTexts = [
-        'Loading Transcription',
-        'Loading Transcription.',
-        'Loading Transcription..',
-        'Loading Transcription...',
-        'Loading Transcription....'
-    ];
-    let currentLoadingText = $state(loadingTexts[loadingIndex]);
 
-    function updateLoadingText() {
-        currentLoadingText = loadingTexts[loadingIndex];
-    }
-
-    function updateSaveButtonState() {
-        const hasTranscription = !!(transcriptionData?.transcription?.trim());
-        isSaveButtonDisabled = !hasTranscription;
-    }
-
-    function update() {
-        updateLoadingText();
-        updateSaveButtonState();
-    }
-
+    let currentLoadingText = $state('');
 
     async function fetchTranscription() {
-        try {
-            const response = await fetch(`http://localhost:3000/transcription/${id}`);
-            if (!response.ok) throw new Error('Failed to fetch transcription');
-            transcriptionData = await response.json();
-            
-            update();
+        if (transcriptionData) return;
 
-            if (transcriptionData.transcription?.trim().length > 0) {
-                isSaveButtonDisabled = false;
+        const eventSource = new EventSource(`http://localhost:3000/transcription/${id}`);
+
+        eventSource.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+
+            if (data === null) {
+                return;
             }
-        } catch (err) {
-            error = err.message;
-        } finally {
-            isLoading = false;
-        }
-    }
 
+            if ("transcription" in data) {
+                isSaveButtonDisabled = false;
+                transcriptionData = data;
+                isLoading = false;
+                eventSource.close();
+                return;
+            }
+
+            if ("progress" in data) {
+                const {progress} = data;
+                switch (progress.status) {
+                    case 'initiate':
+                        currentLoadingText = `Initiating ${progress.file || 'transcription'}...`;
+                        break;
+                    case 'download':
+                        currentLoadingText = `Downloading ${progress.file || 'files'}...`;
+                        break;
+                    case 'progress':
+                        currentLoadingText = `Loading ${progress.file || 'files'}... ${progress.progress || 0}%`;
+                        break;
+                    case 'done':
+                        currentLoadingText = `Done!`;
+                        break;
+                    case 'ready':
+                        currentLoadingText = `${progress.file || 'Everything'} is ready!`;
+                        break;
+                    default:
+                        currentLoadingText = `Unknown progress status: ${progress.status}`;
+                        break;
+                }
+                return;
+            }
+        };
+    }
 
     async function saveTranscription() {
         if (!transcriptionData?.transcription) {
@@ -98,19 +100,12 @@
     }
 
 
-    import {onDestroy, onMount} from 'svelte';
+    import {onMount} from 'svelte';
+
     onMount(() => {
         fetchTranscription();
-        loadingInterval = setInterval(() => {
-            if (!isLoading) return;
-            update(); 
-            loadingIndex = (loadingIndex + 1) % loadingTexts.length;
-        }, 500);
     });
 
-    onDestroy(() => {
-        clearInterval(loadingInterval);
-    });
 
 </script>
 
@@ -122,10 +117,10 @@
     {:else}
         {#if transcriptionData?.transcription?.trim()}
         <textarea
-        bind:value={transcriptionData.transcription}
-        rows="5"
-        class="transcription-textarea"
-    ></textarea>
+                bind:value={transcriptionData.transcription}
+                rows="5"
+                class="transcription-textarea"
+        ></textarea>
         {:else}
             <p>No transcription found yet.</p>
         {/if}
@@ -161,6 +156,7 @@
         word-wrap: break-word;
         align-items: center;
     }
+
     button {
         padding: 0.5rem 1rem;
         border-radius: 5px;
