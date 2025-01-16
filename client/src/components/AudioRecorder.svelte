@@ -1,11 +1,14 @@
 <script>
     import {fade} from 'svelte/transition';
+    import NameInputModal from "./NameInputModal.svelte";
     const {onRecordingSaved, showModal} = $props();
 
     let isBeforeRecording = $state(true);
     let isAfterRecording = $state(false);
 
-
+    let nameInputModalDisplay = $state(false);
+    let nameInputModalMessage = $state("");
+    let modalMessage = "";
 
     // Reactive state
 
@@ -74,6 +77,25 @@
     function setMessage(text) {
         message = text;
         messageVisible = true;
+    }
+
+    function onNameInputSaveClick(){
+        audioName = nameInputModalMessage;
+        nameInputModalDisplay = false;
+
+        if (!audioName) {
+            console.error('No name entered. Aborting upload.');
+            return; // Do not proceed without a name
+        }
+
+        console.log("Audio name " + audioName);
+        fetch(recording)
+            .then((res) => res.blob())
+            .then((blob) => {
+                console.log('Blob prepared for upload:', blob);
+                uploadAudio(blob, audioName);
+            })
+            .catch((error) => console.error('Error preparing audio for upload:', error));
     }
 
     /**
@@ -210,19 +232,10 @@
             return;
         }
 
-        audioName = window.prompt('Enter a name for your audio recording:', 'My Recording');
-        if (!audioName) {
-            console.error('No name entered. Aborting upload.');
-            return; // Do not proceed without a name
-        }
+        showNameInputModal("Enter a name for your audio recording:");
 
-        fetch(recording)
-            .then((res) => res.blob())
-            .then((blob) => {
-                console.log('Blob prepared for upload:', blob);
-                uploadAudio(blob, audioName);
-            })
-            .catch((error) => console.error('Error preparing audio for upload:', error));
+        //audioName = window.prompt('Enter a name for your audio recording:', 'My Recording');
+
     }
 
     /**
@@ -430,8 +443,6 @@
     /**
      * Stops the audio recording.
      */
-
-
     function stop() {
         console.log('Stopping playback');
         isPlaying = false;
@@ -439,10 +450,6 @@
         audioPlayer.currentTime = 0;
         renderBars(bars);
     }
-
-
-
-
 
     /**
      * Toggles playing the audio recording.
@@ -617,16 +624,27 @@
 
     });
 
-
-
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('animated-btn').addEventListener('click', function () {
             this.classList.toggle('active');
         });
     });
 
+    function closeNameInputModal() {
+        nameInputModalDisplay = false;
+    }
+
+    function showNameInputModal(message) {
+        nameInputModalDisplay = true;
+        nameInputModalMessage = message;
+    }
 
 </script>
+
+{#if nameInputModalDisplay}
+    <NameInputModal closeModal={closeNameInputModal} message={modalMessage} name={nameInputModalMessage} handleSaveButtonClick={onNameInputSaveClick}/>
+{/if}
+
 <div class="recorder-container" style="border: 0.3rem solid var(--clr-purple);">
     <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">

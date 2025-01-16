@@ -4,13 +4,10 @@
     import VideoRecorder from "./VideoRecorder.svelte";
     import AlertModal from "./AlertModal.svelte";
     import { crossfade } from 'svelte/transition';
-    import NameInputModal from "./NameInputModal.svelte";
 
     const {onRecordingSaved, onTextFeedbackSaved, onVideoSaved} = $props();
 
     let modalDisplay = $state(false);
-    let nameInputModalDisplay = $state(true);
-    let nameInputModalMessage = "";
     let modalMessage = "";
 
     export function closeModal() {
@@ -26,15 +23,6 @@
         }, 1500);
     }
 
-    function closeNameInputModal() {
-        nameInputModalDisplay = false;
-    }
-
-    function showNameInputModal(message) {
-        nameInputModalDisplay = true;
-        nameInputModalMessage = message;
-    }
-
     let activeRecorder = $state('text');
 
     const [send, receive] = crossfade({
@@ -48,10 +36,6 @@
 
 {#if modalDisplay}
     <AlertModal message={modalMessage} closeModal={closeModal}/>
-{/if}
-
-{#if nameInputModalDisplay}
-    <NameInputModal closeModal={closeNameInputModal} message={modalMessage} name={name}/>
 {/if}
 
 <div class="modal-container">
