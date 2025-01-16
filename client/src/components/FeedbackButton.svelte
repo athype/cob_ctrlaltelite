@@ -31,6 +31,8 @@
         text-align: center;
         margin-left: 20%;
         flex: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .date-time {
@@ -56,6 +58,7 @@
     @media screen and (max-width: 1024px) {
         button{
             justify-content: right;
+
         }
         .date-time{
             font-size: 0.6rem;
