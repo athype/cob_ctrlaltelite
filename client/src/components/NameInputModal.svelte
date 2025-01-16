@@ -1,7 +1,6 @@
 <script>
     export let closeModal;
     export let handleSaveButtonClick;
-    export let message = "Default message";
     export let name;
     import { fade } from 'svelte/transition';
 
@@ -23,7 +22,7 @@
     <section class="pop-up" transition:fade={{ duration: 500 }}>
         <button class="close-btn" on:click={closeButtonClick}>×</button>
         <div class="name-input-container">
-            <input class="name-input" type="text" placeholder={message} bind:value={name}/>
+            <input class="name-input" type="text" placeholder="Enter name" bind:value={name}/>
             <button class="gradient-border-button" on:click={handleSaveButtonClick}>Save</button>
         </div>
     </section>

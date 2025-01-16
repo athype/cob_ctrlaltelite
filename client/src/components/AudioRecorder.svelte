@@ -81,6 +81,7 @@
 
     function onNameInputSaveClick(){
         audioName = nameInputModalMessage;
+        console.log("Audio name " + nameInputModalMessage);
         nameInputModalDisplay = false;
 
         if (!audioName) {
@@ -232,7 +233,7 @@
             return;
         }
 
-        showNameInputModal("Enter a name for your audio recording:");
+        showNameInputModal();
 
         //audioName = window.prompt('Enter a name for your audio recording:', 'My Recording');
 
@@ -634,15 +635,15 @@
         nameInputModalDisplay = false;
     }
 
-    function showNameInputModal(message) {
+    function showNameInputModal() {
         nameInputModalDisplay = true;
-        nameInputModalMessage = message;
+
     }
 
 </script>
 
 {#if nameInputModalDisplay}
-    <NameInputModal closeModal={closeNameInputModal} message={modalMessage} name={nameInputModalMessage} handleSaveButtonClick={onNameInputSaveClick}/>
+    <NameInputModal closeModal={closeNameInputModal} handleSaveButtonClick={onNameInputSaveClick} name={nameInputModalMessage}/>
 {/if}
 
 <div class="recorder-container" style="border: 0.3rem solid var(--clr-purple);">
