@@ -1,6 +1,7 @@
 <script>
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
+    import NameInputModal from "./NameInputModal.svelte";
 
     // We receive the data and a "fetchFeedback" function as props
     let { texts, recordings, videos, onTextFeedbackSaved} = $props();
