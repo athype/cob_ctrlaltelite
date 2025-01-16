@@ -139,6 +139,7 @@
         {#if saved}
             Transcription Saved
         {:else}
+            <i class="fas fa-save"></i>
             Save Transcription
         {/if}
     </button>
