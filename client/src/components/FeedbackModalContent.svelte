@@ -10,7 +10,7 @@
     };
 </script>
 
-<button class="addnew-button gradient-border-button" onclick={showModal}>New feedback</button>
+<button class="addnew-button gradient-border-button" onclick={showModal}>New feedback <i class="fa-solid fa-pen-to-square"></i></button>
 
 <style>
 

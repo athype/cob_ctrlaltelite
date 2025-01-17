@@ -105,6 +105,7 @@
             on:click={handleSend}
             class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
     >
+        <i class="fas fa-save"></i>
         {feedbackSaved ? 'Feedback Saved' : 'Save'}
     </button>
 </section>
@@ -121,10 +122,6 @@
         text-align: center;
     }
 
-    .saved-button {
-        background-color: green !important;
-        color: white !important;
-    }
 
     .error {
         color: red;
@@ -137,7 +134,7 @@
         min-height: 10vh;
         border-radius: 4px;
         width: 100%;
-        height: 19rem;
+        height: 15rem;
         background-color: var(--clr-background);
         color: var(--clr-text);
         border: 3px solid var(--clr-text);
@@ -154,12 +151,12 @@
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
-        color var(--transition-delay) ease;
+        color var(--transition-delay) ease,
+        box-shadow var(--transition-delay) ease;
         font-size: 20px;
     }
 
     .send-button:hover {
         box-shadow: 0 0 0.3125rem 0.0625rem var(--clr-purple);
-        color: var(--clr-background);
     }
 </style>

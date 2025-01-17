@@ -766,7 +766,7 @@
         align-items: center;
         width: 100%;
         max-width: 43.75rem;
-        height: 34.375rem;
+        height: 30rem;
         margin: 0 auto 0;
         border-radius: 0.625rem;
         position: relative;
@@ -930,8 +930,10 @@
         background-color: var(--clr-background);
         color: var(--text-color);
         font-size: 1.6rem;
-        transition: background-color var(--transition-delay) ease,
-        color var(--transition-delay) ease;
+        transition:
+                background-color var(--transition-delay) ease,
+                color var(--transition-delay) ease,
+                transform var(--transition-delay) ease;
     }
     .control-button:not(:disabled):hover {
         transform: scale(1.1);
