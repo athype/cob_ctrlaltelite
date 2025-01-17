@@ -5,6 +5,7 @@
 
     import Modal, { bind } from 'svelte-simple-modal';
     import FeedbackModalContent from "../components/FeedbackModalContent.svelte";
+    import NameInputModal from "../components/NameInputModal.svelte";
 
     // Declare reactive variables
     // let recordings = $state([]);

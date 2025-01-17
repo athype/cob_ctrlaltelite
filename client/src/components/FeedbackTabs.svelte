@@ -5,7 +5,6 @@
     // We receive the data and a "fetchFeedback" function as props
     let { texts, recordings, videos, onTextFeedbackSaved} = $props();
 
-
     // Local states
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
@@ -13,7 +12,7 @@
 
     /**
      * When tab is pressed we change the content.
-     * @param text
+     * @param tab current tab
      */
     const handleTabChange = (tab) => {
         activeTab = tab;
@@ -283,15 +282,15 @@
         transition: transform 0.3s ease, border-color 0.3s, background-color 0.3s, color 0.3s;
         padding: 1rem;
         height: 3rem;
-        display: flex; /* Ensure flexbox is used for vertical alignment */
+        display: flex;
         justify-content: center;
         align-items: center;
         border-bottom: none;
-        transform: translateY(-2px);
+        transform: translateY(-0.125rem);
     }
 
     .tabs button div {
-        display: inline-block; /* Prevent text from being affected by transform */
+        display: inline-block;
     }
 
     /* Hover effect */
@@ -300,7 +299,7 @@
         border-color: var(--clr-border);
         border: dashed;
         border-bottom: none;
-        transform: translateY(-4px); /* Move the button up slightly when hovered */
+        transform: translateY(-0.25rem);
     }
 
     /* Active state */
@@ -308,8 +307,8 @@
         background-color: var(--clr-highlight);
         color: var(--clr-text-active);
         border: 0.225rem solid var(--clr-border);
-        transform: translateY(-8px); /* Move the button up more when active */
-        font-size: 17px;
+        transform: translateY(-0.5rem);
+        font-size: 1rem;
         z-index: 1;
     }
 
@@ -327,7 +326,7 @@
         background-color: var(--clr-background);
         border: 0.3rem solid var(--clr-border);
         border-radius: 0.6rem;
-        border-top: 4px solid var(--clr-border);
+        border-top: 0.25rem solid var(--clr-border);
         box-sizing: border-box;
         height: 28.2rem;
     }
@@ -443,7 +442,7 @@
 
     .selected-feedback-display::-webkit-scrollbar,
     textarea::-webkit-scrollbar {
-        width: 4px;
+        width: 0.25rem;
     }
     .selected-feedback-display::-webkit-scrollbar-thumb,
     textarea::-webkit-scrollbar-thumb {
