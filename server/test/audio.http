@@ -1,0 +1,85 @@
+###
+### Base Route (Server Health Check)
+###
+GET http://localhost:3000/
+Content-Type: application/json
+Accept: application/json
+
+###
+### Upload Audio Feedback (Successful Upload)
+###
+POST http://localhost:3000/upload-audio
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="audio"; filename="test-audio.wav"
+Content-Type: audio/wav
+
+< D:\Year_2\Q2\PCB\78\server\test\files\sample-3s.wav
+--boundary123
+Content-Disposition: form-data; name="name"
+
+Test Audio
+--boundary123
+Content-Disposition: form-data; name="duration"
+
+30
+--boundary123--
+
+###
+### Upload Audio Feedback (Invalid File Type)
+###
+POST http://localhost:3000/upload-audio
+Content-Type: multipart/form-data
+
+--boundary123
+Content-Disposition: form-data; name="audio"; filename="test.txt"
+Content-Type: text/plain
+
+< D:\Year_2\Q2\PCB\78\server\test\files\text.txt
+--boundary123
+Content-Disposition: form-data; name="name"
+
+Invalid File Test
+--boundary123
+Content-Disposition: form-data; name="duration"
+
+30
+--boundary123--
+
+###
+### Upload Audio Feedback (Missing Required Fields)
+###
+POST http://localhost:3000/upload-audio
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="audio"; filename="test-audio.mp3"
+Content-Type: audio/wav
+
+< D:\Year_2\Q2\PCB\78\server\test\files\sample-3s.wav
+--boundary123--
+
+###
+### Get All Audio Feedback (Success)
+###
+GET http://localhost:3000/audio-feedback
+Content-Type: application/json
+Accept: application/json
+
+
+###
+### Get Single Audio Feedback by ID (Success)
+###
+GET http://localhost:3000/audio-feedback/1
+Content-Type: application/json
+Accept: application/json
+
+###
+### Get Single Audio Feedback by ID (Invalid ID)
+###
+GET http://localhost:3000/audio-feedback/999
+Content-Type: application/json
+Accept: application/json
+
+

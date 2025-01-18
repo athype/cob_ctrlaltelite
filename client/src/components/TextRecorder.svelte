@@ -18,7 +18,7 @@
      */
     async function saveTextFeedback(text_feedback) {
         try {
-            const response = await fetch('http://localhost:3000/text_feedback', {
+            const response = await fetch('http://localhost:3000/text-feedback', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

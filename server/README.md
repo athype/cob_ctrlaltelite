@@ -31,5 +31,8 @@ A dependency uses for managing uploading file from the system.
   audios are stored in the project file. This could be change to memory using Multer but we can 
   discuss this later.
 
+### Testing
+The tests are written in HTTP requests and there are 3, one for each backend endpoint that we 
+have. The tests cover most of the cases (including both good and bad weather).
 
 ## Please add README file to everything you do to explain what you added
