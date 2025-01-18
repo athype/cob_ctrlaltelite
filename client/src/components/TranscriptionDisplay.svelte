@@ -34,22 +34,27 @@
                 const {progress} = data;
                 switch (progress.status) {
                     case 'initiate':
-                        currentLoadingText = `Initiating ${progress.file || 'transcription'}...`;
+                        currentLoadingText = `Preparing transcription...`;
                         break;
                     case 'download':
-                        currentLoadingText = `Downloading ${progress.file || 'files'}...`;
+                        currentLoadingText = `Fetching required files...`;
                         break;
                     case 'progress':
-                        currentLoadingText = `Loading ${progress.file || 'files'}... ${progress.progress || 0}%`;
+                        if (progress.progress !== undefined) {
+                            const percentage = parseFloat(progress.progress).toFixed(1); // Round percentage
+                            currentLoadingText = `Processing audio... ${percentage}%`;
+                        } else {
+                            currentLoadingText = `Processing audio... 0%`;
+                        }
                         break;
                     case 'done':
-                        currentLoadingText = `Done!`;
+                        currentLoadingText = `Processing complete!`;
                         break;
                     case 'ready':
-                        currentLoadingText = `${progress.file || 'Everything'} is ready!`;
+                        currentLoadingText = `Ready to start!`;
                         break;
                     default:
-                        currentLoadingText = `Unknown progress status: ${progress.status}`;
+                        currentLoadingText = `Working on it...`;
                         break;
                 }
             }
