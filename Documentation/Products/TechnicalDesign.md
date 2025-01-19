@@ -1,117 +1,129 @@
-# Technical Design Final Version (v3.0)
+# System Design Document(Techical Design) (v3.0)
+
+---
 
 ## 1. Introduction
 
-### Project Description
-The project is focused on developing text and voice feedback features with optional voice recognition for the company Scorion.
-Scorion develops a student portfolio system that aims to provide feedback not only for the final grading, but for smaller parts of each task called data points.
-The data point approach allows students to get a fuller picture of their progress. For this reason, feedback is a primary focus.
+### 1.1 Project Description
+The project focuses on developing **text and voice feedback** features with optional **voice recognition** for the company **Scorion**. Scorion develops a student portfolio system that aims to provide feedback not only for final grading but for smaller parts of each task (data points). This data point approach offers students a fuller picture of their progress, making feedback a **primary focus**.
 
-### Objectives
-To send feedback, Scorion currently relies on external systems, such as sending forms or using a mobile device's speech recognition tool.
-For this project, Scorion wants to detach from the use of third-party servers and build their own set of feedback features.
-The project is a proof of concept, so the development of the specified features is to be done separately from the existing software.
+### 1.2 Objectives
+Currently, Scorion relies on external systems (e.g., sending forms or using mobile device speech recognition) for feedback. This project aims to **reduce dependence on third-party services** and build a set of feedback features in-house. As a proof of concept, the new features will be developed separately from the existing software.
 
-The objectives can be defined as follows:
-- Provide a voice feedback feature that allows recordings to be stored.
-- Provide a text input feature that allows users to type and store feedback.
-- Include a voice-to-text conversion for audio feedback using Whisper from HuggingFace.
-- Preserve confidentiality of users by avoiding the use of third-party services.
-- Optionally explore a video feedback feature for future enhancement.
+Objectives:
 
-### Scope
+- Provide a **voice feedback** feature that allows recordings to be stored.
+- Provide a **text input** feature that allows users to type and store feedback.
+- Include a **voice-to-text** conversion for audio feedback using **Whisper** from HuggingFace.
+- Preserve confidentiality by **avoiding** the use of **third-party services**.
+- Optionally explore a **video feedback** feature for future enhancement.
 
-This document describes the technical design part of the project. It explains the choice of frameworks and components, architectural decisions, and their correspondence with requirements.
+### 1.3 Scope
+This document focuses on the **technical design** of the system, covering architectural decisions, frameworks, components, and how they fulfill the client’s requirements.
 
-### Stakeholders
-- **Client**: Scorion, which formulates the requirements for the project.
-- **Lecturer**: Eelco Jannink, who defines the primary frameworks to be used and serves as an intermediary in communication with the client.
+### 1.4 Stakeholders
+- **Client**: Scorion, formulating the system requirements.  
+- **Lecturer**: Eelco Jannink, who sets guidelines for frameworks and acts as intermediary to the client.
 
 ---
 
 ## 2. General Overview and Approach
 
-The general approach when making technical decisions is to base them on the client's requirements.
-The choice of frameworks is a critical part of the project's architecture as it determines how well features can be realized and how easily they can be maintained.
+When making technical decisions, the project team prioritizes:
 
-Key considerations include:
-- Ensuring modularity and reusability of components.
-- Keeping the frontend and backend independent.
-- Ensuring the system is extendable and maintainable.
+- **Client Requirements**: Ensuring the system meets the needs and constraints set by Scorion.
+- **Modularity & Reusability**: Building components that can be reused or replaced with minimal effort.
+- **Independence of Frontend & Backend**: Allowing the system to be extended or maintained without introducing system-wide dependencies.
+- **Maintainability & Extendibility**: Ensuring the chosen frameworks allow for future expansions and easy updates.
 
 ---
 
+**Framework Choices**:
+
+1. **Frontend**: [Svelte](https://svelte.dev/) for its simplicity, performance, and small footprint.  
+2. **Backend**: [Node.js](https://nodejs.org/) with [Express.js](https://expressjs.com/) for easy routing and API creation.  
+3. **Database**: [SQLite](https://www.sqlite.org/) for a lightweight, file-based database approach.
+
+
 ## 3. Design Considerations
 
-### Frontend
-- **Framework**: Svelte is used for its simplicity and performance.
+### 3.1 Frontend
+- **Framework**: Svelte
 - **Component Design**:
-    - Components must be modular, reusable, and well-contextualized.
-    - Styling is tied to components or applied across the entire project when appropriate.
+  - Must be modular, reusable, and maintainable.
+  - Scoped or global styling as appropriate.
 - **User Experience**:
-    - Prioritized over technical complexity.
-    - The interface must be intuitive, accessible, and easy to use.
+  - Simplicity and accessibility are paramount.
+  - Clear feedback forms and intuitive recording controls.
 
-### Backend
-- **Framework**: Node.js with Express.js for routing and API management.
-- **Design**:
-    - Modular codebase for easy extension and maintenance.
-    - Integration of the MediaStream API for audio recording and playback.
-    - Whisper (from HuggingFace) for speech-to-text processing.
-- **Performance**:
-    - Focus on responsiveness and optimized algorithms.
+### 3.2 Backend
+- **Architecture**: Node.js with Express.js
+- **Modules**:
+  - **Audio Processing**: Handle file compression, encryption, and storage.
+  - **Voice-to-Text**: Integrate [Whisper](https://openai.com/index/whisper/) from HuggingFace locally for transcription.
+- **Scalability**:
+  - Keep modules decoupled to allow adding new features (like video feedback) in the future.
 
 ---
 
 ## 4. System Architecture
 
-### Logical View (Functional Components)
+### 4.1 Logical View (Functional Components)
 
-![conceptual_diagram.png](..%2Fmd-images%2Fconceptual_diagram.png)
+![conceptual_diagram.png](../md-images/conceptual_diagram.png)
 
-1. Frontend Components:
-- Feedback Form: Acts as the main interface where users record audio, preview feedback, and submit the form.
-- Audio Recorder: Captures audio and sends it to the backend for processing.
-- Preview Component: Allows users to review the recorded audio and transcribed text.
-2. Backend Components:
-- API Gateway: Manages all interactions between the frontend and backend modules.
-- Audio Processing Module: Handles audio file compression, encryption, and storage preparation.
-- Speech-to-Text Integration: Interfaces with the external API for transcription.
-- Speech-to-Text API: Processes audio and returns transcription data.
-3. Database:
-- Feedback Data: Stores user feedback, including audio files and text, securely.
+1. **Frontend Components**  
+   - **Feedback Form**: Main interface for users to record audio, preview feedback, and submit forms.  
+   - **Audio Recorder**: Captures audio from the user’s microphone and sends it to the backend.  
+   - **Preview Component**: Displays recorded audio and transcribed text to the user.
 
-### Hardware Architecture (Deploy)
+2. **Backend Components**  
+   - **API Gateway**: Manages all HTTP requests/responses between frontend and backend.  
+   - **Audio Processing Module**: Compresses and encrypts audio files, prepares them for storage.  
+   - **Speech-to-Text Integration**: Calls local Whisper API for transcription.  
+   - **Database Module**: Stores feedback entries (text, audio, video) in SQLite.
 
-![hardware_architecture.png](..%2Fmd-images%2Fhardware_architecture.png)
+3. **Database**  
+   - **Feedback Data**: Stores all feedback records (audio files, text, optional video) securely.
 
-1. User Device:
-- Represents the client device accessing the application via a web browser.
-- Includes a microphone for audio recording. Includes a camera/webcam for video recording.
-2. Application Server:
-- Frontend Server: Hosts and serves the Svelte UI components to the browser.
-- Backend Server: Processes user requests, handles audio and video files, interacts with the database, and integrates with the speech-to-text and media recording APIs.
-- Speech-to-Text API: Converts audio feedback into text.
-- Video Processing API: Processes uploaded video feedback.
-3. Database Server:
-- SQLite: Securely stores user feedbacks, including audio and video files with transcriptions.
+---
 
-### Software Architecture
+### 4.2 Hardware Architecture (Deploy)
 
-#### Overview
-- Svelte for the frontend interface.
-- Node.js and Express.js for the backend.
-- SQLite for database storage.
+![hardware_architecture.png](../md-images/hardware_architecture.png)
 
-#### Libraries
-- MediaStream API for audio recording and playback.
-- Whisper library (HuggingFace) for speech-to-text functionality.
-- Svelte-simple-modal for the pop-up screen.
-- Font awesome for icons.
+1. **User Device**  
+   - A desktop, laptop, or mobile device with a **microphone** for audio and a **camera** for video recording (optional).
+   - A modern **web browser** for accessing the Svelte frontend.
 
-#### Frameworks
-- **Frontend**: Svelte components.
-- **Backend**: Node.js and Express.js.
+2. **Application Server**  
+   - **Frontend Server**: Hosts static Svelte files.  
+   - **Backend Server**: Handles API requests, processes media files, connects to the database, and integrates with the Whisper engine.  
+   - **Speech-to-Text API**: Local instance of Whisper.  
+   - **(Optional) Video Processing API**: For handling video compression and storage in the future.
+
+3. **Database Server**  
+   - **SQLite**: A file-based database located on the same or a dedicated server. Stores user feedback, including audio paths, text content, and (optional) video paths.
+
+---
+
+### 4.3 Software Architecture
+
+#### 4.3.1 Overview
+- **Frontend**: Svelte  
+- **Backend**: Node.js + Express.js  
+- **Database**: SQLite  
+
+#### 4.3.2 Libraries & APIs
+- **MediaStream API**: For in-browser audio recording and playback.  
+- **MediaRecorder API**: Provides video and audio recording capabilities in the browser.  
+- **Whisper API (HuggingFace)**: Local speech-to-text processing.  
+- **Svelte-simple-modal**: Pop-up dialogs (confirmation, editing feedback, etc.).  
+- **Font Awesome**: Icon library for consistent visual elements.
+
+#### 4.3.3 Protocols
+- **HTTP/HTTPS** for all frontend-backend communication.
+- **RESTful API** for standard CRUD operations on feedback data.
 
 #### Components
 
@@ -165,36 +177,45 @@ Key considerations include:
 - **Whisper API** (HuggingFace): Provides local speech-to-text functionality.
 - **MediaRecorder API**: Provides camera recorder and enables the recording of media stream.
 
-### Information Architecture
+### 4.4 Information Architecture
 
-![info_architecture.png](..%2Fmd-images%2Finfo_architecture.png)
+![info_architecture.png](../md-images/info_architecture.png)
 
-1. Entities:
-- TextFeedback: Represents text-based feedback submitted by users, with attributes for content, timestamp, and user association.
-- VideoFeedback: Represents video feedback with attributes for file path, timestamp, and duration.
-- AudioFeedback: Represents audio feedback with attributes for file path, timestamp, and duration.
-- User: Represents users who submit feedback.
+1. **Entities**  
+   - **TextFeedback**: Stores text-based feedback.  
+   - **AudioFeedback**: Stores metadata (file path, timestamps) for audio feedback.  
+   - **VideoFeedback**: Stores metadata for video feedback (file path, duration).  
+   - **User**: Identifies the creator of feedback.
 
-2. Relationship:
-- A User can create multiple feedback entries for each feedback type (TextFeedback, VideoFeedback, and AudioFeedback).
+2. **Relationships**  
+   - A **User** can create multiple **feedback** records (text/audio/video).  
 
-3. Data Types:
-- Audio files (e.g., `.wav`).
-- Text feedback entries.
+3. **Data Types**  
+   - Text: Raw textual feedback  
+   - Audio: Typically `.wav` or `.mp3`  
+   - Video: Potential `.mp4` or `.webm`
 
-4. Data Navigation:
-- Accessible via intuitive UI lists for saved audio and text feedback.
+4. **Navigation**  
+   - Frontend routes and lists allow selecting and viewing existing feedback.  
+   - Feedback is displayed in chronological order with a quick preview (audio/video player or text snippet).
 
-### Security Architecture
-- Whisper is secure due to its ability to process data locally, ensuring privacy, reducing reliance on third-party services, supporting encryption, and providing transparency through its open-source nature.
-- All data is processed and stored locally to ensure confidentiality. No third-party servers are used for sensitive data which fulfilled client's needs for security.
-- No third-party servers are used for sensitive data.
+---
 
-### Performance
+### 4.5 Security Architecture
+- **Local Processing**: Whisper runs locally (or on a private server) to avoid sending audio to third-party servers.  
+- **Encryption**: Audio files can be encrypted at rest in SQLite or on the file system.  
+- **Confidentiality**: All interactions remain internal, fulfilling client’s privacy requirements.  
+- **ISO27001**: Security best practices for handling personal data are considered to ensure compliance with relevant standards.
 
-- The performance of the Whisper model depends on the variant (Tiny, Base, Small, Medium, Large). Smaller models (Tiny/Base) are faster and lightweight, suitable for near real-time transcription with moderate accuracy, using 1–2GB VRAM. Larger models (Medium/Large) are slower but highly accurate, requiring 10+GB VRAM and performing best for offline or high-quality transcription tasks. GPU acceleration significantly enhances speed, while CPU usage is feasible but slower.
-- Audio recording and playback must be low-latency.
-- Whisper integration should handle transcription efficiently, even with larger audio files.
+---
+
+### 4.6 Performance
+- **Whisper Model**:
+  - **Tiny/Base**: Faster, smaller (1–2GB VRAM). Suitable for near real-time transcription with moderate accuracy.  
+  - **Medium/Large**: More accurate but requires >10GB VRAM. Slower, typically used for batch processing or high-quality offline tasks.  
+- **Latency**: Minimizing lag for audio playback and transcription start/stop events.  
+- **GPU Acceleration**: Speeds up Whisper significantly if a GPU is available.  
+- **Scalability**: Node.js handles concurrent requests well; scaling horizontally is feasible with multiple server instances.
 
 ---
 
@@ -367,6 +388,7 @@ Example response
 | 2.0     | 2024-12-08 | Din    | Updated to include Sprint 1 progress.        |
 | 2.5     | 2024-10-01 | Andre  | Updated                                      |
 | 3.0     | 2024-16-01 | Andre  | Updated and make final for submission        |
+| 3.1     | 2024-16-01 | Din    | Final revision                               |
 
 ---
 
