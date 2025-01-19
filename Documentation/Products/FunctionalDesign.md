@@ -166,6 +166,8 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
   - Node.js and Express.js for managing API requests.
   - SQLite for secure storage of feedback and metadata.
   - Whisper for Audio feedback to text transcription.
+  - MediaStream API for handling audio capture and recording.
+  - MediaRecorder API for capturing video feedback.
 
 ### 4.2 Deployment and Component Diagram
 - **Deployment Details:**
