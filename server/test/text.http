@@ -1,0 +1,54 @@
+###
+### Base Route (Server Health Check)
+###
+GET http://localhost:3000/
+Content-Type: application/json
+Accept: application/json
+
+###
+### Get All Text Feedback
+###
+GET http://localhost:3000/text-feedback
+Content-Type: application/json
+Accept: application/json
+
+###
+### Get Single Text Feedback by ID (Success)
+###
+GET http://localhost:3000/text-feedback/1
+Content-Type: application/json
+Accept: application/json
+
+###
+### Get Single Text Feedback by ID (Not Found)
+###
+GET http://localhost:3000/text-feedback/9999
+Content-Type: application/json
+Accept: application/json
+
+###
+### Create Text Feedback (Success)
+###
+POST http://localhost:3000/text-feedback
+Content-Type: application/json
+Accept: application/json
+
+{
+  "feedback_text": "This is a sample feedback text.",
+  "name": "John Doe",
+  "user_id": 1
+}
+
+
+###
+### Create Text Feedback (Missing Fields)
+###
+POST http://localhost:3000/text-feedback
+Content-Type: application/json
+Accept: application/json
+
+{
+  "feedback_text": "",
+  "name": ""
+}
+

@@ -2,13 +2,11 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 
-// Ensure the database directory exists
 const dbDirectory = path.resolve('./db');
 if (!fs.existsSync(dbDirectory)) {
     fs.mkdirSync(dbDirectory, { recursive: true });
 }
 
-// Create or connect to the SQLite database
 const db = new Database(path.join(dbDirectory, 'database.sqlite'), { verbose: console.log });
 
 /**
@@ -34,6 +32,16 @@ function initDatabase() {
             feedback_text TEXT NOT NULL,
             created_at TEXT DEFAULT (datetime('now')),
             user_id INTEGER
+        )
+    `).run();
+
+    db.prepare(`
+        CREATE TABLE IF NOT EXISTS video_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            duration INTEGER NOT NULL
         )
     `).run();
 

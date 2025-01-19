@@ -26,9 +26,11 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "@sveltestrap/sveltestrap": "^6.2.7",
     "cors": "^2.8.5",
     "lucide-svelte": "^0.462.0",
-    "page": "^1.3.7"
+    "page": "^1.3.7",
+    "svelte-simple-modal": "^2.0.0"
   }
 }
