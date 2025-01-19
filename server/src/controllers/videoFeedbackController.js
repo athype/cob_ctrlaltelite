@@ -40,5 +40,5 @@ export function getSingleVideoFeedback(req, res) {
         return res.status(404).send('Video not found.');
     }
 
-    res.sendFile(path.resolve(row.file_path));
+    res.sendFile(path.resolve('src', row.file_path));
 }
