@@ -84,7 +84,6 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 #### **Rules:**
 - Feedback must be stored securely and accessible only to authorized users.
 - Feedback can contain one or multiple types (audio, video, text).
-- Deleting feedback requires confirmation to prevent accidental loss.
 
 #### **Data Involved:**
 - **Audio Feedback:** Stored in `.wav` format.
