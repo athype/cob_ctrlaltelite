@@ -15,7 +15,7 @@ Content-Type: multipart/form-data; boundary=boundary123
 Content-Disposition: form-data; name="video"; filename="test-video.mp4"
 Content-Type: video/mp4
 
-< D:\Year_2\Q2\PCB\78\server\test\files\video.mp4
+< ../test/files/video.mp4
 --boundary123
 Content-Disposition: form-data; name="name"
 
@@ -36,7 +36,7 @@ Content-Type: multipart/form-data; boundary=boundary123
 Content-Disposition: form-data; name="video"; filename="test-video.mp4"
 Content-Type: text/plain
 
-< D:\Year_2\Q2\PCB\78\server\test\files\text.txt
+< ../test/files/text.txt
 --boundary123
 Content-Disposition: form-data; name="name"
 
@@ -79,7 +79,7 @@ Content-Type: multipart/form-data; boundary=boundary123
 Content-Disposition: form-data; name="video"; filename="test-video.mp4"
 Content-Type: video/mp4
 
-< D:\Year_2\Q2\PCB\78\server\test\files\video.mp4
+< ../test/files/video.mp4
 --boundary123
 Content-Disposition: form-data; name="name"
 
