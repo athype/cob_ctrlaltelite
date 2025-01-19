@@ -208,13 +208,13 @@
 
                         <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
                             <button
-                                    on:click={handleTranscriptionClick}
+                                    onclick={handleTranscriptionClick}
                                     class="send-button gradient-border"
                             >
                                 Transcribe
                             </button>
                             <button
-                                    on:click={toggleLanguage}
+                                    onclick={toggleLanguage}
                                     class="send-button gradient-border"
                             >
                                 {selectedLanguage === 'en' ? 'Switch to Dutch' : 'Switch to English'}
@@ -248,13 +248,13 @@
 
                         <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
                             <button
-                                    on:click={handleTranscriptionClick}
+                                    onclick={handleTranscriptionClick}
                                     class="send-button gradient-border"
                             >
                                 Transcribe
                             </button>
                             <button
-                                    on:click={toggleLanguage}
+                                    onclick={toggleLanguage}
                                     class="send-button gradient-border"
                             >
                                 {selectedLanguage === 'en' ? 'Switch to Dutch' : 'Switch to English'}
