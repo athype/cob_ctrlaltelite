@@ -40,6 +40,7 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 - Dedicated feedback page with the ability to manage feedback items.
 - Combining multiple feedback types (text, audio, and video) into a single feedback entry.
 - Support for another language transcription beyond English (Dutch).
+- Feature for editing text feedbacks.
 
 #### **Out-of-Scope:**
 - Integration with Scorion's production environment.
@@ -196,3 +197,4 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 | 0.1     | 2024-11-20 | David  | Initial draft based on known context.                                       |
 | 0.2     | 2024-12-01 | Din    | Updated based on client meeting, Sprint 1 vision document and user stories. |
 | 0.3     | 2024-12-04 | David  | Added low-fidelity mockups, wireframes and updates to introduction          |
+| 1.0     | 2025-01-19 | Din    | Finilized the functional Design        |
