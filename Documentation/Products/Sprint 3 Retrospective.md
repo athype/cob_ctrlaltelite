@@ -23,7 +23,6 @@
 
 ### 5. Client Satisfaction
 - The final client demo received positive feedback, with clients appreciating the ease of use and added flexibility in managing feedback.
-- Clients were satisfied with the security measures, ensuring compliance with ISO27001 standards.
 
 ---
 
@@ -38,12 +37,11 @@
 - Optimization efforts were required to balance performance and accuracy.
 
 ### 3. UI/UX Refinements Took More Time Than Expected
-- Ensuring consistency across various screen sizes and themes (Light, Dark, High Contrast) required additional design iterations.
-- Some features, such as feedback deletion notifications and transcription editing, required usability testing and feedback loops to refine.
+- Ensuring consistency between elements and components etc across various screen sizes and themes (Light, Dark, High Contrast) required additional design iterations.
+- Some features, such as transcription editing, required usability testing and feedback loops to refine.
 
 ### 4. Storage Limitations
-- With the increased use of video feedback, storage optimization became critical.
-- Managing large audio and video files locally required additional work in terms of compression and retrieval optimization.
+- Managing large audio and video files locally might require additional work in terms of compression and retrieval optimization in the future.
 
 ---
 
@@ -63,26 +61,6 @@
 
 ---
 
-## Action Points for Future Improvements
-
-### 1. Optimize Whisper API Usage
-- Investigate alternative models or optimizations to reduce transcription latency.
-- Explore asynchronous processing to allow background transcription.
-
-### 2. Enhance Feedback Management
-- Add filtering and sorting options for better feedback organization.
-- Implement bulk deletion options for better feedback control.
-
-### 3. Further UI Enhancements
-- Continue refining the UI based on additional user feedback to make it even more user-friendly.
-- Improve accessibility compliance by incorporating more user feedback and usability audits.
-
-### 4. Scalability Considerations
-- Research better storage strategies for handling large video files, such as local compression or selective uploads.
-- Plan for future integration with cloud storage solutions if required.
-
----
-
 ## Conclusion
 
-Sprint 3 was a successful milestone, achieving key objectives while facing and overcoming significant challenges. The team delivered a functional and intuitive feedback management system, satisfying client expectations and improving the user experience. Moving forward, optimizing performance and scalability will be the focus to ensure long-term sustainability and future feature expansion.
+Sprint 3 was a successful milestone, achieving key objectives while facing and overcoming significant challenges. The team delivered a functional and intuitive feedback management system, satisfying client expectations and improving the user experience.
