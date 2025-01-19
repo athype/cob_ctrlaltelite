@@ -91,34 +91,49 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 ---
 
 ### 3.2 Epics and User Stories
-
-#### Epic 1: Audio Feedback
-- **User Story 1:** As a user, I want to record and playback audio feedback securely.
-  - Tasks:
-    - Develop audio recording and playback features.
-    - Ensure secure storage of audio files.
-
-- **User Story 2:** As a user, I want my audio feedback to be transcribed into text for better accessibility.
-  - Tasks:
-    - Implement transcription functionality using Whisper.
-    - Display transcription results with an option to edit.
-
-#### Epic 2: Video Feedback
-- **User Story 3:** As a user, I want to record video feedback to provide a more personal touch.
-  - Tasks:
-    - Implement video recording with playback controls.
-    - Secure video storage in the database.
-
-#### Epic 3: Feedback Management
-- **User Story 4:** As a user, I want to delete feedback entries to manage my workspace.
-  - Tasks:
-    - Add delete functionality with confirmation prompts.
-    - Provide notifications for successful deletions.
-
-- **User Story 5:** As a user, I want to combine text, audio, and video feedback in a single entry.
-  - Tasks:
-    - Develop UI components for combined feedback.
-    - Adjust database schema to support mixed feedback types.
+#### Sprint 1: 
+- **User Story 1:** As a user, I want to record audio feedback so that I can capture my message more naturally using tone of voice.
+  - **Includes the following:**
+    - Audio recording
+    - Play, pause, and stop buttons for it.
+- **User Story 2:** As a user, I want to listen to recorded audio feedback so that I can revisit it later.
+  - **Includes the following:**
+    - List of recorded audios with a play button.
+- **User Story 3:** As a user, I want to type feedback so that I can express my thoughts directly and conveniently.
+  - **Includes the following:**
+    - Text input field
+    - Button for sending (to the list with saved texts)
+- **User Story 4:** As a user, I want to view saved text feedback so that I can revisit my previous inputs.
+  - **Includes the following:**
+    - List with the text field
+    - Box for view, where a selected text can be read
+#### Sprint 2:
+- **User Story 1:** As a user, I want to switch between Light, Dark, and High Contrast modes so that I can use the platform in different environments or based on my visual preferences.
+  - **Includes the following:**
+    - Integrating Whisper into the backend to process stored audio files.
+    - Converting recorded audio files to the required frequency (16,000 Hz).
+    - "Transcribe" button to audio feedback previews for initiating transcription.
+    - Connecting the transcription feature between the frontend and backend.
+- **User Story 2:** As a user, I want to transcribe my audio feedback to text so that I can have flexibility in how I provide feedback.
+  - **Includes the following:**
+    - A theme switcher to the frontend with options for Light, Dark, and High Contrast modes.
+    - Light theme, ensuring consistent styling and smooth transitions.
+    - Add High Contrast mode for better accessibility.
+#### Sprint 3:
+- **User Story 1:** As a user, I want the app to have a convenient and user-friendly interface with specific and relevant guidance so that I can record feedback easily and efficiently
+  - **Includes the following:**
+    - Feedback lists (audio, text, video) on a separate page.
+    - A slider to toggle between different feedback types.
+    - Improving the visual design of the interface, including consistent styling and clear labels.
+- **User Story 2:** As a user, I want to be able to record video feedback so that I can deliver feedback similar to an in-person experience
+  - **Includes the following:**
+    - A video recorder component with buttons for record, stop, and playback.
+    - Database functionality for video storage and retrieval.
+    - A list of recorded videos with options for playback.
+- **User Story 3:** As a user, I want real-time feedback during transcription so that I know the progress and status of my request.
+  - **Includes the following:**
+    - Real-time status updates for the transcription process.
+    - Progress stages like uploading, conversion, and transcription on the frontend.
 
 ---
 
