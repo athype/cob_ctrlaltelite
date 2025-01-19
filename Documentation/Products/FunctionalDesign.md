@@ -36,7 +36,7 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 #### **In-Scope:**
 - Audio, text, and video feedback recording, playback, and secure storage.
 - Transcription of recorded audio via **Whisper** integrated into the platform.
-- UI improvements to enhance usability (highlighting new feedback, easier navigation).
+- UI improvements to enhance usability (highlighting new feedback, visual effects, tabs/submenus, pop-up modals, indicators, easier navigation).
 - Dedicated feedback page with the ability to manage feedback items.
 - Combining multiple feedback types (text, audio, and video) into a single feedback entry.
 - Support for another language transcription beyond English (Dutch).
