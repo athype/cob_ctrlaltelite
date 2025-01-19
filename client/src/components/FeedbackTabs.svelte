@@ -30,7 +30,8 @@
     }
 
     /**
-     * When a text feedback is clicked, sets selectedFeedback to that text's details.
+     * When text feedback is clicked, selected feedback is updated with its data.
+     * @param text
      */
     function handleTextFeedbackClick(text) {
         showTranscription = false;
@@ -42,12 +43,18 @@
             created_at: new Date(text.created_at).toISOString().split("T")[0]
         };
     }
+
+    /**
+     * Helper function for determining if a text is selected.
+     * @param text
+     */
     function isTextFeedbackSelected(text) {
         return selectedFeedback?.type === "text" && selectedFeedback?.id === text.id;
     }
 
     /**
-     * When an audio feedback is clicked, sets selectedFeedback to that audio's details.
+     * When an audio feedback is clicked, selected feedback is updated with its data.
+     * @param audio
      */
     function handleAudioFeedbackClick(audio) {
         showTranscription = false;
@@ -64,7 +71,8 @@
     }
 
     /**
-     * When a video feedback is clicked, sets selectedFeedback to that video's details.
+     * When an video feedback is clicked, selected feedback is updated with its data.
+     * @param video
      */
     function handleVideoFeedbackClick(video) {
         showTranscription = false;
@@ -76,6 +84,11 @@
             created_at: new Date(video.created_at).toISOString().split("T")[0]
         };
     }
+
+    /**
+     * Helper function for determining if an video is selected.
+     * @param video
+     */
     function isVideoFeedbackSelected(video) {
         return selectedFeedback?.type === "video" && selectedFeedback?.id === video.id;
     }
@@ -107,7 +120,7 @@
                             id="text-tab"
                             class:active={activeTab === "text"}
                             class="text-tab"
-                            on:click={() => handleTabChange("text")}
+                            onclick={() => handleTabChange("text")}
                     >
                         <span>Text</span>
                     </button>
@@ -116,7 +129,7 @@
                             id="audio-tab"
                             class:active={activeTab === "audio"}
                             class="audio-tab"
-                            on:click={() => handleTabChange("audio")}
+                            onclick={() => handleTabChange("audio")}
                     >
                         <span>Audio</span>
                     </button>
@@ -125,7 +138,7 @@
                             id="video-tab"
                             class:active={activeTab === "video"}
                             class="video-tab"
-                            on:click={() => handleTabChange("video")}
+                            onclick={() => handleTabChange("video")}
                     >
                         <span>Video</span>
                     </button>
@@ -133,7 +146,7 @@
 
                 <div class="content">
                     {#if activeTab === "text"}
-                        <section class="tab-content text-tab-content">
+                        <section id="content-text" class="tab-content text-tab-content">
                             <List
                                     items={texts}
                                     labelPrefix="Text"
@@ -144,7 +157,7 @@
                     {/if}
 
                     {#if activeTab === "audio"}
-                        <section class="tab-content audio-tab-content">
+                        <section id="content-audio" class="tab-content audio-tab-content">
                             <List
                                     items={recordings}
                                     labelPrefix="Audio"
@@ -155,7 +168,7 @@
                     {/if}
 
                     {#if activeTab === "video"}
-                        <section class="tab-content video-tab-content">
+                        <section id="content-video" class="tab-content video-tab-content">
                             <List
                                     items={videos}
                                     labelPrefix="Video"
@@ -209,6 +222,7 @@
                         </div>
 
                         {#if showTranscription}
+                            <!-- TranscriptionDisplay: pass an onTranscriptionSaved callback -->
                             <TranscriptionDisplay
                                     id={selectedFeedback.id}
                                     audioName={selectedFeedback.name}
@@ -269,7 +283,7 @@
 
 <style>
     .container {
-        display: flex;                /* side-by-side layout for left tabs & right preview */
+        display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         padding: 1rem;
@@ -279,7 +293,7 @@
     }
 
     .left-container, .right-container {
-        flex: 1;                     /* both sides share available space */
+        flex: 1;
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -295,6 +309,7 @@
         box-sizing: border-box;
         flex: 1;
         max-width: 100%;
+
     }
 
     .tabs-container {
@@ -322,12 +337,16 @@
         cursor: pointer;
         padding: 1rem;
         height: 3rem;
-        display: flex;
+        display: flex; /* Ensure flexbox is used for vertical alignment */
         justify-content: center;
         align-items: center;
         border-bottom: none;
-        transform: translateY(-2px);
         transition: transform 0.3s ease, border-color 0.3s, background-color 0.3s, color 0.3s;
+        transform: translateY(-0.125rem);
+    }
+
+    .tabs button div {
+        display: inline-block;
     }
 
     .tabs button:hover {
@@ -335,15 +354,15 @@
         border-color: var(--clr-border);
         border: dashed;
         border-bottom: none;
-        transform: translateY(-4px);
+        transform: translateY(-0.25rem);
     }
 
     .tabs button.active {
         background-color: var(--clr-highlight);
         color: var(--clr-text-active);
         border: 0.225rem solid var(--clr-border);
-        transform: translateY(-8px);
-        font-size: 17px;
+        transform: translateY(-0.5rem);
+        font-size: 1rem;
         z-index: 1;
     }
 
@@ -362,7 +381,7 @@
         background-color: var(--clr-background);
         border: 0.3rem solid var(--clr-border);
         border-radius: 0.6rem;
-        border-top: 4px solid var(--clr-border);
+        border-top: 0.25rem solid var(--clr-border);
         box-sizing: border-box;
         height: 28.2rem;
     }
@@ -370,23 +389,42 @@
     .text-tab-content {
         border-color: var(--clr-pink);
     }
+
     .audio-tab-content {
         border-color: var(--clr-purple);
     }
+
     .video-tab-content {
         border-color: var(--clr-indigo);
     }
 
-    .title {
-        font-size: 1.8rem;
-        padding: 0.5rem;
+    input {
+        display: none;
+    }
+
+    label {
+        display: block;
+        padding: 1rem 4vw;
         font-weight: 600;
+        text-align: center;
+        color: var(--clr-text);
+        border: 0.225rem solid transparent;
+        border-radius: 0.5rem 0.5rem 0 0;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    label:hover {
+        color: var(--clr-text);
+        border-color: var(--clr-pink);
+        border-bottom: none;
     }
 
     /* The preview display for selected feedback: single scroll area at 28.2rem height */
     .selected-feedback-display {
-        flex: 1;                     /* expands to fill right side */
+        flex: 1;
         display: flex;
+        padding: 1rem;
         flex-direction: column;
         background-color: var(--clr-background);
         border-radius: 0.5rem;
@@ -398,17 +436,22 @@
         word-wrap: break-word;
         width: 100%;
         box-sizing: border-box;
-        padding: 1rem;
-        height: 28.2rem;            /* matches the tab content height */
-        overflow-y: auto;           /* entire video + transcription in one scroll */
+        height: 28.2rem;
+        overflow-y: auto;
     }
 
+
+    /* Audio selected: purple border */
     .selected-feedback-display.selected-audio {
         border-color: var(--clr-purple);
     }
+
+    /* Video selected: blue border */
     .selected-feedback-display.selected-video {
         border-color: var(--clr-indigo);
     }
+
+    /* Text selected: pink border */
     .selected-feedback-display.selected-text {
         border-color: var(--clr-pink);
     }
@@ -442,14 +485,31 @@
         color var(--transition-delay) ease;
     }
 
-    /* Slim scrollbar for the preview container if content overflows */
+    .title {
+        font-size: 1.8rem;
+        padding: 0.5rem;
+        font-weight: 600;
+    }
+
     .selected-feedback-display::-webkit-scrollbar,
     textarea::-webkit-scrollbar {
-        width: 4px;
+        width: 0.25rem;
     }
     .selected-feedback-display::-webkit-scrollbar-thumb,
     textarea::-webkit-scrollbar-thumb {
         background: var(--clr-text);
         border-radius: 0.25rem;
     }
+
+    .container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        gap: 2.5rem;
+    }
+
+
 </style>

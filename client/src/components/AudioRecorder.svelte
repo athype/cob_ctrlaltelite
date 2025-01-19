@@ -1,11 +1,13 @@
 <script>
     import {fade} from 'svelte/transition';
+    import NameInputModal from "./NameInputModal.svelte";
     const {onRecordingSaved, showModal} = $props();
 
     let isBeforeRecording = $state(true);
     let isAfterRecording = $state(false);
 
-
+    let nameInputModalDisplay = $state(false);
+    let nameInputModalMessage = $state("");
 
     // Reactive state
 
@@ -74,6 +76,26 @@
     function setMessage(text) {
         message = text;
         messageVisible = true;
+    }
+
+    function onNameInputSaveClick(name){
+        audioName = name;
+        console.log("Audio name " + name);
+        nameInputModalDisplay = false;
+
+        if (!audioName) {
+            console.error('No name entered. Aborting upload.');
+            return; // Do not proceed without a name
+        }
+
+        console.log("Audio name " + audioName);
+        fetch(recording)
+            .then((res) => res.blob())
+            .then((blob) => {
+                console.log('Blob prepared for upload:', blob);
+                uploadAudio(blob, audioName);
+            })
+            .catch((error) => console.error('Error preparing audio for upload:', error));
     }
 
     /**
@@ -210,19 +232,7 @@
             return;
         }
 
-        audioName = window.prompt('Enter a name for your audio recording:', 'My Recording');
-        if (!audioName) {
-            console.error('No name entered. Aborting upload.');
-            return; // Do not proceed without a name
-        }
-
-        fetch(recording)
-            .then((res) => res.blob())
-            .then((blob) => {
-                console.log('Blob prepared for upload:', blob);
-                uploadAudio(blob, audioName);
-            })
-            .catch((error) => console.error('Error preparing audio for upload:', error));
+        showNameInputModal();
     }
 
     /**
@@ -430,8 +440,6 @@
     /**
      * Stops the audio recording.
      */
-
-
     function stop() {
         console.log('Stopping playback');
         isPlaying = false;
@@ -439,10 +447,6 @@
         audioPlayer.currentTime = 0;
         renderBars(bars);
     }
-
-
-
-
 
     /**
      * Toggles playing the audio recording.
@@ -617,16 +621,26 @@
 
     });
 
-
-
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('animated-btn').addEventListener('click', function () {
             this.classList.toggle('active');
         });
     });
 
+    function closeNameInputModal() {
+        nameInputModalDisplay = false;
+    }
+
+    function showNameInputModal() {
+        nameInputModalDisplay = true;
+    }
 
 </script>
+
+{#if nameInputModalDisplay}
+    <NameInputModal closeModal={closeNameInputModal} handleSaveButtonClick={onNameInputSaveClick} name={nameInputModalMessage}/>
+{/if}
+
 <div class="recorder-container" style="border: 0.3rem solid var(--clr-purple);">
     <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">
@@ -751,20 +765,20 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        max-width: 700px;
+        max-width: 43.75rem;
         height: 30rem;
         margin: 0 auto 0;
-        border-radius: 10px;
-        position: relative; /* Needed for status-indicator positioning */
-        transition: all 2.5s ease-in-out; /* Smooth transition for all properties */
+        border-radius: 0.625rem;
+        position: relative;
+        transition: all 2.5s ease-in-out;
     }
 
     .status-indicator {
         position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
+        top: 0.635rem;
+        right: 0.625rem;
+        width: 1.875rem;
+        height: 1.875rem;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -777,10 +791,9 @@
         align-items: center;
     }
 
-    /* For recording: red blinking circle */
     .status-indicator.recording .icon.circle {
-        width: 25px;
-        height: 25px;
+        width: 1.563rem;
+        height: 1.563rem;
         background-color: red;
         border-radius: 50%;
         animation: blink 1s infinite alternate;
@@ -814,15 +827,15 @@
 
     /* White square for stopped state */
     .status-indicator.stopped .icon.stopped {
-        width: 25px;
-        height: 25px;
+        width: 1.563rem;
+        height: 1.563rem;
         background-color: red;
     }
 
     /* Green square for stoppedPlayback state */
     .status-indicator.stoppedPlaying .icon.stoppedPlaying {
-        width: 25px;
-        height: 25px;
+        width: 1.563rem;
+        height: 1.563rem;
         background-color: green;
     }
 
@@ -842,14 +855,14 @@
         background: transparent;
         z-index: 0;
         border: none;
-        padding: 12px 24px;
+        padding: 0.75rem 1.5rem;
         cursor: pointer;
     }
 
     .recorder-container :global(.gradient-border-button::after) {
         content: '';
         position: absolute;
-        inset: 2px;
+        inset: 0.125rem;
         background: var(--clr-background);
         z-index: -1;
         border-radius: inherit;
@@ -876,17 +889,16 @@
         left: 50%;
         transform: translateX(-50%);
         width: 90%;
-        height: 100px;
+        height: 6.25rem;
     }
     .waveform__canvas {
         width: 100%;
         height: 100%;
     }
 
-    /* Controls */
     .controls {
         position: absolute;
-        bottom: 20px;
+        bottom: 1.25rem;
         left: 50%;
         top: 75%;
         transform: translateX(-50%);
@@ -894,7 +906,6 @@
         text-align: center;
     }
 
-    /* Centered buttons */
     .centered-buttons {
         display: flex;
         justify-content: center;
@@ -908,14 +919,13 @@
     .centered-buttons.after-recording {
         display: flex;
         justify-content: center;
-        gap: 1rem; /* Space between 'Play', 'Redo', and 'Save' */
+        gap: 1rem;
     }
 
-    /* Buttons */
     .control-button {
         padding: 1rem;
-        border-radius: 10px;
-        border: 3px solid var(--clr-text);
+        border-radius: 0.625rem;
+        border: 0.188rem solid var(--clr-text);
         cursor: pointer;
         background-color: var(--clr-background);
         color: var(--text-color);
@@ -927,9 +937,9 @@
     }
     .control-button:not(:disabled):hover {
         transform: scale(1.1);
-        box-shadow: 0 0 5px 1px var(--clr-text);
+        box-shadow: 0 0 0.313rem 0.063rem var(--clr-text);
         background-color: var(--clr-inverse);
-        border: 3px solid var(--clr-inverse);
+        border: 0.188rem solid var(--clr-inverse);
     }
     #redo-button:disabled {
         color: #666666;
@@ -937,9 +947,8 @@
         opacity: 0.3;
     }
 
-
     /* Button spacing and visibility tweaks for responsive design */
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 48rem) {
         .controls {
             flex-direction: column;
         }
@@ -947,8 +956,6 @@
             flex-wrap: wrap;
         }
     }
-
-
 
     .disabled {
         opacity: 0.2;
@@ -980,24 +987,23 @@
     .pulse-background {
         position: absolute;
         left: 50%;
-        bottom: 120px;
+        bottom: 7.5rem;
         transform: translateX(-50%);
-        width: 130px;
-        height: 130px;
-        background: rgba(150, 0, 255, 0.1); /* Pulse color */
+        width: 8.125rem;
+        height: 8.125rem;
+        background: rgba(150, 0, 255, 0.1);
         border-radius: 50%;
         animation: pulse 1.5s infinite ease-in-out;
-        z-index: -1; /* Behind the button */
+        z-index: -1;
     }
 
-    /* Animated button */
     #animated-btn {
         position: absolute;
         left: 50%;
-        bottom: 120px;
+        bottom: 7.5rem;
         transform: translateX(-50%);
-        width: 130px;
-        height: 130px;
+        width: 8.125rem;
+        height: 8.125rem;
         border: none;
         background: none;
         border-radius: 50%;
@@ -1008,7 +1014,6 @@
         transition: all 0.3s ease;
     }
 
-    /* Hover effect for button */
     #animated-btn:hover {
         transform: translateX(-50%) scale(1.1); /* Grow the button on hover without changing position */
     }
@@ -1016,8 +1021,8 @@
     #animated-btn:before {
         position: absolute;
         content: '';
-        width: 130px;
-        height: 130px;
+        width: 8.125rem;
+        height: 8.125rem;
         background: none;
         border-radius: 50%;
         top: 0;
@@ -1027,12 +1032,12 @@
     #animated-btn:after {
         position: absolute;
         content: '';
-        width: 100px;
-        height: 100px;
+        width: 6.25rem;
+        height: 6.25rem;
         background: var(--clr-border);
         border-radius: 50%;
-        top: 15px;
-        left: 15px;
+        top: 1rem;
+        left: 1rem;
         transition: all 0.3s ease;
     }
 
@@ -1047,33 +1052,32 @@
     }
 
     #microphone-icon {
-        font-size: 2.5rem; /* Adjust the size as needed */
-        color: var(--clr-ideal); /* Use your theme's text color */
-        z-index: 1; /* Ensure the icon appears above the animations */
-        position: relative; /* To prevent it from inheriting absolute positioning from the parent */
+        font-size: 2.5rem;
+        color: var(--clr-ideal);
+        z-index: 1;
+        position: relative;
     }
-
 
     #animated-btn.active #microphone-icon {
         opacity: 0;
-        transform: scale(0.5); /* Shrink the icon as it disappears */
+        transform: scale(0.5);
     }
 
     /* Keyframes for button animation */
     @keyframes stop {
         70% {
-            border-radius: 6px;
-            width: 60px;
-            height: 60px;
-            top: 35px;
-            left: 35px;
+            border-radius: 0.375rem;
+            width: 3.75rem;
+            height: 3.75rem;
+            top: 2.188rem;
+            left: 2.188rem;
         }
         100% {
-            border-radius: 6px;
-            width: 64px;
-            height: 64px;
-            top: 33px;
-            left: 33px;
+            border-radius: 0.375rem;
+            width: 4rem;
+            height: 4rem;
+            top: 2rem;
+            left: 2rem;
         }
     }
 
@@ -1092,6 +1096,5 @@
             opacity: 0;
         }
     }
-
 
 </style>
