@@ -144,11 +144,11 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 
 #### Wireframes
 - Dark mode
-![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
+- ![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
 - White mode
-![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
+- ![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
 - High contrast mode
-![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
+- ![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
 
 ---
 
