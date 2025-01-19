@@ -83,10 +83,10 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 - Deleting feedback requires confirmation to prevent accidental loss.
 
 #### **Data Involved:**
-- **Audio Feedback:** Stored in `.mp3` or `.wav` formats.
-- **Video Feedback:** Stored in `.mp4` format.
+- **Audio Feedback:** Stored in `.wav` format.
+- **Video Feedback:** Stored in `.webp` format.
 - **Text Feedback:** Stored securely in the database.
-- **Metadata:** Associated with each feedback entry (timestamps, user ID).
+- **Metadata:** Associated with each feedback entry.
 
 ---
 
@@ -143,11 +143,11 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 ![mockup2.png](..%2Fmd-images%2Fmockup2.png)
 
 #### Wireframes
-Dark mode
+- Dark mode
 ![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
-White mode
+- White mode
 ![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
-High contrast mode
+- High contrast mode
 ![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
 
 ---
