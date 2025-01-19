@@ -1,0 +1,89 @@
+###
+### Base Route (Server Health Check)
+###
+GET http://localhost:3000/
+Content-Type: application/json
+Accept: application/json
+
+###
+### Upload Video Feedback (Successful Upload)
+###
+POST http://localhost:3000/upload-video
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="video"; filename="test-video.mp4"
+Content-Type: video/mp4
+
+< ../test/files/video.mp4
+--boundary123
+Content-Disposition: form-data; name="name"
+
+Test Video
+--boundary123
+Content-Disposition: form-data; name="duration"
+
+120
+--boundary123--
+
+###
+### Upload Video Feedback (Not a video)
+###
+POST http://localhost:3000/upload-video
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="video"; filename="test-video.mp4"
+Content-Type: text/plain
+
+< ../test/files/text.txt
+--boundary123
+Content-Disposition: form-data; name="name"
+
+Test Video
+--boundary123
+Content-Disposition: form-data; name="duration"
+
+120
+--boundary123--
+
+
+###
+### Get All Video Feedback
+###
+GET http://localhost:3000/video-feedback
+Content-Type: application/json
+Accept: application/json
+
+###
+### Get Single Video Feedback by ID (Success)
+###
+GET http://localhost:3000/video-feedback/1
+Content-Type: application/json
+Accept: application/json
+
+###
+### Get Single Video Feedback by ID (Not Found)
+###
+GET http://localhost:3000/video-feedback/9999
+Content-Type: application/json
+Accept: application/json
+
+###
+### Upload Video Feedback (Missing Name and Duration)
+###
+POST http://localhost:3000/upload-video
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="video"; filename="test-video.mp4"
+Content-Type: video/mp4
+
+< ../test/files/video.mp4
+--boundary123
+Content-Disposition: form-data; name="name"
+
+--boundary123
+Content-Disposition: form-data; name="duration"
+
+--boundary123--
