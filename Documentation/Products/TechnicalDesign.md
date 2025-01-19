@@ -186,7 +186,7 @@ Key considerations include:
 - Accessible via intuitive UI lists for saved audio and text feedback.
 
 ### Security Architecture
-
+- Whisper is secure due to its ability to process data locally, ensuring privacy, reducing reliance on third-party services, supporting encryption, and providing transparency through its open-source nature.
 - All data is processed and stored locally to ensure confidentiality. No third-party servers are used for sensitive data which fulfilled client's needs for security.
 - No third-party servers are used for sensitive data.
 
@@ -224,28 +224,13 @@ From technical perspective, not user perspective.
     - Lists for displaying saved feedback.
     - Buttons for audio actions (Record, Play, Pause, Stop).
 
-#### Final Figma mockup design
-
-
-Dark mode
-
-![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
-
-
-Light mode
-
-![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
-
-
-High-contrast mode
-
-![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
-
 
 ### Software Design
 
 - Modular and extendable backend structure.
 - Reusable Svelte components for the frontend.
+- Frameworks and libraries.
+- Mobile responsiveness.
 
 ### Security Design
 
