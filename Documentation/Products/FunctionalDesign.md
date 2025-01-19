@@ -172,11 +172,21 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 ### 4.2 Deployment and Component Diagram
   - Deployment Diagram
   - ![deployment_diagram.png](..%2Fmd-images%2Fdeployment_diagram.png)
-  - Ceployment Diagram
+  - Component Diagram
   - ![Component_diagram.png](..%2Fmd-images%2FComponent_diagram.png)
-  **Deployment Details:**
-  - Local SQLite database storage.
-  - Proof-of-concept hosted in a local or sandbox environment.
+  **Deployment Diagram Explanation:**
+  - Represents the system's deployment structure.
+  - Shows user interaction with the frontend.
+  - Frontend communicates with the backend via RESTful API.
+  - Backend interacts with the SQLite database and external APIs.
+  - Local storage handles audio and video files.
+  **Deployment Diagram Explanation:**
+  - Breaks down the system into logical components.
+  - Frontend (Svelte): Handles UI components such as recorders, feedback inputs, themes, etc.
+  - Backend (Express.js): Organized into controllers, routes, and services for handling business logic.
+  - Database (SQLite): Stores structured feedback data.
+  - External Libraries: Handles audio/video processing and transcription.
+
 ---
 
 ## 5. Changelog
