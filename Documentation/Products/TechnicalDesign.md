@@ -388,6 +388,7 @@ Example response
 | 2.0     | 2024-12-08 | Din    | Updated to include Sprint 1 progress.        |
 | 2.5     | 2024-10-01 | Andre  | Updated                                      |
 | 3.0     | 2024-16-01 | Andre  | Updated and make final for submission        |
+| 3.1     | 2024-16-01 | Din    | Final revision                               |
 
 ---
 
