@@ -37,7 +37,6 @@
             mediaRecorder.onstart = () => {
                 recordingStartTime = Date.now();
                 recordedChunks = [];
-                console.log("Recording started at:", recordingStartTime);
             };
 
             mediaRecorder.ondataavailable = (event) => {

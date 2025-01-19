@@ -381,7 +381,6 @@
      * Plays the audio recording.
      */
     function play() {
-        console.log('Play button pressed');
         isPlaying = true;
         isPaused = false;
         audioPlayer.currentTime = 0;
@@ -419,7 +418,6 @@
      * Stops the audio recording.
      */
     function stop() {
-        console.log('Stopping playback');
         isPlaying = false;
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
@@ -743,6 +741,7 @@
         align-items: center;
     }
 
+    /* The .icon base */
     .status-indicator .icon {
         font-size: 2.5rem;
         display: flex;
@@ -750,46 +749,53 @@
         align-items: center;
     }
 
+    /* Recording: Red blinking circle */
     .status-indicator.recording .icon.circle {
         width: 1.563rem;
         height: 1.563rem;
-        background-color: red;
+        background-color: red; /* High visibility red */
         border-radius: 50%;
         animation: blink 1s infinite alternate;
     }
 
-    @keyframes blink {
-        0% { opacity: 1; }
-        100% { opacity: 0; }
-    }
-
+    /* Paused: green pause icon */
     .status-indicator.paused .icon.pause {
         color: green;
     }
 
+    /* Playing: green blinking play icon */
     .status-indicator.playing .icon.play {
         color: green;
         animation: blink 1s infinite alternate;
     }
 
+    /* Cleared: red cross */
     .status-indicator.cleared .icon.cleared {
         color: red;
     }
 
+    /* Saved: green checkmark */
     .status-indicator.saved .icon.saved {
         color: green;
     }
 
+    /* Stopped (was white square). Use a bright color, e.g., red or orange */
     .status-indicator.stopped .icon.stopped {
         width: 1.563rem;
         height: 1.563rem;
         background-color: red;
     }
 
+    /* Stopped Playing: green square */
     .status-indicator.stoppedPlaying .icon.stoppedPlaying {
         width: 1.563rem;
         height: 1.563rem;
         background-color: green;
+    }
+
+    @keyframes blink {
+        0% { opacity: 1; }
+        100% { opacity: 0; }
     }
 
     .recording-time {
@@ -965,7 +971,7 @@
     }
 
     #animated-btn:hover {
-        transform: translateX(-50%) scale(1.1); /* Grow the button on hover without changing position */
+        transform: translateX(-50%) scale(1.1);
     }
 
     #animated-btn:before {
