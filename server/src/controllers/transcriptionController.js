@@ -2,6 +2,7 @@ import { pipeline } from '@huggingface/transformers';
 import fs from 'fs';
 import path from 'path';
 import wavefile from 'wavefile';
+import ffmpegPath from 'ffmpeg-static';
 import { spawnSync } from 'child_process';
 
 import { getAudioFeedbackById } from '../services/audioFeedbackService.js';
@@ -132,7 +133,9 @@ function extractAudioFromVideo(videoPath, onProgress) {
         '-f', 'wav',
         'pipe:1'
     ];
-    const ret = spawnSync('ffmpeg', ffmpegArgs, { encoding: 'buffer' });
+
+    // Run ffmpeg using the static binary
+    const ret = spawnSync(ffmpegPath, ffmpegArgs, { encoding: 'buffer' });
     if (ret.error) {
         throw new Error(`ffmpeg error: ${ret.error.message}`);
     }
