@@ -45,6 +45,7 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 - Integration with Scorion's production environment.
 - Advanced editing features (e.g., trimming audio/video).
 - Transcription of video feedback to text.
+- Support for more than 2 languages.
 
 ### 2.3 Requirements (Non-Functional)
 - **Performance:** Ensure low-latency recording, playback, and transcription processing.
