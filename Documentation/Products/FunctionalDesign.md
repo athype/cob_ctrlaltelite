@@ -158,9 +158,11 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 - **Frontend:**
   - Built using Svelte with UI components for feedback recording and playback.
   - Includes theme-switching functionality (Light, Dark, High Contrast).
+  - Features for enhancing user experience (visual effects, tabs/submenus, pop uo modals, indicators, timer, etc)
 - **Backend:**
   - Node.js and Express.js for managing API requests.
   - SQLite for secure storage of feedback and metadata.
+  - Whisper for Audio feedback to text transcription.
 
 ### 4.2 Deployment and Component Diagram
 - **Deployment Details:**
