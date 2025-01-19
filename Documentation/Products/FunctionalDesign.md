@@ -7,15 +7,16 @@ Scorion currently lacks an intuitive and secure feedback system that allows stud
 The current feedback system relies on third-party services for audio recording and transcription, which raises privacy concerns and non-compliance with ISO27001 security standards.
 
 ### 1.2 Problem Analysis
-- The current system only supports text feedback, which lacks the clarity and depth that audio and video can provide.
+- The current system only supports text feedback(recording was done externally), which lacks the clarity and depth that audio and video can provide.
 - The dependency on third-party audio tools introduces security risks, potential data leaks, and breaches of privacy regulations.
 - The lack of integrated audio transcription prevents users from efficiently converting their speech into text within the platform.
-- Users currently cannot manage feedback efficiently, lacking features such as deleting and combining multiple types of feedback.
+- Users currently cannot manage feedback efficiently, lacking features such as combining multiple types of feedback.
+- There is no way to stop or resume recordings, which leads to unnecessary content being captured during interruptions.
 
 ### 1.3 Context Research
-- Scorion is a digital portfolio platform primarily used by medical students and educators to track progress through data points.
-- Existing portfolio systems prioritize final grading, whereas Scorion focuses on **continuous improvement** by collecting frequent feedback across multiple assignments.
-- The proposed system aims to provide a self-contained, locally processed feedback system that enhances usability while ensuring security compliance.
+- Scorion is a digital portfolio platform tailored for students, especially in the medical field, emphasizing gradual feedback instead of end grades.
+- The platform provides dashboards for students to review feedback on data points (assignments or supervised tasks).
+- An integrated, privacy-compliant audio recording system will enhance the platform’s usability and align with its educational goals.
 
 ---
 
@@ -24,24 +25,26 @@ The current feedback system relies on third-party services for audio recording a
 ### 2.1 Solution Vision
 The project aims to create a proof-of-concept feedback feature within Scorion that:
 - Allows users to **record, store, and play audio feedback securely** using the MediaStream API.
-- Provides text-based feedback input and storage with the ability to **edit transcriptions**.
-- Supports **video feedback recording**, playback, and storage.
+- Provides text-based feedback input and storage.
+- Supports **video feedback recording**, playback, and storage using MediaRecorderAPI.
 - Enables a combined feedback feature where users can include **text, audio, and video** in a single entry.
 - Provides an intuitive and user-friendly interface that meets accessibility standards with **theme-switching functionality** (Light, Dark, High Contrast).
+- An interface with details and features that have a positive impact on statisfying user experience.
 
 ### 2.2 Scope
 
 #### **In-Scope:**
 - Audio, text, and video feedback recording, playback, and secure storage.
-- Transcription of recorded audio via **HuggingFace Whisper** integrated into the platform.
-- Basic UI improvements to enhance usability (highlighting new feedback, easier navigation).
-- Dedicated feedback page with the ability to delete and manage feedback items.
+- Transcription of recorded audio via **Whisper** integrated into the platform.
+- UI improvements to enhance usability (highlighting new feedback, easier navigation).
+- Dedicated feedback page with the ability to manage feedback items.
 - Combining multiple feedback types (text, audio, and video) into a single feedback entry.
+- Support for another language transcription beyond English (Dutch).
 
 #### **Out-of-Scope:**
 - Integration with Scorion's production environment.
 - Advanced editing features (e.g., trimming audio/video).
-- Support for multiple language transcriptions beyond English.
+- Transcription of video feedback to text.
 
 ### 2.3 Requirements (Non-Functional)
 - **Performance:** Ensure low-latency recording, playback, and transcription processing.
@@ -158,7 +161,7 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 - **Frontend:**
   - Built using Svelte with UI components for feedback recording and playback.
   - Includes theme-switching functionality (Light, Dark, High Contrast).
-  - Features for enhancing user experience (visual effects, tabs/submenus, pop uo modals, indicators, timer, etc)
+  - Features for enhancing user experience (visual effects, tabs/submenus, pop-up modals, highlighiting, indicators, timer, etc)
 - **Backend:**
   - Node.js and Express.js for managing API requests.
   - SQLite for secure storage of feedback and metadata.
