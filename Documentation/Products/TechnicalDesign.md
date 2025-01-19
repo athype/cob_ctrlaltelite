@@ -64,12 +64,12 @@ Key considerations include:
 
 ## 4. System Architecture
 
-### Logical View (Functional Components)\
+### Logical View (Functional Components)
 ![conceptual_diagram.png](..%2Fmd-images%2Fconceptual_diagram.png)
-
-### Hardware Architecture (Deploy)\
+//TODO: describe the components
+### Hardware Architecture (Deploy)
 ![hardware_architecture.png](..%2Fmd-images%2Fhardware_architecture.png)
-
+//TODO describe the hardware
 ### Software Architecture
 
 #### Overview
@@ -86,7 +86,7 @@ Key considerations include:
 - **Backend**: Node.js and Express.js.
 
 #### Components
-
+//TODO: list all components, and name as they are named in the project
 **Reusable Components:**
 1. **Button**:
 - Supports icons, labels, and actions on press.
@@ -107,10 +107,13 @@ Key considerations include:
 - Displays a list of saved text feedback entries.
 
 ### APIs
+
 - **MediaStream API**: Handles audio recording and playback.
 - **Whisper API** (HuggingFace): Provides local speech-to-text functionality.
 
 ### Information Architecture
+
+//TODO: add diagram and describe it
 - Data Types:
     - Audio files (e.g., `.wav`).
     - Text feedback entries.
@@ -118,10 +121,14 @@ Key considerations include:
     - Accessible via intuitive UI lists for saved audio and text feedback.
 
 ### Security Architecture
+//TODO: describe security, explain that all data is processed and stored locally to ensure confidentiality, and that no third-party servers are used for sensitive data.
+
 - All data is processed and stored locally to ensure confidentiality.
 - No third-party servers are used for sensitive data.
 
 ### Performance
+//TODO: describe performance of the whisper model that we use (how fast it is, how much memory it uses, etc.)
+
 - Audio recording and playback must be low-latency.
 - Whisper integration should handle transcription efficiently, even with larger audio files.
 
@@ -130,12 +137,15 @@ Key considerations include:
 ## 5. System Design
 
 ### Database Design
+//TODO: class diagram of the database
 - **Database**: SQLite is used to store recordings and textual feedback.
 - **Reasoning**:
     - Ease of integration and maintenance.
     - File-based storage for enhanced security.
 
 ### User Interface Design
+//TODO: add and describe wireframes. Explain why we put components where ther are, and why we changed it later etc. 
+From technical perspective, not user perspective. 
 - **Principles**:
     - Focus on simplicity and intuitiveness.
     - Clear labeling and purposeful placement of buttons.
@@ -144,17 +154,20 @@ Key considerations include:
     - Buttons for audio actions (Record, Play, Pause, Stop).
 
 ### Software Design
+//TODO: explain what software components are there (backend, frontend, etc.)
+
 - Modular and extendable backend structure.
 - Reusable Svelte components for the frontend.
 
 ### Security Design
+//TODO: explain how we ended up implementing it taking into account the security requirements
 - Local data processing and storage to align with privacy requirements.
 - ISO27001 compliance for system security.
 
 ---
 
 ## 6. Data Flow
-
+//TODO: add sequence diagrams for the data flow
 ### Audio/Video Recording and Transcription
 1. Users clicks on the record button to start audio or camera capture.
 2. Audio or video is recorded and temporarily stored in the browser.
@@ -208,19 +221,22 @@ audio_feedback
 ## 8. Error Handling
 
 ### Frontend
-
+//TODO: describe text feedback validation on frontend
 1. Display error messages for failed recordings or API requests.
 2. Handle UI fallback for users without microphone or camera access.
 
 ### Backend
-
+//TODO: describe error handling on backend
 1. Validate input files and texts before processing.
 2. Return understandable errors code.
 
 ---
 
 ## 9. Timeline
-
+//copy freaking parts of backlogs we had
+https://docs.google.com/document/d/10fQPt7yL3RTi0cYwei1daPV0w_FIDbVmGtZ0hO8Z6fA/edit?tab=t.0
+https://docs.google.com/document/d/1sl-zKipzTvmlL12tQw9ov78GFGaSp-b0Db9KUAIsoZo/edit?tab=t.0#heading=h.2u2qql3xgmi6
+https://docs.google.com/document/d/1Fmdu2oIvaCh1dLgFWBOOzhFj99Wee4R-kk46L-lBt0s/edit?tab=t.0
 - Srpint 1: Research and wireframes.
 - Sprint 2: Implement core functions (recording, transcription).
 - Sprint 3: Finalize features, fix bugs, mobile responsive and testing.
