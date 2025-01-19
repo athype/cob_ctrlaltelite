@@ -20,19 +20,19 @@
         font-weight: 600;
         color: var(--clr-text);
         padding: 1rem;
-        width: 40%;  /* Button width is 40% of the screen width */
+        width: 40%;
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,
         color var(--transition-delay) ease,
-        transform 0.2s ease; /* Added transition for scaling */
+        transform 0.2s ease;
         margin-left: auto;
         margin-right: auto;
     }
 
     .addnew-button:hover {
         color: var(--clr-text);
-        transform: scale(1.03); /* Button will grow by 5% */
+        transform: scale(1.03);
     }
 
 

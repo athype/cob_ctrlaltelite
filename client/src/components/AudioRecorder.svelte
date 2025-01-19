@@ -56,7 +56,7 @@
     let height = 0;
     let halfHeight = 0;
 
-    let playbackTime = 0; // Current playback time
+    let playbackTime = 0;
     const playbackBarColor = "#7d7d7d";
     let canvasPositionX = 0;
     let temporaryDuration = 0;
@@ -80,12 +80,11 @@
 
     function onNameInputSaveClick(name){
         audioName = name;
-        console.log("Audio name " + name);
         nameInputModalDisplay = false;
 
         if (!audioName) {
             console.error('No name entered. Aborting upload.');
-            return; // Do not proceed without a name
+            return;
         }
 
         console.log("Audio name " + audioName);
@@ -104,7 +103,6 @@
     function hideMessage() {
         messageVisible = false;
     }
-
 
     /**
      * Requests access to the user's microphone.
@@ -158,12 +156,10 @@
         };
 
         recorder.onstop = () => {
-            console.log("Recorder stopped");
             recording = URL.createObjectURL(new Blob(chunks, {'type': 'audio/wav; codecs=opus'}));
             chunks = [];
         };
     }
-
 
     /**
      * Methods to toggle between button visibility
@@ -177,7 +173,6 @@
         isBeforeRecording = false;
         isAfterRecording = true;
     }
-
 
     /**
      * Uploads the audio file to the server along with its duration and name.
@@ -207,11 +202,9 @@
                 console.log('Audio uploaded successfully:', result);
                 onRecordingSaved?.();
                 showModal?.("Success!");
-                // Indicate that we have just saved
                 justSaved = true;
                 justCleared = false;
                 justStopped = false;
-                // Reset the timer only after saving
                 recordingTime = 0;
                 resetIndicatorStateLater();
             } else {
@@ -246,7 +239,6 @@
         justStopped = false;
         isPlaying = false;
 
-        // Reset recording time whenever we start a new recording
         recordingTime = 0;
 
         recorder.start();
@@ -256,7 +248,6 @@
      * Stops recording audio.
      */
     function stopRecording() {
-        // Capture the current time just before stopping
         temporaryDuration = recordingTime/100;
         isRecording = false;
         recorder.stop();
@@ -311,10 +302,8 @@
         analyser.connect(scriptProcessor);
         scriptProcessor.connect(audioContext.destination);
 
-        // Add a flag to check if setup is complete before calling processInput
         scriptProcessor.onaudioprocess = processInput;
 
-        // Initial empty render to ensure the canvas is ready
         renderBars(bars);
     }
 
@@ -332,7 +321,6 @@
             const average = getAverageVolume(array);
             bars = [...bars, average];
 
-            // If the waveform exceeds the width, slice it
             if (bars.length <= Math.floor(width / (barWidth + barGutter))) {
                 renderBars(bars);
             } else {
@@ -352,10 +340,8 @@
      */
 
     function getAverageVolume(array) {
-        // Get the average volume from the frequency data array
         const average = array.reduce((sum, value) => sum + value, 0) / array.length;
 
-        // Ensure the average volume is never below 1
         return Math.max(1, average);
     }
 
@@ -370,7 +356,6 @@
             requestAnimationFrame(() => {
                 canvasContext.clearRect(0, 0, width, height);
 
-                // Render all bars from the start based on the current bars array
                 currentBars.forEach((bar, index) => {
                     canvasContext.fillStyle = barColor;
                     const x = (index * (barWidth + barGutter)) - canvasPositionX;
@@ -381,11 +366,10 @@
 
                 });
 
-                // Render the static white line in the middle (playback bar)
                 if (isPlaying) {
-                    canvasContext.fillStyle = playbackBarColor; // White line color
-                    const centerLineX = width / 2; // Center of the canvas
-                    canvasContext.fillRect(centerLineX - 1, 0, 2, height); // Fixed white line in the center
+                    canvasContext.fillStyle = playbackBarColor;
+                    const centerLineX = width / 2;
+                    canvasContext.fillRect(centerLineX - 1, 0, 2, height);
                 }
 
                 drawing = false;
@@ -396,18 +380,15 @@
     /**
      * Plays the audio recording.
      */
-
     function play() {
         console.log('Play button pressed');
         isPlaying = true;
         isPaused = false;
         audioPlayer.currentTime = 0;
 
-        // Ensure waveform is rendered before playback starts
         renderBars(bars);
-        canvasPositionX = 0; // Reset canvas position for first playback
+        canvasPositionX = 0;
 
-        // Start playback only after rendering the waveform
         requestAnimationFrame(() => {
             audioPlayer.play();
 
@@ -421,11 +402,8 @@
                         canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
                     }
 
-                    console.log(temporaryDuration);
-
                     renderBars(bars);
 
-                    // Update the recording time display
                     recordingTime = playbackTime * 100;
 
                     requestAnimationFrame(updatePlaybackIndicator);
@@ -486,7 +464,6 @@
         justCleared = true;
         justSaved = false;
         justStopped = false;
-        // Reset the timer after clearing
         recordingTime = 0;
         stop();
         resetIndicatorStateLater();
@@ -517,7 +494,6 @@
     function resetIndicatorStateLater() {
         setTimeout(() => {
             if (!isRecording && !isPlaying && !isPaused && !justSaved && !justCleared && !justStopped && !justStoppedPlaying) {
-                // Reset states if needed - currently does nothing, but can be extended.
             }
         }, 3000);
     }
@@ -581,21 +557,17 @@
      * @returns {string} Formatted time as "MM:SS.hh"
      */
     function formatTime(hundredths) {
-        // Round the hundredths to avoid floating-point precision issues
         hundredths = Math.round(hundredths);
 
-        // Convert hundredths to seconds and minutes
         const totalSeconds = Math.floor(hundredths / 100);
-        const h = hundredths % 100; // hundredths of a second
+        const h = hundredths % 100;
         const m = Math.floor(totalSeconds / 60);
         const s = totalSeconds % 60;
 
-        // Format time values to always be two digits
         const mm = m < 10 ? '0' + m : m;
         const ss = s < 10 ? '0' + s : s;
         const hh = h < 10 ? '0' + h : h;
 
-        // Return the formatted time in MM:SS.hh format
         return `${mm}:${ss}.${hh}`;
     }
 
@@ -605,14 +577,12 @@
      */
     $effect(() => {
         if (isRecording && !isPaused) {
-            // Start or continue the interval if not already set
             if (!recordingInterval) {
                 recordingInterval = setInterval(() => {
                     recordingTime++;
-                },10); // increment every 10ms
+                },10);
             }
         } else {
-            // Not actively recording, clear the interval if set
             if (recordingInterval) {
                 clearInterval(recordingInterval);
                 recordingInterval = undefined;
@@ -642,30 +612,22 @@
 {/if}
 
 <div class="recorder-container" style="border: 0.3rem solid var(--clr-purple);">
-    <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">
         {#if indicatorSymbol.type === 'recording'}
-            <!-- Red blinking circle -->
             <div class="icon circle"></div>
         {:else if indicatorSymbol.type === 'paused'}
-            <!-- Green pause sign -->
             <div class="icon pause">&#10073;&#10073;</div>
         {:else if indicatorSymbol.type === 'playing'}
-            <!-- Green play triangle -->
             <div class="icon play">&#9658;</div>
         {:else if indicatorSymbol.type === 'saved'}
-            <!-- Green checkmark -->
             <div class="icon saved">&#10004;</div>
         {:else if indicatorSymbol.type === 'stopped'}
-            <!-- Red square -->
             <div class="icon stopped"></div>
         {:else if indicatorSymbol.type === 'stoppedPlaying'}
-            <!-- Green square -->
             <div class="icon stoppedPlaying"></div>
         {/if}
     </div>
     <div class="audio-recorder">
-        <!-- Display current recording time in MM:SS.hh -->
         <div class="recording-time">
             {formatTime(recordingTime)}
         </div>
@@ -683,7 +645,6 @@
                     style="display: {isRecording ? 'block' : 'none'}"
             ></div>
 
-            <!-- Animated button -->
             <button
                     id="animated-btn"
                     class="{isRecording ? 'active' : ''}"
@@ -692,7 +653,6 @@
                     <i id="microphone-icon" class="fas fa-microphone"></i>
             </button>
 
-            <!-- Play and Pause buttons -->
             <div class="centered-buttons">
                 <button
                         class="control-button pause-button"
@@ -703,7 +663,6 @@
                 </button>
             </div>
 
-            <!-- After Recording buttons -->
             <div class="centered-buttons after-recording">
                 <button
                         class="control-button play-button"
@@ -804,42 +763,35 @@
         100% { opacity: 0; }
     }
 
-    /* Paused: green pause icon */
     .status-indicator.paused .icon.pause {
         color: green;
     }
 
-    /* Playing: green play triangle (blinking) */
     .status-indicator.playing .icon.play {
         color: green;
         animation: blink 1s infinite alternate;
     }
 
-    /* Cleared: red cross */
     .status-indicator.cleared .icon.cleared {
         color: red;
     }
 
-    /* Saved: green checkmark */
     .status-indicator.saved .icon.saved {
         color: green;
     }
 
-    /* White square for stopped state */
     .status-indicator.stopped .icon.stopped {
         width: 1.563rem;
         height: 1.563rem;
         background-color: red;
     }
 
-    /* Green square for stoppedPlayback state */
     .status-indicator.stoppedPlaying .icon.stoppedPlaying {
         width: 1.563rem;
         height: 1.563rem;
         background-color: green;
     }
 
-    /* Timer */
     .recording-time {
         position: absolute;
         top: 10%;
@@ -882,7 +834,6 @@
         padding: 2rem;
     }
 
-    /* Waveform */
     .waveform {
         position: absolute;
         top: 25%;
@@ -947,7 +898,6 @@
         opacity: 0.3;
     }
 
-    /* Button spacing and visibility tweaks for responsive design */
     @media screen and (max-width: 48rem) {
         .controls {
             flex-direction: column;
@@ -1063,7 +1013,6 @@
         transform: scale(0.5);
     }
 
-    /* Keyframes for button animation */
     @keyframes stop {
         70% {
             border-radius: 0.375rem;
@@ -1081,7 +1030,6 @@
         }
     }
 
-    /* Keyframes for pulse animation */
     @keyframes pulse {
         0% {
             transform: translateX(-50%) scale(0.1);
@@ -1096,5 +1044,4 @@
             opacity: 0;
         }
     }
-
 </style>

@@ -3,7 +3,10 @@
     export let message = "Default message";
     import { fade } from 'svelte/transition';
 
-    // Function to handle clicks outside the pop-up
+    /**
+     * Closes the modal when the overlay is clicked.
+     * @param event
+     */
     function handleOverlayClick(event) {
         const popup = event.target.closest('.pop-up');
         if (!popup) {
@@ -11,6 +14,9 @@
         }
     }
 
+    /**
+     * Closes the modal when the close button is clicked.
+     */
     function closeButtonClick() {
         closeModal();
     }
