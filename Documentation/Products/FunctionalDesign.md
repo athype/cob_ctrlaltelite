@@ -87,7 +87,7 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 
 #### **Data Involved:**
 - **Audio Feedback:** Stored in `.wav` format.
-- **Video Feedback:** Stored in `.webp` format.
+- **Video Feedback:** Stored in `.webm` format.
 - **Text Feedback:** Stored securely in the database.
 - **Metadata:** Associated with each feedback entry.
 
