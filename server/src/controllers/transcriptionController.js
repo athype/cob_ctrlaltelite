@@ -17,7 +17,6 @@ export async function getTranscription(req, res) {
         const { id } = req.params;
         const { type = 'audio', language = 'en' } = req.query;
 
-        // SSE setup
         res.on('close', () => res.end());
         res.set({
             'Content-Type': 'text/event-stream',
@@ -27,7 +26,6 @@ export async function getTranscription(req, res) {
         });
         res.flushHeaders();
 
-        // Determine file path
         let filePath;
         if (type === 'video') {
             filePath = getVideoPath(id);
@@ -35,33 +33,26 @@ export async function getTranscription(req, res) {
             filePath = getAudioPath(id);
         }
 
-        // If not found, send SSE error and exit
         if (!filePath) {
             res.write(`data: ${JSON.stringify({ error: `No ${type} file for ID=${id}` })}\n\n`);
             return res.end();
         }
 
-        // 1) Immediately tell client "initializing"
         res.write(`data: ${JSON.stringify({ progress: { status: 'initializing' } })}\n\n`);
-        // Let that actually reach the client:
         res.flushHeaders();
 
-        // 2) Yield to event loop so the client sees "initializing" right away
         await new Promise(r => setImmediate(r));
 
-        // 3) Now do synchronous reading + pipeline call
         const text = await transcribeFile(filePath, type, language, (prog) => {
             res.write(`data: ${JSON.stringify({ progress: prog })}\n\n`);
         });
 
-        // 4) Send the final transcript
         res.write(`data: ${JSON.stringify({ transcription: text })}\n\n`);
         res.end();
 
     } catch (err) {
         console.error('Error in getTranscription:', err);
         if (!res.writableEnded) {
-            // SSE error if still open
             res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
             res.end();
         }
@@ -90,15 +81,12 @@ function getVideoPath(id) {
  * Reads or extracts audio data, then calls whisper pipeline with SSE progress.
  */
 async function transcribeFile(filePath, type, language, onProgress) {
-    // Let the client see that we've started
     onProgress({ status: 'initiate' });
 
-    // Either read wave audio or extract from video
     let audioFloat32;
     if (type === 'video') {
         audioFloat32 = extractAudioFromVideo(filePath, onProgress);
     } else {
-        // Synchronous reading for audio
         const buffer = fs.readFileSync(filePath);
         const wf = new wavefile.WaveFile(buffer);
         wf.toBitDepth('32f');
@@ -114,7 +102,6 @@ async function transcribeFile(filePath, type, language, onProgress) {
         { progress_callback: onProgress }
     );
 
-    // Do transcription
     const result = await transcriber(audioFloat32, { language });
     onProgress({ status: 'done' });
     return result.text;

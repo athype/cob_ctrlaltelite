@@ -143,7 +143,7 @@
         transition: transform 0.3s ease, border-color 0.3s, background-color 0.3s, color 0.3s;
         padding: 1rem;
         height: 3rem;
-        display: flex; /* Ensure flexbox is used for vertical alignment */
+        display: flex;
         justify-content: center;
         align-items: center;
         border-bottom: none;
@@ -153,7 +153,7 @@
     }
 
     .feedback-toolbar button div {
-        display: inline-block; /* Prevent text from being affected by transform */
+        display: inline-block;
     }
 
     /* Hover effect */
@@ -162,7 +162,7 @@
         border-color: var(--clr-border);
         border: dashed;
         border-bottom: none;
-        transform: translateY(-4px); /* Move the button up slightly when hovered */
+        transform: translateY(-4px);
     }
 
     /* Active state */
@@ -170,7 +170,7 @@
         background-color: var(--clr-highlight);
         color: var(--clr-text-active);
         border: 0.225rem solid var(--clr-border);
-        transform: translateY(-8px); /* Move the button up more when active */
+        transform: translateY(-8px);
         font-size: 17px;
         z-index: 1;
     }
