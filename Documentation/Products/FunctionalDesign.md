@@ -180,6 +180,6 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 
 | Version | Date       | Author | Description                                                                 |
 |---------|------------|--------|-----------------------------------------------------------------------------|
-| 0.1     | 2023-11-20 | David  | Initial draft based on known context.                                       |
-| 0.2     | 2023-12-01 | Din    | Updated based on client meeting, Sprint 1 vision document and user stories. |
-| 0.3     | 2023-12-04 | David  | Added low-fidelity mockups, wireframes and updates to introduction          |
+| 0.1     | 2024-11-20 | David  | Initial draft based on known context.                                       |
+| 0.2     | 2024-12-01 | Din    | Updated based on client meeting, Sprint 1 vision document and user stories. |
+| 0.3     | 2024-12-04 | David  | Added low-fidelity mockups, wireframes and updates to introduction          |
