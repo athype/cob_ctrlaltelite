@@ -1,40 +1,44 @@
 <script>
+    // Imports needed for listing feedback items (List.svelte) and displaying transcriptions (TranscriptionDisplay.svelte)
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
 
-    // Props from parent
+    // Props received from the parent: arrays of text, audio, and video feedback, plus a callback after saving text feedback
     let { texts, recordings, videos, onTextFeedbackSaved } = $props();
 
-    // Local states
-    let selectedFeedback = $state(null);
-    let showTranscription = $state(false);
-    let activeTab = $state("text");
-
-    // Tracks which language is selected ('en' or 'nl')
-    let selectedLanguage = $state('en');
+    // Internal states
+    let selectedFeedback = $state(null); // Stores whichever feedback item (text, audio, or video) the user selected
+    let showTranscription = $state(false); // Controls visibility of the transcription display
+    let activeTab = $state("text");       // Tracks which tab is currently active: "text", "audio", or "video"
+    let selectedLanguage = $state('en');  // Toggles between "en" and "nl" for transcription
 
     /**
-     * Toggle language before transcription
+     * Switches the language used by the transcription process:
+     * 'en' -> 'nl' or 'nl' -> 'en'
      */
     function toggleLanguage() {
         selectedLanguage = (selectedLanguage === 'en') ? 'nl' : 'en';
     }
 
     /**
-     * Switch among "Text", "Audio", "Video" tabs
+     * Changes the active tab (text, audio, or video)
+     * and optionally hides the transcription preview.
      */
     function handleTabChange(tab) {
         activeTab = tab;
+        showTranscription = false;
     }
 
-    // TEXT FEEDBACK
+    /**
+     * When a text feedback is clicked, sets selectedFeedback to that text's details.
+     */
     function handleTextFeedbackClick(text) {
         showTranscription = false;
         selectedFeedback = {
             type: "text",
             id: text.id,
             content: text.feedback_text,
-            name: `${text.name}`,
+            name: text.name,
             created_at: new Date(text.created_at).toISOString().split("T")[0]
         };
     }
@@ -42,36 +46,33 @@
         return selectedFeedback?.type === "text" && selectedFeedback?.id === text.id;
     }
 
-    // AUDIO FEEDBACK
-    function handleAudioFeedbackClick(recording) {
+    /**
+     * When an audio feedback is clicked, sets selectedFeedback to that audio's details.
+     */
+    function handleAudioFeedbackClick(audio) {
         showTranscription = false;
         selectedFeedback = {
-            id: recording.id,
             type: "audio",
-            filePath: recording.file_path,
-            name: `${recording.name}`,
-            created_at: new Date(recording.created_at).toISOString().split("T")[0]
+            id: audio.id,
+            filePath: audio.file_path,
+            name: audio.name,
+            created_at: new Date(audio.created_at).toISOString().split("T")[0]
         };
     }
-    function isAudioFeedbackSelected(recording) {
-        return selectedFeedback?.type === "audio" && selectedFeedback?.id === recording.id;
+    function isAudioFeedbackSelected(audio) {
+        return selectedFeedback?.type === "audio" && selectedFeedback?.id === audio.id;
     }
 
     /**
-     * Called when user clicks "Transcribe"
+     * When a video feedback is clicked, sets selectedFeedback to that video's details.
      */
-    function handleTranscriptionClick() {
-        showTranscription = true;
-    }
-
-    // VIDEO FEEDBACK
     function handleVideoFeedbackClick(video) {
         showTranscription = false;
         selectedFeedback = {
-            id: video.id,
             type: "video",
+            id: video.id,
             filePath: video.file_path,
-            name: `${video.name}`,
+            name: video.name,
             created_at: new Date(video.created_at).toISOString().split("T")[0]
         };
     }
@@ -80,18 +81,24 @@
     }
 
     /**
-     * Generate a unique key so the entire preview re-renders each time
-     * (prevents "blocked" audio scenario).
+     * Called when user clicks "Transcribe" to reveal the transcription component.
+     */
+    function handleTranscriptionClick() {
+        showTranscription = true;
+    }
+
+    /**
+     * Returns a stable key for each selectedFeedback so that we force re-mounting
+     * and avoid certain 'stuck' states in audio or video playback.
      */
     function getPreviewKey(feedback) {
         if (!feedback) return '';
-        // Combine type, ID, and filePath so even if just the path changes, we get a new key
         return `${feedback.type}-${feedback.id}-${feedback.filePath}`;
     }
 </script>
 
 <section class="container">
-    <!-- LEFT: TABS for text/audio/video -->
+    <!-- Left side: tabs and feedback lists for text, audio, and video -->
     <section class="left-container">
         <section class="feedback-container">
             <div class="tabs-container">
@@ -126,7 +133,7 @@
 
                 <div class="content">
                     {#if activeTab === "text"}
-                        <section id="content-text" class="tab-content text-tab-content">
+                        <section class="tab-content text-tab-content">
                             <List
                                     items={texts}
                                     labelPrefix="Text"
@@ -137,7 +144,7 @@
                     {/if}
 
                     {#if activeTab === "audio"}
-                        <section id="content-audio" class="tab-content audio-tab-content">
+                        <section class="tab-content audio-tab-content">
                             <List
                                     items={recordings}
                                     labelPrefix="Audio"
@@ -148,7 +155,7 @@
                     {/if}
 
                     {#if activeTab === "video"}
-                        <section id="content-video" class="tab-content video-tab-content">
+                        <section class="tab-content video-tab-content">
                             <List
                                     items={videos}
                                     labelPrefix="Video"
@@ -162,7 +169,7 @@
         </section>
     </section>
 
-    <!-- RIGHT: "Preview" area -->
+    <!-- Right side: preview of selected item (text/audio/video) and transcription -->
     <section class="right-container">
         <h1 class="title">Preview</h1>
         <div
@@ -172,13 +179,11 @@
                 class:selected-text={selectedFeedback?.type === "text"}
         >
             {#if selectedFeedback}
-                <!-- Force re-mount by keying the entire preview block -->
                 {#key getPreviewKey(selectedFeedback)}
                     <div class="feedback-header">
                         {selectedFeedback.name + " " + selectedFeedback.created_at}
                     </div>
 
-                    <!-- AUDIO PREVIEW -->
                     {#if selectedFeedback.type === "audio"}
                         <audio controls autoplay>
                             <source
@@ -188,7 +193,6 @@
                             Your browser does not support the audio element.
                         </audio>
 
-                        <!-- Buttons side by side, centered -->
                         <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
                             <button
                                     on:click={handleTranscriptionClick}
@@ -205,22 +209,20 @@
                         </div>
 
                         {#if showTranscription}
-                            <!-- Pass chosen language to TranscriptionDisplay -->
                             <TranscriptionDisplay
                                     id={selectedFeedback.id}
                                     audioName={selectedFeedback.name}
-                                    onTextFeedbackSaved={onTextFeedbackSaved}
                                     language={selectedLanguage}
+                                    onTextFeedbackSaved={onTextFeedbackSaved}
+                                    type="audio"
                             />
                         {/if}
 
-                        <!-- TEXT PREVIEW -->
                     {:else if selectedFeedback.type === "text"}
                         <p style="font-size: 1.5rem; padding: 0.5rem; align-self: center;">
                             {selectedFeedback.content}
                         </p>
 
-                        <!-- VIDEO PREVIEW -->
                     {:else if selectedFeedback.type === "video"}
                         <video controls autoplay>
                             <source
@@ -229,10 +231,35 @@
                             />
                             Your browser does not support the video element.
                         </video>
+
+                        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
+                            <button
+                                    on:click={handleTranscriptionClick}
+                                    class="send-button gradient-border"
+                            >
+                                Transcribe
+                            </button>
+                            <button
+                                    on:click={toggleLanguage}
+                                    class="send-button gradient-border"
+                            >
+                                {selectedLanguage === 'en' ? 'Switch to Dutch' : 'Switch to English'}
+                            </button>
+                        </div>
+
+                        {#if showTranscription}
+                            <TranscriptionDisplay
+                                    id={selectedFeedback.id}
+                                    audioName={selectedFeedback.name}
+                                    language={selectedLanguage}
+                                    onTextFeedbackSaved={onTextFeedbackSaved}
+                                    type="video"
+                            />
+                        {/if}
                     {/if}
                 {/key}
             {:else}
-                <p style="text-align: center; padding-bottom: 5vh">
+                <p style="text-align: center; padding-bottom: 5vh;">
                     Select a feedback to view it here.
                 </p>
             {/if}
@@ -242,7 +269,7 @@
 
 <style>
     .container {
-        display: flex;
+        display: flex;                /* side-by-side layout for left tabs & right preview */
         flex-direction: row;
         flex-wrap: wrap;
         padding: 1rem;
@@ -252,7 +279,7 @@
     }
 
     .left-container, .right-container {
-        flex: 1;
+        flex: 1;                     /* both sides share available space */
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -293,14 +320,14 @@
         border: dashed;
         border-radius: 0.5rem 0.5rem 0 0;
         cursor: pointer;
-        transition: transform 0.3s ease, border-color 0.3s, background-color 0.3s, color 0.3s;
         padding: 1rem;
         height: 3rem;
-        display: flex; /* vertical alignment */
+        display: flex;
         justify-content: center;
         align-items: center;
         border-bottom: none;
         transform: translateY(-2px);
+        transition: transform 0.3s ease, border-color 0.3s, background-color 0.3s, color 0.3s;
     }
 
     .tabs button:hover {
@@ -330,6 +357,7 @@
         border-color: var(--clr-indigo);
     }
 
+    /* Each tab panel has a fixed height to match the preview area */
     .tab-content {
         background-color: var(--clr-background);
         border: 0.3rem solid var(--clr-border);
@@ -349,10 +377,16 @@
         border-color: var(--clr-indigo);
     }
 
+    .title {
+        font-size: 1.8rem;
+        padding: 0.5rem;
+        font-weight: 600;
+    }
+
+    /* The preview display for selected feedback: single scroll area at 28.2rem height */
     .selected-feedback-display {
-        flex: 1;
+        flex: 1;                     /* expands to fill right side */
         display: flex;
-        padding: 1rem;
         flex-direction: column;
         background-color: var(--clr-background);
         border-radius: 0.5rem;
@@ -363,35 +397,34 @@
         gap: 1rem;
         word-wrap: break-word;
         width: 100%;
-        max-height: 28.2rem;
         box-sizing: border-box;
-        overflow-y: auto;
+        padding: 1rem;
+        height: 28.2rem;            /* matches the tab content height */
+        overflow-y: auto;           /* entire video + transcription in one scroll */
     }
 
-    /* Audio selected: purple border */
     .selected-feedback-display.selected-audio {
         border-color: var(--clr-purple);
     }
-    /* Video selected: blue border */
     .selected-feedback-display.selected-video {
         border-color: var(--clr-indigo);
     }
-    /* Text selected: pink border */
     .selected-feedback-display.selected-text {
         border-color: var(--clr-pink);
     }
 
     .feedback-header {
-        align-self: center;
         font-size: 1.3rem;
         font-weight: bold;
         padding: 0.7rem;
         border-radius: 0.5rem;
         color: var(--clr-text);
         background-color: var(--clr-inverse);
+        text-align: center;
     }
 
-    audio {
+
+    audio, video {
         width: 70%;
         margin-left: auto;
         margin-right: auto;
@@ -409,12 +442,7 @@
         color var(--transition-delay) ease;
     }
 
-    .title {
-        font-size: 1.8rem;
-        padding: 0.5rem;
-        font-weight: 600;
-    }
-
+    /* Slim scrollbar for the preview container if content overflows */
     .selected-feedback-display::-webkit-scrollbar,
     textarea::-webkit-scrollbar {
         width: 4px;
