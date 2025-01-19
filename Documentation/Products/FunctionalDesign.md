@@ -75,7 +75,7 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 #### **Roles:**
 - **Educators:** 
   - Record, store, and review feedback.
-  - Manage and delete feedback entries.
+  - Manage feedback entries.
   - Use transcription to convert audio feedback into text.
 - **Students:**
   - Submit feedback using text, audio, or video.
