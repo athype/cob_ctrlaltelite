@@ -103,6 +103,23 @@ A standalone proof-of-concept feedback feature within Scorion that:
 ![wireframe.png](..%2Fmd-images%2Fwireframe.png)
 ---
 
+#### Final Figma mockup design
+
+
+Dark mode
+
+![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
+
+
+Light mode
+
+![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
+
+
+High-contrast mode
+
+![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
+
 ## 4. System Architecture
 
 ### 4.1 Basic Architecture with Logical Components

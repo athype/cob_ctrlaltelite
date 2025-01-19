@@ -33,7 +33,6 @@ export async function uploadAudioFeedback(req, res) {
             .then(() => {
                 console.log('File exists, starting FFmpeg...');
 
-                // Start FFmpeg conversion after file upload completes
                 ffmpeg(filePath)
                     .audioFrequency(16000)
                     .audioChannels(1)
@@ -42,11 +41,10 @@ export async function uploadAudioFeedback(req, res) {
                         console.log('FFmpeg conversion finished');
 
                 
-                        fsPromises.unlink(filePath) // Delete the original file
+                        fsPromises.unlink(filePath)
                             .then(() => {
-                                fsPromises.rename(outputFilePath, filePath) // Replace the original file with the converted one
+                                fsPromises.rename(outputFilePath, filePath)
                                     .then(() => {
-                                        // Save the file metadata after conversion
                                         saveAudioFeedback(filePathForDb, req.body.duration, req.body.name || 'Untitled');
                                         res.status(200).json({
                                             message: 'Audio uploaded and processed!',
@@ -69,7 +67,7 @@ export async function uploadAudioFeedback(req, res) {
                         console.error('Error processing audio:', err);
                         res.status(500).send('Audio processing failed.');
                     })
-                    .save(outputFilePath); // Save to a new output file
+                    .save(outputFilePath);
 
             })
             .catch((err) => {
@@ -77,7 +75,6 @@ export async function uploadAudioFeedback(req, res) {
                 res.status(400).send('Uploaded file not found.');
             });
 
-        // return res.status(200).json({ message: 'Audio uploaded successfully!', filePath, duration, name });
     } catch (err) {
         console.error('Error uploading audio:', err);
         return res.status(500).send('Internal Server Error');

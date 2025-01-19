@@ -6,40 +6,30 @@
     import Modal, { bind } from 'svelte-simple-modal';
     import FeedbackModalContent from "../components/FeedbackModalContent.svelte";
 
-    // Declare reactive variables
-    // let recordings = $state([]);
-    // let videos = $state([]);
-    // let texts = $state([]);
-
     let recordings = $state(writable([]));
     let videos = $state(writable([]));
     let texts = $state(writable([]));
 
     let {onTextFeedbackSaved} = $props();
 
-    // Side effect that runs whenever a reactive variable changes, also polling backend for feedback
     $effect(() => {
         fetchFeedback();
     });
-
 
     /**
      * Fetches both audio and text feedback from backend api via await.
      */
     async function fetchFeedback() {
         try {
-            // Fetch audio feedback
             const recordingsResponse = await fetch('http://localhost:3000/audio-feedback');
             if (recordingsResponse.ok) {
                 recordings = await recordingsResponse.json();
             } else if (recordingsResponse.status === 404) {
                 console.warn('No audio feedback found.');
-                // recordings = [];
             } else {
                 console.error('Failed to fetch audio feedback:', await recordingsResponse.text());
             }
 
-            // Fetch text feedback
             const textsResponse = await fetch('http://localhost:3000/text-feedback');
             if (textsResponse.ok) {
                 texts = await textsResponse.json();
@@ -47,7 +37,6 @@
                 console.error('Failed to fetch text feedback:', await textsResponse.text());
             }
 
-            // Fetch video feedback
             const videosResponse = await fetch('http://localhost:3000/video-feedback');
             if (videosResponse.ok) {
                 videos = await videosResponse.json();
@@ -136,15 +125,13 @@
         border-radius: 0.25rem;
         color: var(--clr-text);
         border: 3px solid var(--clr-border);
-        /*border-top-width: 1px;*/
     }
 
 
     .error {
         color: red;
         font-size: 0.9rem;
-        margin-top: -1rem; /* Adjust if needed */
+        margin-top: -1rem;
     }
-
 
 </style>

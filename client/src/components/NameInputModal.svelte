@@ -1,7 +1,10 @@
 <script>
     export let closeModal;
-    export let message = "Default message";
+    export let handleSaveButtonClick;
+    export let name;
     import { fade } from 'svelte/transition';
+
+    let localName = name;
 
     /**
      * Closes the modal when the overlay is clicked.
@@ -12,6 +15,14 @@
         if (!popup) {
             closeModal();
         }
+    }
+
+    /**
+     * Closes and saves the name the modal when the close button is clicked.
+     */
+    function saveAndClose() {
+        handleSaveButtonClick(localName);
+        closeModal();
     }
 
     /**
@@ -26,7 +37,15 @@
 <section class="overlay" on:click={handleOverlayClick}>
     <section class="pop-up" transition:fade={{ duration: 500 }}>
         <button class="close-btn" on:click={closeButtonClick}>×</button>
-        <p>{message}</p>
+        <div class="name-input-container">
+            <input 
+                class="name-input" 
+                type="text" 
+                placeholder="Enter name" 
+                bind:value={localName}
+            />
+            <button class="gradient-border-button" on:click={saveAndClose}>Save</button>
+        </div>
     </section>
 </section>
 
@@ -47,7 +66,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         width: 30rem;
-        height: 7rem;
+        height: 11rem;
         background-color: var(--clr-light);
         border: 0.1rem solid #ccc;
         padding: 1.25rem;
@@ -82,5 +101,27 @@
 
     .close-btn:hover {
         color: #f00;
+    }
+
+    .name-input {
+        width: 80%;
+        padding: 0.75rem;
+        font-size: 1.25rem;
+        border-radius: 0.25rem;
+        border: 1px solid #ccc;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+        color: var(--clr-dark);
+    }
+
+    .name-input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .name-input-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>

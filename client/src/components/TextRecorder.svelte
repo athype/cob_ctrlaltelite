@@ -4,11 +4,9 @@
     let feedbackText = $state('');
     let textFeedbackTitle = $state('');
 
-
-    // New state variables for validation and feedback
     let titleError = $state(false);
     let feedbackError = $state(false);
-    let feedbackSaved = $state(false); // To track if feedback was successfully
+    let feedbackSaved = $state(false);
 
     const {onTextFeedbackSaved, showModal} = $props();
 
@@ -49,11 +47,9 @@
      * Handler function that calls save function.
      */
     function handleSend() {
-        // Reset errors first
         titleError = false;
         feedbackError = false;
 
-        // Check if title or feedback text are empty
         if (!textFeedbackTitle.trim()) {
             titleError = true;
         }
@@ -61,20 +57,17 @@
             feedbackError = true;
         }
 
-        // If either error is true, don't save
         if (titleError || feedbackError) {
             return;
         }
 
-        // Proceed to save if no errors
         saveTextFeedback(feedbackText);
     }
 
-    // Effect that resets the "Feedback Saved" state when the user starts typing again
     $effect(() => {
         if (textFeedbackTitle || feedbackText) {
             feedbackSaved = false;
-            // Reset errors if user typed something non-empty
+
             if (textFeedbackTitle.trim()) {
                 titleError = false;
             }
@@ -100,7 +93,6 @@
         <p class="error">Feedback text is required</p>
     {/if}
 
-    <!-- Change button style based on feedbackSaved state -->
     <button
             on:click={handleSend}
             class={`send-button ${feedbackSaved ? 'saved-button' : ''}`}
@@ -126,7 +118,7 @@
     .error {
         color: red;
         font-size: 0.9rem;
-        margin-top: -1rem; /* Adjust if needed */
+        margin-top: -1rem;
     }
 
     textarea {
@@ -138,7 +130,6 @@
         background-color: var(--clr-background);
         color: var(--clr-text);
         border: 3px solid var(--clr-text);
-        /*border-top-width: 1px;*/
     }
 
     .send-button {
@@ -146,8 +137,8 @@
         border: 3px solid var(--clr-pink);
         color: var(--clr-text);
         padding: 1rem;
-        width: auto; /* Makes the width adjust based on content */
-        max-width: 20rem; /* Maximum width */
+        width: auto;
+        max-width: 20rem;
         align-self: center;
         border-radius: 0.625rem;
         transition: background-color var(--transition-delay) ease,

@@ -1,11 +1,13 @@
 <script>
     import {fade} from 'svelte/transition';
+    import NameInputModal from "./NameInputModal.svelte";
     const {onRecordingSaved, showModal} = $props();
 
     let isBeforeRecording = $state(true);
     let isAfterRecording = $state(false);
 
-
+    let nameInputModalDisplay = $state(false);
+    let nameInputModalMessage = $state("");
 
     // Reactive state
 
@@ -54,7 +56,7 @@
     let height = 0;
     let halfHeight = 0;
 
-    let playbackTime = 0; // Current playback time
+    let playbackTime = 0;
     const playbackBarColor = "#7d7d7d";
     let canvasPositionX = 0;
     let temporaryDuration = 0;
@@ -76,13 +78,31 @@
         messageVisible = true;
     }
 
+    function onNameInputSaveClick(name){
+        audioName = name;
+        nameInputModalDisplay = false;
+
+        if (!audioName) {
+            console.error('No name entered. Aborting upload.');
+            return;
+        }
+
+        console.log("Audio name " + audioName);
+        fetch(recording)
+            .then((res) => res.blob())
+            .then((blob) => {
+                console.log('Blob prepared for upload:', blob);
+                uploadAudio(blob, audioName);
+            })
+            .catch((error) => console.error('Error preparing audio for upload:', error));
+    }
+
     /**
      * Hides the currently visible message.
      */
     function hideMessage() {
         messageVisible = false;
     }
-
 
     /**
      * Requests access to the user's microphone.
@@ -136,12 +156,10 @@
         };
 
         recorder.onstop = () => {
-            console.log("Recorder stopped");
             recording = URL.createObjectURL(new Blob(chunks, {'type': 'audio/wav; codecs=opus'}));
             chunks = [];
         };
     }
-
 
     /**
      * Methods to toggle between button visibility
@@ -155,7 +173,6 @@
         isBeforeRecording = false;
         isAfterRecording = true;
     }
-
 
     /**
      * Uploads the audio file to the server along with its duration and name.
@@ -185,11 +202,9 @@
                 console.log('Audio uploaded successfully:', result);
                 onRecordingSaved?.();
                 showModal?.("Success!");
-                // Indicate that we have just saved
                 justSaved = true;
                 justCleared = false;
                 justStopped = false;
-                // Reset the timer only after saving
                 recordingTime = 0;
                 resetIndicatorStateLater();
             } else {
@@ -210,19 +225,7 @@
             return;
         }
 
-        audioName = window.prompt('Enter a name for your audio recording:', 'My Recording');
-        if (!audioName) {
-            console.error('No name entered. Aborting upload.');
-            return; // Do not proceed without a name
-        }
-
-        fetch(recording)
-            .then((res) => res.blob())
-            .then((blob) => {
-                console.log('Blob prepared for upload:', blob);
-                uploadAudio(blob, audioName);
-            })
-            .catch((error) => console.error('Error preparing audio for upload:', error));
+        showNameInputModal();
     }
 
     /**
@@ -236,7 +239,6 @@
         justStopped = false;
         isPlaying = false;
 
-        // Reset recording time whenever we start a new recording
         recordingTime = 0;
 
         recorder.start();
@@ -246,7 +248,6 @@
      * Stops recording audio.
      */
     function stopRecording() {
-        // Capture the current time just before stopping
         temporaryDuration = recordingTime/100;
         isRecording = false;
         recorder.stop();
@@ -301,10 +302,8 @@
         analyser.connect(scriptProcessor);
         scriptProcessor.connect(audioContext.destination);
 
-        // Add a flag to check if setup is complete before calling processInput
         scriptProcessor.onaudioprocess = processInput;
 
-        // Initial empty render to ensure the canvas is ready
         renderBars(bars);
     }
 
@@ -322,7 +321,6 @@
             const average = getAverageVolume(array);
             bars = [...bars, average];
 
-            // If the waveform exceeds the width, slice it
             if (bars.length <= Math.floor(width / (barWidth + barGutter))) {
                 renderBars(bars);
             } else {
@@ -342,10 +340,8 @@
      */
 
     function getAverageVolume(array) {
-        // Get the average volume from the frequency data array
         const average = array.reduce((sum, value) => sum + value, 0) / array.length;
 
-        // Ensure the average volume is never below 1
         return Math.max(1, average);
     }
 
@@ -360,7 +356,6 @@
             requestAnimationFrame(() => {
                 canvasContext.clearRect(0, 0, width, height);
 
-                // Render all bars from the start based on the current bars array
                 currentBars.forEach((bar, index) => {
                     canvasContext.fillStyle = barColor;
                     const x = (index * (barWidth + barGutter)) - canvasPositionX;
@@ -371,11 +366,10 @@
 
                 });
 
-                // Render the static white line in the middle (playback bar)
                 if (isPlaying) {
-                    canvasContext.fillStyle = playbackBarColor; // White line color
-                    const centerLineX = width / 2; // Center of the canvas
-                    canvasContext.fillRect(centerLineX - 1, 0, 2, height); // Fixed white line in the center
+                    canvasContext.fillStyle = playbackBarColor;
+                    const centerLineX = width / 2;
+                    canvasContext.fillRect(centerLineX - 1, 0, 2, height);
                 }
 
                 drawing = false;
@@ -386,18 +380,15 @@
     /**
      * Plays the audio recording.
      */
-
     function play() {
         console.log('Play button pressed');
         isPlaying = true;
         isPaused = false;
         audioPlayer.currentTime = 0;
 
-        // Ensure waveform is rendered before playback starts
         renderBars(bars);
-        canvasPositionX = 0; // Reset canvas position for first playback
+        canvasPositionX = 0;
 
-        // Start playback only after rendering the waveform
         requestAnimationFrame(() => {
             audioPlayer.play();
 
@@ -411,11 +402,8 @@
                         canvasPositionX = (playbackTime / audioPlayer.duration) * waveformWidth - width / 2;
                     }
 
-                    console.log(temporaryDuration);
-
                     renderBars(bars);
 
-                    // Update the recording time display
                     recordingTime = playbackTime * 100;
 
                     requestAnimationFrame(updatePlaybackIndicator);
@@ -430,8 +418,6 @@
     /**
      * Stops the audio recording.
      */
-
-
     function stop() {
         console.log('Stopping playback');
         isPlaying = false;
@@ -439,10 +425,6 @@
         audioPlayer.currentTime = 0;
         renderBars(bars);
     }
-
-
-
-
 
     /**
      * Toggles playing the audio recording.
@@ -482,7 +464,6 @@
         justCleared = true;
         justSaved = false;
         justStopped = false;
-        // Reset the timer after clearing
         recordingTime = 0;
         stop();
         resetIndicatorStateLater();
@@ -513,7 +494,6 @@
     function resetIndicatorStateLater() {
         setTimeout(() => {
             if (!isRecording && !isPlaying && !isPaused && !justSaved && !justCleared && !justStopped && !justStoppedPlaying) {
-                // Reset states if needed - currently does nothing, but can be extended.
             }
         }, 3000);
     }
@@ -577,21 +557,17 @@
      * @returns {string} Formatted time as "MM:SS.hh"
      */
     function formatTime(hundredths) {
-        // Round the hundredths to avoid floating-point precision issues
         hundredths = Math.round(hundredths);
 
-        // Convert hundredths to seconds and minutes
         const totalSeconds = Math.floor(hundredths / 100);
-        const h = hundredths % 100; // hundredths of a second
+        const h = hundredths % 100;
         const m = Math.floor(totalSeconds / 60);
         const s = totalSeconds % 60;
 
-        // Format time values to always be two digits
         const mm = m < 10 ? '0' + m : m;
         const ss = s < 10 ? '0' + s : s;
         const hh = h < 10 ? '0' + h : h;
 
-        // Return the formatted time in MM:SS.hh format
         return `${mm}:${ss}.${hh}`;
     }
 
@@ -601,14 +577,12 @@
      */
     $effect(() => {
         if (isRecording && !isPaused) {
-            // Start or continue the interval if not already set
             if (!recordingInterval) {
                 recordingInterval = setInterval(() => {
                     recordingTime++;
-                },10); // increment every 10ms
+                },10);
             }
         } else {
-            // Not actively recording, clear the interval if set
             if (recordingInterval) {
                 clearInterval(recordingInterval);
                 recordingInterval = undefined;
@@ -617,41 +591,43 @@
 
     });
 
-
-
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('animated-btn').addEventListener('click', function () {
             this.classList.toggle('active');
         });
     });
 
+    function closeNameInputModal() {
+        nameInputModalDisplay = false;
+    }
+
+    function showNameInputModal() {
+        nameInputModalDisplay = true;
+    }
 
 </script>
+
+{#if nameInputModalDisplay}
+    <NameInputModal closeModal={closeNameInputModal} handleSaveButtonClick={onNameInputSaveClick} name={nameInputModalMessage}/>
+{/if}
+
 <div class="recorder-container" style="border: 0.3rem solid var(--clr-purple);">
-    <!-- Indicator in the top-right corner -->
     <div class="status-indicator {indicatorSymbol.type}">
         {#if indicatorSymbol.type === 'recording'}
-            <!-- Red blinking circle -->
             <div class="icon circle"></div>
         {:else if indicatorSymbol.type === 'paused'}
-            <!-- Green pause sign -->
             <div class="icon pause">&#10073;&#10073;</div>
         {:else if indicatorSymbol.type === 'playing'}
-            <!-- Green play triangle -->
             <div class="icon play">&#9658;</div>
         {:else if indicatorSymbol.type === 'saved'}
-            <!-- Green checkmark -->
             <div class="icon saved">&#10004;</div>
         {:else if indicatorSymbol.type === 'stopped'}
-            <!-- Red square -->
             <div class="icon stopped"></div>
         {:else if indicatorSymbol.type === 'stoppedPlaying'}
-            <!-- Green square -->
             <div class="icon stoppedPlaying"></div>
         {/if}
     </div>
     <div class="audio-recorder">
-        <!-- Display current recording time in MM:SS.hh -->
         <div class="recording-time">
             {formatTime(recordingTime)}
         </div>
@@ -669,7 +645,6 @@
                     style="display: {isRecording ? 'block' : 'none'}"
             ></div>
 
-            <!-- Animated button -->
             <button
                     id="animated-btn"
                     class="{isRecording ? 'active' : ''}"
@@ -678,7 +653,6 @@
                     <i id="microphone-icon" class="fas fa-microphone"></i>
             </button>
 
-            <!-- Play and Pause buttons -->
             <div class="centered-buttons">
                 <button
                         class="control-button pause-button"
@@ -689,7 +663,6 @@
                 </button>
             </div>
 
-            <!-- After Recording buttons -->
             <div class="centered-buttons after-recording">
                 <button
                         class="control-button play-button"
@@ -751,20 +724,20 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        max-width: 700px;
+        max-width: 43.75rem;
         height: 30rem;
         margin: 0 auto 0;
-        border-radius: 10px;
-        position: relative; /* Needed for status-indicator positioning */
-        transition: all 2.5s ease-in-out; /* Smooth transition for all properties */
+        border-radius: 0.625rem;
+        position: relative;
+        transition: all 2.5s ease-in-out;
     }
 
     .status-indicator {
         position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
+        top: 0.635rem;
+        right: 0.625rem;
+        width: 1.875rem;
+        height: 1.875rem;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -777,10 +750,9 @@
         align-items: center;
     }
 
-    /* For recording: red blinking circle */
     .status-indicator.recording .icon.circle {
-        width: 25px;
-        height: 25px;
+        width: 1.563rem;
+        height: 1.563rem;
         background-color: red;
         border-radius: 50%;
         animation: blink 1s infinite alternate;
@@ -791,42 +763,35 @@
         100% { opacity: 0; }
     }
 
-    /* Paused: green pause icon */
     .status-indicator.paused .icon.pause {
         color: green;
     }
 
-    /* Playing: green play triangle (blinking) */
     .status-indicator.playing .icon.play {
         color: green;
         animation: blink 1s infinite alternate;
     }
 
-    /* Cleared: red cross */
     .status-indicator.cleared .icon.cleared {
         color: red;
     }
 
-    /* Saved: green checkmark */
     .status-indicator.saved .icon.saved {
         color: green;
     }
 
-    /* White square for stopped state */
     .status-indicator.stopped .icon.stopped {
-        width: 25px;
-        height: 25px;
+        width: 1.563rem;
+        height: 1.563rem;
         background-color: red;
     }
 
-    /* Green square for stoppedPlayback state */
     .status-indicator.stoppedPlaying .icon.stoppedPlaying {
-        width: 25px;
-        height: 25px;
+        width: 1.563rem;
+        height: 1.563rem;
         background-color: green;
     }
 
-    /* Timer */
     .recording-time {
         position: absolute;
         top: 10%;
@@ -842,14 +807,14 @@
         background: transparent;
         z-index: 0;
         border: none;
-        padding: 12px 24px;
+        padding: 0.75rem 1.5rem;
         cursor: pointer;
     }
 
     .recorder-container :global(.gradient-border-button::after) {
         content: '';
         position: absolute;
-        inset: 2px;
+        inset: 0.125rem;
         background: var(--clr-background);
         z-index: -1;
         border-radius: inherit;
@@ -869,24 +834,22 @@
         padding: 2rem;
     }
 
-    /* Waveform */
     .waveform {
         position: absolute;
         top: 25%;
         left: 50%;
         transform: translateX(-50%);
         width: 90%;
-        height: 100px;
+        height: 6.25rem;
     }
     .waveform__canvas {
         width: 100%;
         height: 100%;
     }
 
-    /* Controls */
     .controls {
         position: absolute;
-        bottom: 20px;
+        bottom: 1.25rem;
         left: 50%;
         top: 75%;
         transform: translateX(-50%);
@@ -894,7 +857,6 @@
         text-align: center;
     }
 
-    /* Centered buttons */
     .centered-buttons {
         display: flex;
         justify-content: center;
@@ -908,14 +870,13 @@
     .centered-buttons.after-recording {
         display: flex;
         justify-content: center;
-        gap: 1rem; /* Space between 'Play', 'Redo', and 'Save' */
+        gap: 1rem;
     }
 
-    /* Buttons */
     .control-button {
         padding: 1rem;
-        border-radius: 10px;
-        border: 3px solid var(--clr-text);
+        border-radius: 0.625rem;
+        border: 0.188rem solid var(--clr-text);
         cursor: pointer;
         background-color: var(--clr-background);
         color: var(--text-color);
@@ -927,9 +888,9 @@
     }
     .control-button:not(:disabled):hover {
         transform: scale(1.1);
-        box-shadow: 0 0 5px 1px var(--clr-text);
+        box-shadow: 0 0 0.313rem 0.063rem var(--clr-text);
         background-color: var(--clr-inverse);
-        border: 3px solid var(--clr-inverse);
+        border: 0.188rem solid var(--clr-inverse);
     }
     #redo-button:disabled {
         color: #666666;
@@ -937,9 +898,7 @@
         opacity: 0.3;
     }
 
-
-    /* Button spacing and visibility tweaks for responsive design */
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 48rem) {
         .controls {
             flex-direction: column;
         }
@@ -947,8 +906,6 @@
             flex-wrap: wrap;
         }
     }
-
-
 
     .disabled {
         opacity: 0.2;
@@ -980,24 +937,23 @@
     .pulse-background {
         position: absolute;
         left: 50%;
-        bottom: 120px;
+        bottom: 7.5rem;
         transform: translateX(-50%);
-        width: 130px;
-        height: 130px;
-        background: rgba(150, 0, 255, 0.1); /* Pulse color */
+        width: 8.125rem;
+        height: 8.125rem;
+        background: rgba(150, 0, 255, 0.1);
         border-radius: 50%;
         animation: pulse 1.5s infinite ease-in-out;
-        z-index: -1; /* Behind the button */
+        z-index: -1;
     }
 
-    /* Animated button */
     #animated-btn {
         position: absolute;
         left: 50%;
-        bottom: 120px;
+        bottom: 7.5rem;
         transform: translateX(-50%);
-        width: 130px;
-        height: 130px;
+        width: 8.125rem;
+        height: 8.125rem;
         border: none;
         background: none;
         border-radius: 50%;
@@ -1008,7 +964,6 @@
         transition: all 0.3s ease;
     }
 
-    /* Hover effect for button */
     #animated-btn:hover {
         transform: translateX(-50%) scale(1.1); /* Grow the button on hover without changing position */
     }
@@ -1016,8 +971,8 @@
     #animated-btn:before {
         position: absolute;
         content: '';
-        width: 130px;
-        height: 130px;
+        width: 8.125rem;
+        height: 8.125rem;
         background: none;
         border-radius: 50%;
         top: 0;
@@ -1027,12 +982,12 @@
     #animated-btn:after {
         position: absolute;
         content: '';
-        width: 100px;
-        height: 100px;
+        width: 6.25rem;
+        height: 6.25rem;
         background: var(--clr-border);
         border-radius: 50%;
-        top: 15px;
-        left: 15px;
+        top: 1rem;
+        left: 1rem;
         transition: all 0.3s ease;
     }
 
@@ -1047,37 +1002,34 @@
     }
 
     #microphone-icon {
-        font-size: 2.5rem; /* Adjust the size as needed */
-        color: var(--clr-ideal); /* Use your theme's text color */
-        z-index: 1; /* Ensure the icon appears above the animations */
-        position: relative; /* To prevent it from inheriting absolute positioning from the parent */
+        font-size: 2.5rem;
+        color: var(--clr-ideal);
+        z-index: 1;
+        position: relative;
     }
-
 
     #animated-btn.active #microphone-icon {
         opacity: 0;
-        transform: scale(0.5); /* Shrink the icon as it disappears */
+        transform: scale(0.5);
     }
 
-    /* Keyframes for button animation */
     @keyframes stop {
         70% {
-            border-radius: 6px;
-            width: 60px;
-            height: 60px;
-            top: 35px;
-            left: 35px;
+            border-radius: 0.375rem;
+            width: 3.75rem;
+            height: 3.75rem;
+            top: 2.188rem;
+            left: 2.188rem;
         }
         100% {
-            border-radius: 6px;
-            width: 64px;
-            height: 64px;
-            top: 33px;
-            left: 33px;
+            border-radius: 0.375rem;
+            width: 4rem;
+            height: 4rem;
+            top: 2rem;
+            left: 2rem;
         }
     }
 
-    /* Keyframes for pulse animation */
     @keyframes pulse {
         0% {
             transform: translateX(-50%) scale(0.1);
@@ -1092,6 +1044,4 @@
             opacity: 0;
         }
     }
-
-
 </style>
