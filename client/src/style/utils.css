@@ -22,7 +22,6 @@
     margin-right: auto;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    /* border: 1px solid red; */
 }
 
 .section {
@@ -51,7 +50,6 @@
     background: transparent;
 }
 
-/* Gradient border */
 .gradient-border-button::before {
     content: '';
     position: absolute;
@@ -68,7 +66,6 @@
     transition: all var(--transition-delay) ease;
 }
 
-/* Solid color middle */
 .gradient-border-button::after {
     content: '';
     position: absolute;
@@ -82,7 +79,6 @@
     background-position: 100% 0;
 }
 
-/* Override for contrast mode */
 [data-theme="contrast"] .gradient-border-button::before {
     background: var(--clr-yellow);
     background-size: 100%;
@@ -101,7 +97,7 @@
 .gradient-border::before {
     content: '';
     position: absolute;
-    inset: -2px; /* Controls border thickness */
+    inset: -2px;
     background: linear-gradient(90deg,
     var(--clr-pink),
     var(--clr-dark-blue),
@@ -111,19 +107,18 @@
     background-size: 200% 100%;
     z-index: -1;
     transition: all 0.5s ease;
-    border-radius: inherit; /* Inherits border-radius from parent */
+    border-radius: inherit;
 }
 
 .gradient-border::after {
     content: '';
     position: absolute;
-    inset: 2px; /* Should match the negative of the before inset */
-    background: var(--clr-background, #000); /* Fallback to black if variable not set */
+    inset: 2px;
+    background: var(--clr-background, #000);
     z-index: -1;
     border-radius: inherit;
 }
 
-/* Override for contrast mode */
 [data-theme="contrast"] .gradient-border::before {
     background: var(--clr-yellow);
     background-size: 100%;
@@ -134,11 +129,9 @@
 }
 
 .gradient-text {
-    /* Base styles */
     position: relative;
     display: inline-block;
 
-    /* Gradient setup */
     background: linear-gradient(90deg,
     var(--clr-purple),
     var(--clr-dark-blue),
@@ -147,13 +140,11 @@
     );
     background-size: 200% auto;
 
-    /* Make the gradient apply to text */
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent; /* Fallback */
 
-    /* Optional animation */
     animation: gradient-text 5s linear infinite;
 }
 
@@ -174,7 +165,6 @@
     color: transparent;
 }
 
-/* Hover effect version */
 .gradient-text-hover {
     background: linear-gradient(90deg,
     var(--clr-purple),

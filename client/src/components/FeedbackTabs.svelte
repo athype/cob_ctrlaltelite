@@ -1,16 +1,13 @@
 <script>
-    // Imports needed for listing feedback items (List.svelte) and displaying transcriptions (TranscriptionDisplay.svelte)
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
 
-    // Props received from the parent: arrays of text, audio, and video feedback, plus a callback after saving text feedback
     let { texts, recordings, videos, onTextFeedbackSaved } = $props();
 
-    // Internal states
-    let selectedFeedback = $state(null); // Stores whichever feedback item (text, audio, or video) the user selected
-    let showTranscription = $state(false); // Controls visibility of the transcription display
-    let activeTab = $state("text");       // Tracks which tab is currently active: "text", "audio", or "video"
-    let selectedLanguage = $state('en');  // Toggles between "en" and "nl" for transcription
+    let selectedFeedback = $state(null);
+    let showTranscription = $state(false);
+    let activeTab = $state("text");
+    let selectedLanguage = $state('en');
 
     /**
      * Switches the language used by the transcription process:
@@ -111,7 +108,6 @@
 </script>
 
 <section class="container">
-    <!-- Left side: tabs and feedback lists for text, audio, and video -->
     <section class="left-container">
         <section class="feedback-container">
             <div class="tabs-container">
@@ -182,7 +178,6 @@
         </section>
     </section>
 
-    <!-- Right side: preview of selected item (text/audio/video) and transcription -->
     <section class="right-container">
         <h1 class="title">Preview</h1>
         <div
@@ -222,7 +217,6 @@
                         </div>
 
                         {#if showTranscription}
-                            <!-- TranscriptionDisplay: pass an onTranscriptionSaved callback -->
                             <TranscriptionDisplay
                                     id={selectedFeedback.id}
                                     audioName={selectedFeedback.name}
@@ -337,7 +331,7 @@
         cursor: pointer;
         padding: 1rem;
         height: 3rem;
-        display: flex; /* Ensure flexbox is used for vertical alignment */
+        display: flex;
         justify-content: center;
         align-items: center;
         border-bottom: none;
@@ -376,7 +370,6 @@
         border-color: var(--clr-indigo);
     }
 
-    /* Each tab panel has a fixed height to match the preview area */
     .tab-content {
         background-color: var(--clr-background);
         border: 0.3rem solid var(--clr-border);
@@ -420,7 +413,6 @@
         border-bottom: none;
     }
 
-    /* The preview display for selected feedback: single scroll area at 28.2rem height */
     .selected-feedback-display {
         flex: 1;
         display: flex;
@@ -441,17 +433,14 @@
     }
 
 
-    /* Audio selected: purple border */
     .selected-feedback-display.selected-audio {
         border-color: var(--clr-purple);
     }
 
-    /* Video selected: blue border */
     .selected-feedback-display.selected-video {
         border-color: var(--clr-indigo);
     }
 
-    /* Text selected: pink border */
     .selected-feedback-display.selected-text {
         border-color: var(--clr-pink);
     }
@@ -510,6 +499,5 @@
         box-sizing: border-box;
         gap: 2.5rem;
     }
-
 
 </style>

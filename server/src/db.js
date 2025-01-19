@@ -2,13 +2,11 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 
-// Ensure the database directory exists
 const dbDirectory = path.resolve('./db');
 if (!fs.existsSync(dbDirectory)) {
     fs.mkdirSync(dbDirectory, { recursive: true });
 }
 
-// Create or connect to the SQLite database
 const db = new Database(path.join(dbDirectory, 'database.sqlite'), { verbose: console.log });
 
 /**

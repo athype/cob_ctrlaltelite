@@ -6,7 +6,10 @@
 
     let localName = name;
 
-    // Function to handle clicks outside the pop-up
+    /**
+     * Closes the modal when the overlay is clicked.
+     * @param event
+     */
     function handleOverlayClick(event) {
         const popup = event.target.closest('.pop-up');
         if (!popup) {
@@ -14,11 +17,17 @@
         }
     }
 
+    /**
+     * Closes and saves the name the modal when the close button is clicked.
+     */
     function saveAndClose() {
-        handleSaveButtonClick(localName); // Pass the updated name back to the parent
+        handleSaveButtonClick(localName);
         closeModal();
     }
 
+    /**
+     * Closes the modal when the close button is clicked.
+     */
     function closeButtonClick() {
         closeModal();
     }

@@ -15,7 +15,6 @@
     export let language: string = 'en';
     export let type: 'audio' | 'video' = 'audio';
 
-    // Local states for loading, error, saving, etc.
     let transcriptionData: { transcription?: string } | null = null;
     let isLoading = true;
     let error: string | null = null;
@@ -35,7 +34,6 @@
             const data = JSON.parse(e.data);
             if (!data) return;
 
-            // Final transcription
             if ('transcription' in data) {
                 isSaveButtonDisabled = false;
                 transcriptionData = data;
@@ -44,7 +42,6 @@
                 return;
             }
 
-            // Intermediate progress
             if ('progress' in data) {
                 const { status, progress } = data.progress;
 
@@ -138,7 +135,6 @@
         }
     }
 
-    // Start the SSE connection on mount
     onMount(() => {
         fetchTranscription();
     });
