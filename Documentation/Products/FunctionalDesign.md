@@ -181,7 +181,8 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
   - Frontend communicates with the backend via RESTful API.
   - Backend interacts with the SQLite database and external APIs.
   - Local storage handles audio and video files.
-  **Deployment Diagram Explanation:**
+  
+  **Component Diagram Explanation:**
   - Breaks down the system into logical components.
   - Frontend (Svelte): Handles UI components such as recorders, feedback inputs, themes, etc.
   - Backend (Express.js): Organized into controllers, routes, and services for handling business logic.
