@@ -2,27 +2,32 @@
     import List from "./List.svelte";
     import TranscriptionDisplay from "./TranscriptionDisplay.svelte";
 
-    // We receive the data and a "fetchFeedback" function as props
-    let { texts, recordings, videos, onTextFeedbackSaved} = $props();
-
+    // Props from parent
+    let { texts, recordings, videos, onTextFeedbackSaved } = $props();
 
     // Local states
     let selectedFeedback = $state(null);
     let showTranscription = $state(false);
     let activeTab = $state("text");
 
-    /**
-     * When tab is pressed we change the content.
-     * @param text
-     */
-    const handleTabChange = (tab) => {
-        activeTab = tab;
-    };
+    // Tracks which language is selected ('en' or 'nl')
+    let selectedLanguage = $state('en');
 
     /**
-     * When text feedback is clicked, selected feedback is updated with its data.
-     * @param text
+     * Toggle language before transcription
      */
+    function toggleLanguage() {
+        selectedLanguage = (selectedLanguage === 'en') ? 'nl' : 'en';
+    }
+
+    /**
+     * Switch among "Text", "Audio", "Video" tabs
+     */
+    function handleTabChange(tab) {
+        activeTab = tab;
+    }
+
+    // TEXT FEEDBACK
     function handleTextFeedbackClick(text) {
         showTranscription = false;
         selectedFeedback = {
@@ -30,24 +35,14 @@
             id: text.id,
             content: text.feedback_text,
             name: `${text.name}`,
-            created_at: new Date(text.created_at)
-                .toISOString()
-                .split('T')[0]
+            created_at: new Date(text.created_at).toISOString().split("T")[0]
         };
     }
-
-    /**
-     * Helper function for determining if a text is selected.
-     * @param text
-     */
     function isTextFeedbackSelected(text) {
         return selectedFeedback?.type === "text" && selectedFeedback?.id === text.id;
     }
 
-    /**
-     * When an audio feedback is clicked, selected feedback is updated with its data.
-     * @param recording
-     */
+    // AUDIO FEEDBACK
     function handleAudioFeedbackClick(recording) {
         showTranscription = false;
         selectedFeedback = {
@@ -55,51 +50,48 @@
             type: "audio",
             filePath: recording.file_path,
             name: `${recording.name}`,
-            created_at: new Date(recording.created_at)
-                .toISOString()
-                .split('T')[0]
+            created_at: new Date(recording.created_at).toISOString().split("T")[0]
         };
     }
-
-    /**
-     * Helper function for determining if an audio is selected.
-     * @param recording
-     */
     function isAudioFeedbackSelected(recording) {
         return selectedFeedback?.type === "audio" && selectedFeedback?.id === recording.id;
     }
 
-    async function handleTranscriptionClick() {
+    /**
+     * Called when user clicks "Transcribe"
+     */
+    function handleTranscriptionClick() {
         showTranscription = true;
     }
 
-    /**
-     * When an video feedback is clicked, selected feedback is updated with its data.
-     * @param video
-     */
+    // VIDEO FEEDBACK
     function handleVideoFeedbackClick(video) {
         showTranscription = false;
         selectedFeedback = {
             id: video.id,
-            type: 'video',
+            type: "video",
             filePath: video.file_path,
             name: `${video.name}`,
-            created_at: new Date(video.created_at)
-                .toISOString()
-                .split('T')[0]
+            created_at: new Date(video.created_at).toISOString().split("T")[0]
         };
+    }
+    function isVideoFeedbackSelected(video) {
+        return selectedFeedback?.type === "video" && selectedFeedback?.id === video.id;
     }
 
     /**
-     * Helper function for determining if an video is selected.
-     * @param video
+     * Generate a unique key so the entire preview re-renders each time
+     * (prevents "blocked" audio scenario).
      */
-    function isVideoFeedbackSelected(video) {
-        return selectedFeedback?.type === "video" && selectedFeedback?.id === video.id;
+    function getPreviewKey(feedback) {
+        if (!feedback) return '';
+        // Combine type, ID, and filePath so even if just the path changes, we get a new key
+        return `${feedback.type}-${feedback.id}-${feedback.filePath}`;
     }
 </script>
 
 <section class="container">
+    <!-- LEFT: TABS for text/audio/video -->
     <section class="left-container">
         <section class="feedback-container">
             <div class="tabs-container">
@@ -108,7 +100,7 @@
                             id="text-tab"
                             class:active={activeTab === "text"}
                             class="text-tab"
-                            onclick={() => handleTabChange("text")}
+                            on:click={() => handleTabChange("text")}
                     >
                         <span>Text</span>
                     </button>
@@ -117,7 +109,7 @@
                             id="audio-tab"
                             class:active={activeTab === "audio"}
                             class="audio-tab"
-                            onclick={() => handleTabChange("audio")}
+                            on:click={() => handleTabChange("audio")}
                     >
                         <span>Audio</span>
                     </button>
@@ -126,7 +118,7 @@
                             id="video-tab"
                             class:active={activeTab === "video"}
                             class="video-tab"
-                            onclick={() => handleTabChange("video")}
+                            on:click={() => handleTabChange("video")}
                     >
                         <span>Video</span>
                     </button>
@@ -166,11 +158,11 @@
                         </section>
                     {/if}
                 </div>
-
             </div>
         </section>
     </section>
-    <!--    This is the container on the right which contains the feedback previews-->
+
+    <!-- RIGHT: "Preview" area -->
     <section class="right-container">
         <h1 class="title">Preview</h1>
         <div
@@ -180,9 +172,14 @@
                 class:selected-text={selectedFeedback?.type === "text"}
         >
             {#if selectedFeedback}
-                <div class="feedback-header">{selectedFeedback.name + " " + selectedFeedback.created_at}</div>
-                {#if selectedFeedback.type === 'audio'}
-                    {#key selectedFeedback.id}
+                <!-- Force re-mount by keying the entire preview block -->
+                {#key getPreviewKey(selectedFeedback)}
+                    <div class="feedback-header">
+                        {selectedFeedback.name + " " + selectedFeedback.created_at}
+                    </div>
+
+                    <!-- AUDIO PREVIEW -->
+                    {#if selectedFeedback.type === "audio"}
                         <audio controls autoplay>
                             <source
                                     src="http://localhost:3000/{selectedFeedback.filePath}"
@@ -190,24 +187,41 @@
                             />
                             Your browser does not support the audio element.
                         </audio>
-                        <!-- Transcribe Button -->
-                        <button onclick={handleTranscriptionClick} class="send-button gradient-border">
-                            Transcribe
-                        </button>
+
+                        <!-- Buttons side by side, centered -->
+                        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
+                            <button
+                                    on:click={handleTranscriptionClick}
+                                    class="send-button gradient-border"
+                            >
+                                Transcribe
+                            </button>
+                            <button
+                                    on:click={toggleLanguage}
+                                    class="send-button gradient-border"
+                            >
+                                {selectedLanguage === 'en' ? 'Switch to Dutch' : 'Switch to English'}
+                            </button>
+                        </div>
+
                         {#if showTranscription}
-                            <!-- TranscriptionDisplay: pass an onTranscriptionSaved callback -->
+                            <!-- Pass chosen language to TranscriptionDisplay -->
                             <TranscriptionDisplay
                                     id={selectedFeedback.id}
                                     audioName={selectedFeedback.name}
-                                    {onTextFeedbackSaved}
+                                    onTextFeedbackSaved={onTextFeedbackSaved}
+                                    language={selectedLanguage}
                             />
                         {/if}
-                    {/key}
-                {:else if selectedFeedback.type === 'text'}
-                    <!-- Directly display the content (no typewriter effect) -->
-                    <p style="font-size: 1.5rem; padding: 0.5rem; align-self: center;">{selectedFeedback.content}</p>
-                {:else if selectedFeedback.type === 'video'}
-                    {#key selectedFeedback.id}
+
+                        <!-- TEXT PREVIEW -->
+                    {:else if selectedFeedback.type === "text"}
+                        <p style="font-size: 1.5rem; padding: 0.5rem; align-self: center;">
+                            {selectedFeedback.content}
+                        </p>
+
+                        <!-- VIDEO PREVIEW -->
+                    {:else if selectedFeedback.type === "video"}
                         <video controls autoplay>
                             <source
                                     src="http://localhost:3000/{selectedFeedback.filePath}"
@@ -215,8 +229,8 @@
                             />
                             Your browser does not support the video element.
                         </video>
-                    {/key}
-                {/if}
+                    {/if}
+                {/key}
             {:else}
                 <p style="text-align: center; padding-bottom: 5vh">
                     Select a feedback to view it here.
@@ -254,7 +268,6 @@
         box-sizing: border-box;
         flex: 1;
         max-width: 100%;
-
     }
 
     .tabs-container {
@@ -272,7 +285,7 @@
         flex-wrap: wrap;
     }
 
-    .tabs button  {
+    .tabs button {
         flex-grow: 1;
         font-weight: 600;
         text-align: center;
@@ -283,32 +296,26 @@
         transition: transform 0.3s ease, border-color 0.3s, background-color 0.3s, color 0.3s;
         padding: 1rem;
         height: 3rem;
-        display: flex; /* Ensure flexbox is used for vertical alignment */
+        display: flex; /* vertical alignment */
         justify-content: center;
         align-items: center;
         border-bottom: none;
         transform: translateY(-2px);
     }
 
-    .tabs button div {
-        display: inline-block; /* Prevent text from being affected by transform */
-    }
-
-    /* Hover effect */
     .tabs button:hover {
         color: var(--clr-highlight);
         border-color: var(--clr-border);
         border: dashed;
         border-bottom: none;
-        transform: translateY(-4px); /* Move the button up slightly when hovered */
+        transform: translateY(-4px);
     }
 
-    /* Active state */
     .tabs button.active {
         background-color: var(--clr-highlight);
         color: var(--clr-text-active);
         border: 0.225rem solid var(--clr-border);
-        transform: translateY(-8px); /* Move the button up more when active */
+        transform: translateY(-8px);
         font-size: 17px;
         z-index: 1;
     }
@@ -335,35 +342,11 @@
     .text-tab-content {
         border-color: var(--clr-pink);
     }
-
     .audio-tab-content {
         border-color: var(--clr-purple);
     }
-
     .video-tab-content {
         border-color: var(--clr-indigo);
-    }
-
-    input {
-        display: none;
-    }
-
-    label {
-        display: block;
-        padding: 1rem 4vw;
-        font-weight: 600;
-        text-align: center;
-        color: var(--clr-text);
-        border: 0.225rem solid transparent;
-        border-radius: 0.5rem 0.5rem 0 0;
-        box-sizing: border-box;
-        cursor: pointer;
-    }
-
-    label:hover {
-        color: var(--clr-text);
-        border-color: var(--clr-pink);
-        border-bottom: none;
     }
 
     .selected-feedback-display {
@@ -382,26 +365,17 @@
         width: 100%;
         max-height: 28.2rem;
         box-sizing: border-box;
-        overflow-y: auto
+        overflow-y: auto;
     }
-
-    video {
-        width: 100%;
-        max-height: 21.9rem;
-        border-radius: 0.5rem;
-    }
-
 
     /* Audio selected: purple border */
     .selected-feedback-display.selected-audio {
         border-color: var(--clr-purple);
     }
-
     /* Video selected: blue border */
     .selected-feedback-display.selected-video {
         border-color: var(--clr-indigo);
     }
-
     /* Text selected: pink border */
     .selected-feedback-display.selected-text {
         border-color: var(--clr-pink);
@@ -450,16 +424,4 @@
         background: var(--clr-text);
         border-radius: 0.25rem;
     }
-
-    .container {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        padding: 1rem;
-        width: 100%;
-        box-sizing: border-box;
-        gap: 2.5rem;
-    }
-
-
 </style>

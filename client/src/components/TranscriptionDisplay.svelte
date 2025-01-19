@@ -1,28 +1,27 @@
-<script>
-    const {onTextFeedbackSaved, id, audioName} = $props();
+<script lang="ts">
+    import { onMount } from 'svelte';
 
-    let transcriptionData = $state(null);
-    let isLoading = $state(true);
-    let error = $state(null);
-    let isSaveButtonDisabled = $state(true);
-    let saved = $state(false);
+    export let id: number;
+    export let audioName: string;
+    export let onTextFeedbackSaved: (() => void) | undefined;
+    export let language: string = 'en';
 
-
-    let currentLoadingText = $state('');
+    let transcriptionData: { transcription?: string } | null = null;
+    let isLoading = true;
+    let error: string | null = null;
+    let isSaveButtonDisabled = true;
+    let saved = false;
+    let currentLoadingText = '';
 
     async function fetchTranscription() {
-        if (transcriptionData) return;
-
-        const eventSource = new EventSource(`http://localhost:3000/transcription/${id}`);
+        const eventSource = new EventSource(`http://localhost:3000/transcription/${id}?language=${language}`);
 
         eventSource.onmessage = (e) => {
             const data = JSON.parse(e.data);
+            if (!data) return;
 
-            if (data === null) {
-                return;
-            }
-
-            if ("transcription" in data) {
+            // If we have a final transcription:
+            if ('transcription' in data) {
                 isSaveButtonDisabled = false;
                 transcriptionData = data;
                 isLoading = false;
@@ -30,34 +29,50 @@
                 return;
             }
 
-            if ("progress" in data) {
-                const {progress} = data;
-                switch (progress.status) {
+            // If we got partial progress:
+            if ('progress' in data) {
+                const { status, progress } = data.progress;
+
+                switch (status) {
+
+
+                    // [ADDED] Immediately after user clicks, server sends 'initializing'
+                    case 'initializing':
+                        currentLoadingText = 'Initializing transcription...';
+                        break;
+
                     case 'initiate':
-                        currentLoadingText = `Preparing transcription...`;
+                        currentLoadingText = 'Preparing transcription...';
                         break;
                     case 'download':
-                        currentLoadingText = `Fetching required files...`;
+                        currentLoadingText = 'Fetching required files...';
                         break;
                     case 'progress':
-                        if (progress.progress !== undefined) {
-                            const percentage = parseFloat(progress.progress).toFixed(1); // Round percentage
+                        if (progress !== undefined) {
+                            const percentage = parseFloat(progress).toFixed(1);
                             currentLoadingText = `Processing audio... ${percentage}%`;
                         } else {
-                            currentLoadingText = `Processing audio... 0%`;
+                            currentLoadingText = 'Processing audio... 0%';
                         }
                         break;
                     case 'done':
-                        currentLoadingText = `Processing complete!`;
+                        currentLoadingText = 'Processing complete!';
                         break;
                     case 'ready':
-                        currentLoadingText = `Ready to start!`;
+                        currentLoadingText = 'Loading transcription...';
                         break;
                     default:
-                        currentLoadingText = `Working on it...`;
+                        currentLoadingText = 'Working on it...';
                         break;
                 }
             }
+        };
+
+        eventSource.onerror = (err) => {
+            error = 'Failed to transcribe audio.';
+            console.error(err);
+            isLoading = false;
+            eventSource.close();
         };
     }
 
@@ -66,7 +81,6 @@
             console.error('No transcription to save');
             return;
         }
-
         const finalTitle = `Transcription - ${audioName || 'Unknown Audio'}`;
 
         try {
@@ -92,25 +106,17 @@
 
             transcriptionData = {
                 ...transcriptionData,
-                transcription: newFeedback.feedback_text,
+                transcription: newFeedback.feedback_text
             };
-
-
             saved = true;
-
         } catch (err) {
             console.error('Error saving transcription:', err);
         }
     }
 
-
-    import {onMount} from 'svelte';
-
     onMount(() => {
         fetchTranscription();
     });
-
-
 </script>
 
 <div class="transcription-display">
@@ -120,17 +126,18 @@
         <p>{error}</p>
     {:else}
         {#if transcriptionData?.transcription?.trim()}
-        <textarea
-                bind:value={transcriptionData.transcription}
-                rows="5"
-                class="transcription-textarea"
-        ></textarea>
+            <textarea
+                    bind:value={transcriptionData.transcription}
+                    rows="5"
+                    class="transcription-textarea"
+            />
         {:else}
             <p>No transcription found yet.</p>
         {/if}
     {/if}
+
     <button
-            onclick={saveTranscription}
+            on:click={saveTranscription}
             class="feedback-button"
             disabled={isSaveButtonDisabled}
             class:saved={saved}
@@ -213,5 +220,4 @@
         border-color: var(--clr-white);
         box-shadow: 0 0 5px var(--clr-purple);
     }
-
 </style>
