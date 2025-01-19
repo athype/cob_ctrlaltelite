@@ -1,4 +1,4 @@
-# System Design Document(Techical Design) (v3.1)
+# System Design Document (Techical Design) [v3.1]
 
 ---
 
