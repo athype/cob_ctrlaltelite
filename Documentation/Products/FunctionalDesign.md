@@ -173,7 +173,8 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 - **Deployment Details:**
   - Local SQLite database storage.
   - Proof-of-concept hosted in a local or sandbox environment.
-
+  - ![deployment_diagram.png](..%2Fmd-images%2deployment_diagram.png)
+  - ![component_diagram.png](..%2Fmd-images%2Fcomponent_diagram.png)
 ---
 
 ## 5. Changelog
