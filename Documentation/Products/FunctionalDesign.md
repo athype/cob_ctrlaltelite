@@ -143,20 +143,9 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 ![mockup2.png](..%2Fmd-images%2Fmockup2.png)
 
 #### Wireframes
-![wireframe.png](..%2Fmd-images%2Fwireframe.png)
-
----
-
-### Final Figma Mockup Designs
-
-**Dark Mode**
-![dark_mode.png](..%2Fmd-images%2Fdark_mode.png)
-
-**Light Mode**
-![light_mode.png](..%2Fmd-images%2Flight_mode.png)
-
-**High-Contrast Mode**
-![high_contrast.png](..%2Fmd-images%2Fhigh_contrast.png)
+![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
+![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
+![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
 
 ---
 
