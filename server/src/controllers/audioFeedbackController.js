@@ -107,5 +107,12 @@ export function getSingleAudioFeedback(req, res) {
         return res.status(404).send('Audio not found.');
     }
 
-    res.sendFile(path.resolve(row.file_path));
+    // Resolve the file path to include 'src' in it
+    const filePath = path.resolve('src', row.file_path);
+
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            res.status(500).send('Error sending file: ' + err);
+        }
+    });
 }

@@ -16,6 +16,6 @@ router.get('/text-feedback/:id', getSingleTextFeedback);
 /**
  * Route to create a new text feedback record.
  */
-router.post('/text_feedback', createTextFeedback);
+router.post('/text-feedback', createTextFeedback);
 
 export default router;
