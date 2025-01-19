@@ -142,18 +142,21 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 ---
 
 ### 3.3 Mockups and Wireframes (Low-Fidelity)
-#### Mockups
+#### Mockups: Initial version
 ![mockup1.png](..%2Fmd-images%2Fmockup1.png)
 ![mockup2.png](..%2Fmd-images%2Fmockup2.png)
 
-#### Wireframes
+#### Mockups: Final version
 - Dark mode
-- ![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
+![wireframe_final.png](..%2Fmd-images%2Fwireframe_final.png)
 - White mode
-- ![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
+![wireframe_final2.png](..%2Fmd-images%2Fwireframe_final2.png)
 - High contrast mode
-- ![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
+![wireframe_final3.png](..%2Fmd-images%2Fwireframe_final3.png)
 
+#### Wireframes: Initial version
+![wireframe1.png](..%2Fmd-images%2Fwireframe2.png)
+![wireframe2.png](..%2Fmd-images%2Fwireframe1.png)
 ---
 
 ## 4. System Architecture
@@ -172,9 +175,9 @@ The project aims to create a proof-of-concept feedback feature within Scorion th
 
 ### 4.2 Deployment and Component Diagram
   - Deployment Diagram
-  - ![deployment_diagram.png](..%2Fmd-images%2Fdeployment_diagram.png)
+![deployment_diagram.png](..%2Fmd-images%2Fdeployment_diagram.png)
   - Component Diagram
-  - ![Component_diagram.png](..%2Fmd-images%2FComponent_diagram.png)
+![Component_diagram.png](..%2Fmd-images%2FComponent_diagram.png)
   **Deployment Diagram Explanation:**
   - Represents the system's deployment structure.
   - Shows user interaction with the frontend.
