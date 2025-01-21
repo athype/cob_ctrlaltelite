@@ -1,38 +1,108 @@
-### Audio storing
-#### Tables
-Our database is a SQlite table with 4 columns: id, file_path, duration, created_at. Out of the 4,
-2 are auto created and only file_path and duration is needed to be created when you upload an 
-audio file
+# User Manual for Scorion Feedback System
 
-- The file_path is basically the route to the audio file physically being stored on our system. 
-This is our limitation because table-type database are not that good with storing big binary items
+## 1. System Requirements
 
-- Duration: length of the audio file
+Before proceeding, ensure you have the following installed:
 
-- ID: auto generated
+- Node.js (v16 or higher)
+- npm (Node Package Manager)
+- A terminal or command prompt (CMD, PowerShell, IntelliJ's terminal, etc)
 
-- created_at: the creation time of the audio file
+## 2. Project Setup
 
-#### Audio file
-These can be found at the uploads directory and the table is in the db directory. The code auto 
-create both of these on start up if they don't exist yet. 
-You can probably view the sqlite table if you install the correct plugin. I don't know the one 
-for IntelliJ but for VS code is SQLite Viewer
+### Step 1: Install Dependencies
 
-#### Multer 
+To install the required dependencies, follow these steps:
 
-A dependency uses for managing uploading file from the system.
+1. Open IntelliJ command console, CMD, or Terminal.
+2. Navigate to the client and server directories, respectively, using the following commands:
 
-- File management: Multer allows us to choose where to store our file. In this case, we store it 
-  in the uploads directory. It also helps with naming conventions to make sure all of our file 
-  names are different (we should probably change the file names tho)
-- Access to uploaded files: Use req.files or req.file
-- Flexibility in file handling: Currently we store the files as diskStorage so practically, the 
-  audios are stored in the project file. This could be change to memory using Multer but we can 
-  discuss this later.
+   ```sh
+   cd path\to\client
+   npm install
+   ```
 
-### Testing
-The tests are written in HTTP requests and there are 3, one for each backend endpoint that we 
-have. The tests cover most of the cases (including both good and bad weather).
+   Expected output should include:
 
-## Please add README file to everything you do to explain what you added
+   ```
+   added <n> packages, and audited <n> packages in <n> seconds
+   ```
+
+   Repeat the process for the backend:
+
+   ```sh
+   cd path\to\server
+   npm install
+   ```
+
+   Similar output should be displayed confirming the installation.
+
+## 3. Running the Application
+
+### Step 2: Launching the Backend
+
+To start the backend server:
+
+1. Open the terminal and navigate to the server directory:
+
+   ```sh
+   cd path\to\server
+   ```
+
+2. Start the backend server by running:
+
+   ```sh
+   npm start
+   ```
+
+   Expected output should include:
+
+   ```
+   Created uploads directory at: [directory]\server\src\videos
+   Database initialized and tables are ready.
+   Server is running on http://localhost:3000
+   ```
+
+**Stopping the Backend:**  
+To shut down the server, press `Ctrl + C` in the terminal. You will be prompted with:
+
+```
+Terminate batch job (Y/N)?
+```
+
+Type `Y` and press `Enter` to stop the server.
+
+### Step 3: Launching the Frontend
+
+To start the frontend:
+
+1. Navigate to the client directory in your terminal:
+
+   ```sh
+   cd path\to\client
+   ```
+
+2. Start the frontend using the following command:
+
+   ```sh
+   npm run dev
+   ```
+
+   Expected output should include:
+
+   ```
+   ➜  Local:   http://localhost:5173/
+   ➜  Network: use --host to expose
+   ➜  press h + enter to show help
+   ```
+
+Open the application by going to `http://localhost:5173/` in your browser.
+
+**Stopping the Frontend:**  
+To shut down the server, press `Ctrl + C` in the terminal. You will be prompted with:
+
+```
+Terminate batch job (Y/N)?
+```
+
+Type `Y` and press `Enter` to stop the frontend.
